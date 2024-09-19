@@ -121,17 +121,17 @@
         <div id = "inventory"></div>
         <div id = "textInput"><textarea rows = "1"></textarea><div id = "text-display"></div></div>
         <script>
-            const storyDialogue = JSON.parse('<?=file_get_contents("dialogue.json");?>');
-            const tileObjects = JSON.parse('<?=file_get_contents("objects.json")?>');
-            var playerInventory = JSON.parse('<?=file_get_contents("inventory.json");?>');
-            var maps = {"level_1":JSON.parse('<?=file_get_contents("map.json");?>'),"level_2":JSON.parse('<?=file_get_contents("map2.json")?>')};
+            const storyDialogue = JSON.parse('<?=file_get_contents("https://fathomless.io/json/dialogue.json");?>');
+            const tileObjects = JSON.parse('<?=file_get_contents("https://fathomless.io/json/objects.json")?>');
+            var playerInventory = JSON.parse('<?=file_get_contents("https://fathomless.io/json/inventory.json");?>');
+            var maps = {"level_1":JSON.parse('<?=file_get_contents("https://fathomless.io/json/map.json");?>'),"level_2":JSON.parse('<?=file_get_contents("https://fathomless.io/json/map2.json")?>')};
             var currentMapName = "level_1";
             var currentMap = maps[currentMapName];
             var playerCoordinates = [];
             var sizeX = sizeY = levelStep = inventoryOpened = textInputOpened = isEditMap = editRotation = previousPortal= 0;
             var editTypes = ["tile","item","obstacle","entity"];
             var textUpIndex = currentTexture = 1;
-            var sfx = [new Audio('https://vintageautos.org/walking.mp3'),new Audio('https://vintageautos.org/coin.mp3'),new Audio('https://vintageautos.org/crash.mp3'),new Audio('https://vintageautos.org/walk2.mp3'), new Audio('https://vintageautos.org/woosh.mp3'), new Audio('https://vintageautos.org/dead.mp3'), new Audio('https://vintageautos.org/attack.mp3'), new Audio('https://vintageautos.org/shoot.mp3'), new Audio('https://vintageautos.org/hit.mp3'), new Audio('https://vintageautos.org/kill.mp3')];
+            var sfx = [new Audio('https://fathomless.io/assets/audio//walking.mp3'),new Audio('https://fathomless.io/assets/audio//coin.mp3'),new Audio('https://fathomless.io/assets/audio//crash.mp3'),new Audio('https://fathomless.io/assets/audio//walk2.mp3'), new Audio('https://fathomless.io/assets/audio//woosh.mp3'), new Audio('https://fathomless.io/assets/audio//dead.mp3'), new Audio('https://fathomless.io/assets/audio//attack.mp3'), new Audio('https://fathomless.io/assets/audio//shoot.mp3'), new Audio('https://fathomless.io/assets/audio//hit.mp3'), new Audio('https://fathomless.io/assets/audio//kill.mp3')];
             var arrowKeys = ["ArrowRight","ArrowUp","ArrowLeft","ArrowDown","KeyD","KeyW","KeyA","KeyS"];
             var viewSizeX = viewSizeY = 20;
             var blankTile = {"tile":{"textureIndex":8,"rotation":0},"item":{"textureIndex":8,"rotation":0},"obstacle":{"textureIndex":8,"rotation":0},"entity":{"textureIndex":"8","rotation":"0"}};
