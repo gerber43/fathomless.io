@@ -6,11 +6,11 @@ HTTP_FIELDS = cgi.FieldStorage()
 
 #How to get http request variables
 #https://fathomless.io/?test=testValue
-#test = HTTP_FIELDS.getvalue("test") -> test = "testValue"
+#test = HTTP_FIELDS.getvalue("test") THIS WILL YIELD test = "testValue"
 
-#indents are two spaces
-for i in range(10):
-  print(i)
+if (HTTP_FIELDS.getvalue("message")):
+  message = HTTP_FIELDS.getvalue("message")
+  print("The message \"" + message + "\" is " + str(len(message)) + " characters long")
 
 
 #output of document can be viewed at https://fathomless.io/cgi-bin/test.cgi
