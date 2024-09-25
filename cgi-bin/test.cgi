@@ -1,6 +1,7 @@
 #!/usr/bin/python2 
-print ('Content-type:text/html\n\n') 
-import cgi #https://docs.python.org/3/library/cgi.html
+import sys
+import cgi #https://docs.python.org/2/library/cgi.html
+print('Content-type:text/html\n') 
 HTTP_FIELDS = cgi.FieldStorage() 
 #DO NOT EDIT ABOVE TEXT
 
@@ -10,7 +11,7 @@ HTTP_FIELDS = cgi.FieldStorage()
 
 if (HTTP_FIELDS.getvalue("message")):
   message = HTTP_FIELDS.getvalue("message")
-  print("The message \"" + message + "\" is " + str(len(message)) + " characters long")
+  sys.stdout.write("The message \"" + message + "\" is " + str(len(message)) + " characters long")
 
 
 #output of document can be viewed at https://fathomless.io/cgi-bin/test.cgi
