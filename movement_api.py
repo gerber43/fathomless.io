@@ -81,16 +81,28 @@ def is_valid_move(x, y, game_map):
 #Function to create the subset of map
 def get_map_subset(player_pos, game_map, fov_radius):
     x, y = player_pos
+    x_max = len(game_map)
+    y_max = 0;
+    if x_max > 0:
+        y_max = len(game_map[0])
 
-    # Define the range of tiles to include in the FOV
-    x_start = x - fov_radius;
-    x_end = x + fov_radius;
-    y_start = y - fov_radius;
-    y_end = y + fov_radius
+    balnk_tile = {
+        "tile": {"textureIndex": 8, "rotation": 0},
+        "item": {"textureIndex": 8, "rotation": 0},
+        "obstacle": {"textureIndex": 8, "rotation": 0},
+        "entity": {"textureIndex": "8", "rotation": "0"}
+    }
+
 
     map_subset = []
-    for row in game_map[x_start:x_end]:
-        map_subset.append(row[y_start:y_end])
+    for i in range(x - fov_radius, x + fov_radius + 1):
+        row_subset = []
+        for j in range(y- fov_radius, y + fov_radius + 1):
+            if i < 0 or i >= x_max or j < 0  or j >= y_max:
+                row_subset.append(balnk_tile)
+            else:
+                row_subset.append(game_map[i][j])
+        map_subset.append(row_subset)
 
     return map_subset
 
