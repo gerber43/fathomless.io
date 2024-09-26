@@ -42,11 +42,11 @@ def process_entity_movement(position, direction, game_map):
     # If the entity is facing the correct direction, calculate the new position
     if direction == 0:  # Move right
         new_x, new_y = x + 1, y
-    elif direction == 90:  # Move up
+    elif direction == -90:  # Move up
         new_x, new_y = x, y - 1
     elif direction == 180:  # Move left
         new_x, new_y = x - 1, y
-    elif direction == 270:  # Move down
+    elif direction == 90:  # Move down
         new_x, new_y = x, y + 1
     else:
         return position, "Invalid direction"
