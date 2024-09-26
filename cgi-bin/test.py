@@ -1,4 +1,4 @@
-#!/usr/bin/python2 
+#!/usr/bin/python3
 import sys
 import cgi #https://docs.python.org/2/library/cgi.html
 print('Content-type:text/html\n') 
