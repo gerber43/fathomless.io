@@ -8,6 +8,7 @@ function guidv4($data = null) {
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));}
     if (isset($_REQUEST['guest_session'])) {
         $_SESSION['uuid'] = guidv4();
+        $_SESSION['username'] = "Guest";
         header("Location: https://fathomless.io/engine/");
     }
     if (isset($_REQUEST['create_account'])) {
