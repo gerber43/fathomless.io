@@ -95,7 +95,7 @@
             const  arrowKeys = ["ArrowRight","ArrowUp","ArrowLeft","ArrowDown","KeyD","KeyW","KeyA","KeyS"];
             const objectTypes = ["tile","item","obstacle","entity"];
             var playerInventory = JSON.parse('<?=file_get_contents("https://fathomless.io/json/inventory.json");?>');
-            var maps = {"level_1":JSON.parse('<?=file_get_contents("https://fathomless.io/json/map.json");?>'),"level_2":JSON.parse('<?=file_get_contents("https://fathomless.io/json/map2.json")?>')};
+            var maps = {"level_1":JSON.parse('<?=file_get_contents("https://fathomless.io/cgi-bin/map.py?getMap=value");?>'),"level_2":JSON.parse('<?=file_get_contents("https://fathomless.io/json/map2.json")?>')};
             var viewSizeX = viewSizeY = playerCoordinates = currentMap = currentMapName = sizeX = sizeY = levelStep = inventoryOpened = textInputOpened = isEditMap = editRotation = previousPortal=asciiMode= 0;
             loadMap("level_1");
             setFov(5);
@@ -175,8 +175,9 @@
                 var uuid = uuidv4();
                 if (!document.getElementById(type).innerHTML.includes(message)) {
                     document.getElementById(type).innerHTML = ((type == "alert")?document.getElementById(type).innerHTML:"")+"<p id = '"+uuid+"'>"+message+"</p>";
-                    setTimeout(function() {document.getElementById(uuid).remove()}, time*1000);
+                    setTimeout(function() {if (document.getElementById(uuid)){document.getElementById(uuid).remove()}}, time*1000);
                 }
+                
             }
             function toggleInventory() {
                 document.getElementById('inventory').style.height = (inventoryOpened)?"0":"100svh";
@@ -217,9 +218,22 @@
                 }
                 sfx[index].play();
             }
+            function sendDirection(direction) {
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        createMessage("dialogue",this.responseText,1);
+                    }
+                  }
+                  xmlhttp.open("GET", "https://fathomless.io/cgi-bin/movement_api.py?direction="+encodeURIComponent(direction), true);
+                  xmlhttp.send();
+            
+            }
             document.addEventListener('keydown', (e) => {
                 if (arrowKeys.indexOf(e.code) > -1) {
-                    moveDirection([Math.round(Math.cos((arrowKeys.indexOf(e.code)%4)*Math.PI/2))+0,-Math.round(Math.sin((arrowKeys.indexOf(e.code)%4)*Math.PI/2))+0],playerCoordinates[0],playerCoordinates[1])
+                    var newDirection = [Math.round(Math.cos((arrowKeys.indexOf(e.code)%4)*Math.PI/2))+0,-Math.round(Math.sin((arrowKeys.indexOf(e.code)%4)*Math.PI/2))+0];
+                    sendDirection(((Math.atan2(newDirection[1], newDirection[0])*180)/Math.PI))
+                    moveDirection(newDirection,playerCoordinates[0],playerCoordinates[1])
                     playSound(0);
                 }
                 if (e.code === "KeyE")  {
