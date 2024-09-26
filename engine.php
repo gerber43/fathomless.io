@@ -1,3 +1,8 @@
+<?php include("session.php");
+if (!$uuid) {
+    header("Location: https://fathomless.io/account/");
+}
+?>
 <html>
     <head>
         <style>
@@ -225,7 +230,7 @@
                         createMessage("dialogue",this.responseText,1);
                     }
                   }
-                  xmlhttp.open("GET", "https://fathomless.io/cgi-bin/movement_api.py?direction="+encodeURIComponent(direction), true);
+                  xmlhttp.open("GET", "https://fathomless.io/sessionValidate/?sendDirection="+encodeURIComponent(direction), true);
                   xmlhttp.send();
             
             }
