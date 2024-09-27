@@ -132,11 +132,17 @@ try:
       game_map = load_map(map_file_path)
 
     # Process player's movement
-      player_pos = find_player_position(game_map);
-      new_player_pos, message = process_entity_movement(player_pos, direction, game_map)
+      player_pos = find_player_position(game_map)
+      if (player_pos != None):
+          new_player_pos, message = process_entity_movement(player_pos, direction, game_map)
+      else:
+          message = "player not found"
+
+
 
     #update the entity's position
-      update_entity_position(game_map)
+      if (message == "orientation has changed" or message == "entity has moved"):
+          update_entity_position(game_map)
 
     # Save the updated map back to the file
       save_map(map_file_path, game_map)
