@@ -85,6 +85,89 @@ if (!$uuid) {
                 align-items:center;
                 justify-content:center;
             }
+            @keyframes fadeSettings {
+  0%   {opacity:1;}
+  
+  75% {opacity:1;}
+  100% {opacity:.25;}
+}
+
+#settings:not(:hover){
+    animation-name: fadeSettings;
+  animation-duration: 4s;
+}
+            #settings {
+                transition:4s;
+                position:absolute;
+                top:0;
+                right:0;
+                height:100px;
+                display:flex;
+                align-items:center;
+                justify-content:end;
+                flex-direction:row-reverse;
+                width:0px;
+                filter: brightness(0) invert(1);
+                opacity:.25;
+                font-size:0;
+            }
+            #settings:hover {
+                transition:.75s;
+                opacity:1;
+            }
+            
+            #settings button{
+                background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+	width:100px;
+            }
+           .gearRotate {
+  -webkit-animation-name: gearRotation;
+  -webkit-animation-duration: 1s;
+  -webkit-animation-timing-function: ease-in-out;
+  transform:rotate(360deg);
+}
+
+@-webkit-keyframes gearRotation {
+  from {
+    transform:rotate(0deg);
+  }
+  to {
+    transform:rotate(360deg);
+  }
+}
+
+
+            
+            #settings button img {
+                transition:1s;
+                animation-timing-function: ease-in-out;
+            transform:scale(0deg);
+              
+                width:100px;
+
+            }
+            #settings span {
+                height:100%;
+                width:100%;
+                display:flex;
+                align-items:center;
+                justify-content:space-around;
+                
+            }
+            #settings span * {
+                height:100%;
+                width:0px;
+                padding:0;
+                margin:0;
+                font-size:inherit;
+            }
+            
         </style>
     </head>
     <body onresize="scaleTextures()">
@@ -94,6 +177,7 @@ if (!$uuid) {
         <div id = "dialogue"></div>
         <div id = "alert"></div>
         <div id = "inventory"></div>
+        <div id = "settings" onmouseenter = "clearTimeout(closeSetting);" onmouseleave = "if (isSettingsOpen){closeSetting = setTimeout(toggleSettings, 3000);}"><button onclick = "toggleSettings();"><img id = "gear" style = "width:100px;height:100px;" src = "https://icons.veryicon.com/png/o/miscellaneous/xdh-font-graphics-library/gear-setting-1.png"></button><span id = "settings_span"><button>Setting 1</button><button>Setting 2</button><button>Setting 3</button><button>Setting 4</button></span></div>
         <script>
             const username = "<?=$username?>";
             const tileObjects = JSON.parse('<?=file_get_contents("https://fathomless.io/json/objects.json")?>');
@@ -101,10 +185,19 @@ if (!$uuid) {
             const  arrowKeys = ["ArrowRight","ArrowUp","ArrowLeft","ArrowDown","KeyD","KeyW","KeyA","KeyS"];
             const objectTypes = ["tile","item","obstacle","entity"];
             var playerInventory = JSON.parse('<?=file_get_contents("https://fathomless.io/json/inventory.json");?>');
-            var maps = {"level_1":JSON.parse('<?=file_get_contents("https://fathomless.io/sessionValidate/?uuid=".urlencode($uuid)."&sendDirection");?>')['map_subset'],"level_2":JSON.parse('<?=file_get_contents("https://fathomless.io/json/map2.json")?>')};
-            var viewSizeX = viewSizeY = playerCoordinates = currentMap = currentMapName = sizeX = sizeY = levelStep = inventoryOpened = textInputOpened = isEditMap = editRotation = previousPortal=asciiMode= 0;
-            loadMap("level_1");
-            setFov(5);
+            var maps = {};
+            var playerCoordinates = currentMap = currentMapName = sizeX = sizeY = levelStep = inventoryOpened = textInputOpened = isEditMap = editRotation = previousPortal=asciiMode= 0;
+            sendDirection("");
+            var viewSizeX = viewSizeY = 5;
+            var isSettingsOpen = false;
+            var closeSetting = "";
+            function toggleSettings() {
+                document.getElementById('settings').style.width=(isSettingsOpen?"0px":"100vw");
+                                document.getElementById('settings').style.fontSize=(isSettingsOpen?"0px":"20px");
+                                document.getElementById('gear').classList.toggle('gearRotate');
+
+                isSettingsOpen = !isSettingsOpen;
+            }
             function setFov(radius) {
                 viewSizeX = viewSizeY = radius;
                 updateMap();
@@ -197,7 +290,7 @@ if (!$uuid) {
                 updateMap();
             }
             function moveEntity(x,y,currentCoordinates,type,augmentation) {
-                if (0 <= x && x < currentMap.length && 0 <= y && y < currentMap[0].length) {
+                if (currentMap[x][y]['tile']['textureIndex'] != 8 && currentMap[x][y]['obstacle']['textureIndex'] == 8) {
                     currentMap[currentCoordinates[0]][currentCoordinates[1]]['entity'] = [currentMap[x][y]['entity'], currentMap[x][y]['entity'] = currentMap[currentCoordinates[0]][currentCoordinates[1]]['entity']][0];
                     if (playerCoordinates[0] == currentCoordinates[0] && playerCoordinates[1] == currentCoordinates[1]) {
                         playerCoordinates = [x,y];
@@ -224,6 +317,21 @@ if (!$uuid) {
                 }
                 sfx[index].play();
             }
+             function getMap() {
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var response = JSON.parse(this.responseText);
+                        var mapName = uuidv4();
+                        maps[mapName] = response["map_subset"];
+                        loadMap(mapName);
+                        createMessage("dialogue",response["message"],1);
+                    }
+                  }
+                  xmlhttp.open("GET", "https://fathomless.io/sessionValidate/?sendDirection", true);
+                  xmlhttp.send();
+            
+            }
             function sendDirection(direction) {
                 var xmlhttp = new XMLHttpRequest();
                 xmlhttp.onreadystatechange = function () {
@@ -235,7 +343,9 @@ if (!$uuid) {
                         createMessage("dialogue",response["message"],1);
                     }
                   }
-                  xmlhttp.open("GET", "https://fathomless.io/sessionValidate/?sendDirection="+encodeURIComponent(direction), true);
+                  var queryString = (direction !== "")?"="+encodeURIComponent(direction):"";
+                  console.log("https://fathomless.io/sessionValidate/?sendDirection"+queryString);
+                  xmlhttp.open("GET", "https://fathomless.io/sessionValidate/?sendDirection"+queryString, true);
                   xmlhttp.send();
             
             }
