@@ -95,12 +95,13 @@ if (!$uuid) {
         <div id = "alert"></div>
         <div id = "inventory"></div>
         <script>
+            const username = "<?=$username?>";
             const tileObjects = JSON.parse('<?=file_get_contents("https://fathomless.io/json/objects.json")?>');
             const sfx = [new Audio('https://fathomless.io/assets/audio//walking.mp3'),new Audio('https://fathomless.io/assets/audio//coin.mp3'),new Audio('https://fathomless.io/assets/audio//crash.mp3'),new Audio('https://fathomless.io/assets/audio//walk2.mp3'), new Audio('https://fathomless.io/assets/audio//woosh.mp3'), new Audio('https://fathomless.io/assets/audio//dead.mp3'), new Audio('https://fathomless.io/assets/audio//attack.mp3'), new Audio('https://fathomless.io/assets/audio//shoot.mp3'), new Audio('https://fathomless.io/assets/audio//hit.mp3'), new Audio('https://fathomless.io/assets/audio//kill.mp3')];
             const  arrowKeys = ["ArrowRight","ArrowUp","ArrowLeft","ArrowDown","KeyD","KeyW","KeyA","KeyS"];
             const objectTypes = ["tile","item","obstacle","entity"];
             var playerInventory = JSON.parse('<?=file_get_contents("https://fathomless.io/json/inventory.json");?>');
-            var maps = {"level_1":JSON.parse('<?=file_get_contents("https://fathomless.io/cgi-bin/map.py?getMap=value");?>'),"level_2":JSON.parse('<?=file_get_contents("https://fathomless.io/json/map2.json")?>')};
+            var maps = {"level_1":JSON.parse('<?=file_get_contents("https://fathomless.io/sessionValidate/?uuid=".urlencode($uuid)."&sendDirection");?>')['map_subset'],"level_2":JSON.parse('<?=file_get_contents("https://fathomless.io/json/map2.json")?>')};
             var viewSizeX = viewSizeY = playerCoordinates = currentMap = currentMapName = sizeX = sizeY = levelStep = inventoryOpened = textInputOpened = isEditMap = editRotation = previousPortal=asciiMode= 0;
             loadMap("level_1");
             setFov(5);
@@ -227,14 +228,18 @@ if (!$uuid) {
                 var xmlhttp = new XMLHttpRequest();
                 xmlhttp.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
-                        createMessage("dialogue",this.responseText,1);
+                        var response = JSON.parse(this.responseText);
+                        var mapName = uuidv4();
+                        maps[mapName] = response["map_subset"];
+                        loadMap(mapName);
+                        createMessage("dialogue",response["message"],1);
                     }
                   }
                   xmlhttp.open("GET", "https://fathomless.io/sessionValidate/?sendDirection="+encodeURIComponent(direction), true);
                   xmlhttp.send();
             
             }
-            document.addEventListener('keydown', (e) => {
+            document.addEventListener('keyup', (e) => {
                 if (arrowKeys.indexOf(e.code) > -1) {
                     var newDirection = [Math.round(Math.cos((arrowKeys.indexOf(e.code)%4)*Math.PI/2))+0,-Math.round(Math.sin((arrowKeys.indexOf(e.code)%4)*Math.PI/2))+0];
                     sendDirection(((Math.atan2(newDirection[1], newDirection[0])*180)/Math.PI))
