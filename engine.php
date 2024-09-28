@@ -228,7 +228,7 @@
             var playerInventory = JSON.parse('<?=file_get_contents("https://fathomless.io/json/inventory.json");?>');
             var maps = {};
             var onScreenControls = playAudio = closeSetting = isSettingsOpen = playerCoordinates = currentMap = currentMapName = sizeX = sizeY = levelStep = inventoryOpened = textInputOpened = isEditMap = editRotation = previousPortal=asciiMode= 0;
-            sendDirection("");
+            getMap();
             var viewSizeX = viewSizeY = 5;
             isMobile()?toggleOnScreenControls():"";
             function isMobile() {
@@ -257,7 +257,7 @@
                     }
                 }
             }
-            function updateMap() {
+            function updateMap(loadTypes = "") {
                 var createTiles = false;
                 if (sizeX != viewSizeX || sizeY != viewSizeY) {
                     createTiles = true;
@@ -274,15 +274,25 @@
                             document.getElementById('canvas').innerHTML += '<div class="tile" id = "'+j+','+i+'"><div class = "entity"></div><div class = "item"></div><div class = "obstacle"></div></div>';
                         }
                         if (maps[currentMapName][topLeftCorner[0]+j] && maps[currentMapName][topLeftCorner[0]+j][topLeftCorner[1]+i]) {
+                           applyTexture("item",j+","+i,maps[currentMapName][topLeftCorner[0]+j][topLeftCorner[1]+i]['item']);
+                                applyTexture("entity",j+","+i,maps[currentMapName][topLeftCorner[0]+j][topLeftCorner[1]+i]['entity']);
+                         
                            applyTexture('tile',j+","+i,maps[currentMapName][topLeftCorner[0]+j][topLeftCorner[1]+i]['tile']);
-                            applyTexture("item",j+","+i,maps[currentMapName][topLeftCorner[0]+j][topLeftCorner[1]+i]['item']);
                             applyTexture("obstacle",j+","+i,maps[currentMapName][topLeftCorner[0]+j][topLeftCorner[1]+i]['obstacle']);
-                            applyTexture("entity",j+","+i,maps[currentMapName][topLeftCorner[0]+j][topLeftCorner[1]+i]['entity']);
+                            if (loadTypes == "") {
+                                
+                           applyTexture('tile',j+","+i,maps[currentMapName][topLeftCorner[0]+j][topLeftCorner[1]+i]['tile']);
+                            applyTexture("obstacle",j+","+i,maps[currentMapName][topLeftCorner[0]+j][topLeftCorner[1]+i]['obstacle']);
+                           
+                                   }
                         } else {
-                           applyTexture('tile',j+","+i,{"textureIndex":8,"rotation":0});
                             applyTexture("item",j+","+i,{"textureIndex":8,"rotation":0});
+                                applyTexture("entity",j+","+i,{"textureIndex":8,"rotation":0});
+                            if (loadTypes == "") {
+                                applyTexture('tile',j+","+i,{"textureIndex":8,"rotation":0});
                             applyTexture("obstacle",j+","+i,{"textureIndex":8,"rotation":0});
-                            applyTexture("entity",j+","+i,{"textureIndex":8,"rotation":0});
+                                
+                            }
                         }
                     }
                 }
@@ -369,22 +379,59 @@
                 xmlhttp.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
                         var response = JSON.parse(this.responseText);
-                        var mapName = uuidv4();
-                        maps[mapName] = response["map_subset"];
-                        loadMap(mapName);
+                        applyDyanamics(response["map_subset"]);
                         createMessage("dialogue",response["message"],1);
+                        disableMovement = false;
                     }
                   }
                   var queryString = (direction !== "")?"="+encodeURIComponent(direction):"";
                   xmlhttp.open("GET", "https://fathomless.io/sessionValidate/?sendDirection"+queryString, true);
                   xmlhttp.send();
+                
             
             }
             function directionHandler(keycode) {
-                var newDirection = [Math.round(Math.cos((arrowKeys.indexOf(keycode)%4)*Math.PI/2))+0,-Math.round(Math.sin((arrowKeys.indexOf(keycode)%4)*Math.PI/2))+0];
-                sendDirection(((Math.atan2(newDirection[1], newDirection[0])*180)/Math.PI))
-                moveDirection(newDirection,playerCoordinates[0],playerCoordinates[1])
-                playSound(0);
+                if (!disableMovement) {
+                    var newDirection = [Math.round(Math.cos((arrowKeys.indexOf(keycode)%4)*Math.PI/2))+0,-Math.round(Math.sin((arrowKeys.indexOf(keycode)%4)*Math.PI/2))+0];
+                    sendDirection(((Math.atan2(newDirection[1], newDirection[0])*180)/Math.PI))
+                    moveDirection(newDirection,playerCoordinates[0],playerCoordinates[1])
+                    playSound(0);
+                    disableMovement = true;
+                } else {
+                    createMessage("alert","You Are Moving Too Fast!",1);
+                }
+            }
+            function getMap() {
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var response = JSON.parse(this.responseText);
+                        var mapName = uuidv4();
+                        maps[mapName] = response;
+                        loadMap(mapName);
+                    }
+                  }
+                  xmlhttp.open("GET", "https://fathomless.io/sessionValidate/?getMap", true);
+                  xmlhttp.send();
+            
+            }
+            function applyDyanamics(layer) {
+                var topLeftCorner = [playerCoordinates[0] - Math.floor(viewSizeX/2),playerCoordinates[1] - Math.floor(viewSizeX/2)]
+                
+                for (var i = 0; i < layer.length; i++) {
+                    for (var j = 0; j < layer[0].length; j++) {
+                        if (currentMap[topLeftCorner[0] + i] && currentMap[topLeftCorner[0] + i][topLeftCorner[1] + j]) {
+                            if (currentMap[topLeftCorner[0] + i][topLeftCorner[1] + j]['entity'] != layer[i][j]['entity']) {
+                            currentMap[topLeftCorner[0] + i][topLeftCorner[1] + j]['entity'] = layer[i][j]['entity'];
+                            }
+                            if (currentMap[topLeftCorner[0] + i][topLeftCorner[1] + j]['item'] != layer[i][j]['item']) {
+                            currentMap[topLeftCorner[0] + i][topLeftCorner[1] + j]['item'] = layer[i][j]['item'];
+                            }
+                        }
+                        
+                    }
+                }
+                updateMap("dynamic");
             }
             document.addEventListener('keyup', (e) => {
                 if (arrowKeys.indexOf(e.code) > -1) {
@@ -405,6 +452,7 @@
                     closeSetting = setTimeout(toggleSettings, 3000);
                 }
             });
+            var disableMovement = false;
             document.querySelectorAll('button').forEach((item) => {
                 item.addEventListener("click", () => {
                     if (item.dataset.direction && arrowKeys.includes(item.dataset.direction)){
