@@ -1,10 +1,8 @@
-<?php include("session.php");
-if (!$uuid) {
-    header("Location: https://fathomless.io/account/");
-}
-?>
+<?php include("session.php");session_required();?>
 <html>
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
             @import url('https://fonts.cdnfonts.com/css/8bit-wonder');
             * {
@@ -13,6 +11,7 @@ if (!$uuid) {
             html, body {
             margin:0;
             padding:0;
+            touch-action: manipulation;
             }
             #page {
             width:100vw;
@@ -81,93 +80,120 @@ if (!$uuid) {
             height:50px;
             }
             #alert p {
-                display:flex;
-                align-items:center;
-                justify-content:center;
+            display:flex;
+            align-items:center;
+            justify-content:center;
             }
             @keyframes fadeSettings {
-  0%   {opacity:1;}
-  
-  75% {opacity:1;}
-  100% {opacity:.25;}
-}
-
-#settings:not(:hover){
-    animation-name: fadeSettings;
-  animation-duration: 4s;
-}
+            0%   {opacity:1;}
+            75% {opacity:1;}
+            100% {opacity:.25;}
+            }
+            #settings:not(:hover){
+            animation-name: fadeSettings;
+            animation-duration: 4s;
+            }
             #settings {
-                transition:4s;
-                position:absolute;
-                top:0;
-                right:0;
-                height:100px;
-                display:flex;
-                align-items:center;
-                justify-content:end;
-                flex-direction:row-reverse;
-                width:0px;
-                filter: brightness(0) invert(1);
-                opacity:.25;
-                font-size:0;
+            transition:4s;
+            position:absolute;
+            top:0;
+            right:0;
+            height:100px;
+            display:flex;
+            align-items:center;
+            justify-content:end;
+            flex-direction:row-reverse;
+            width:0px;
+            filter: brightness(0) invert(1);
+            opacity:.25;
+            font-size:0;
             }
             #settings:hover {
-                transition:.75s;
-                opacity:1;
+            transition:.75s;
+            opacity:1;
             }
-            
             #settings button{
-                background: none;
-	color: inherit;
-	border: none;
-	padding: 0;
-	font: inherit;
-	cursor: pointer;
-	outline: inherit;
-	width:100px;
+            background: none;
+            color: inherit;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            outline: inherit;
+            width:100px;
             }
-           .gearRotate {
-  -webkit-animation-name: gearRotation;
-  -webkit-animation-duration: 1s;
-  -webkit-animation-timing-function: ease-in-out;
-  transform:rotate(360deg);
-}
-
-@-webkit-keyframes gearRotation {
-  from {
-    transform:rotate(0deg);
-  }
-  to {
-    transform:rotate(360deg);
-  }
-}
-
-
-            
+            .gearRotate {
+            -webkit-animation-name: gearRotation;
+            -webkit-animation-duration: 1s;
+            -webkit-animation-timing-function: ease-in-out;
+            transform:rotate(360deg);
+            }
+            @-webkit-keyframes gearRotation {
+            from {
+            transform:rotate(0deg);
+            }
+            to {
+            transform:rotate(360deg);
+            }
+            }
             #settings button img {
-                transition:1s;
-                animation-timing-function: ease-in-out;
+            transition:1s;
+            animation-timing-function: ease-in-out;
             transform:scale(0deg);
-              
-                width:100px;
-
+            width:100px;
             }
             #settings span {
-                height:100%;
-                width:100%;
-                display:flex;
-                align-items:center;
-                justify-content:space-around;
-                
+            height:100%;
+            width:100%;
+            display:flex;
+            align-items:center;
+            justify-content:space-around;
             }
             #settings span * {
-                height:100%;
-                width:0px;
-                padding:0;
-                margin:0;
-                font-size:inherit;
+            height:100%;
+            width:0px;
+            padding:0;
+            margin:0;
+            font-size:inherit;
             }
-            
+            #mobile_movement {
+            position:absolute;
+            bottom:0;
+            right:0;
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            grid-column-gap: 0px;
+            grid-row-gap: 0px;
+            opacity:.5;
+            }
+            #mobile_movement button {
+            width:100px;
+            height:100px;
+            }
+            #mobile_movement button:nth-child(1) {grid-area: 1 / 2 / 2 / 3;}
+            #mobile_movement button:nth-child(2) {grid-area: 2 / 1 / 3 / 2;}
+            #mobile_movement button:nth-child(4) {grid-area: 3 / 2 / 4 / 3;}
+            #mobile_movement button:nth-child(3) {grid-area: 2 / 3 / 3 / 4;}
+            button, input {
+            transition:.75s;
+            background: none;
+            color: inherit;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            outline: inherit;
+            color:gold;
+            font-size:20px;
+            border:2px burlywood solid;
+            background:saddlebrown;
+            background:url(https://img.freepik.com/premium-vector/seamless-pattern-old-wood-wall-background_117579-47.jpg);
+            }
+            button, input[type=submit]:hover {
+            transition:.75s;
+            transform:scale(.9);
+            }
         </style>
     </head>
     <body onresize="scaleTextures()">
@@ -177,7 +203,22 @@ if (!$uuid) {
         <div id = "dialogue"></div>
         <div id = "alert"></div>
         <div id = "inventory"></div>
-        <div id = "settings" onmouseenter = "clearTimeout(closeSetting);" onmouseleave = "if (isSettingsOpen){closeSetting = setTimeout(toggleSettings, 3000);}"><button onclick = "toggleSettings();"><img id = "gear" style = "width:100px;height:100px;" src = "https://icons.veryicon.com/png/o/miscellaneous/xdh-font-graphics-library/gear-setting-1.png"></button><span id = "settings_span"><button>Setting 1</button><button>Setting 2</button><button>Setting 3</button><button>Setting 4</button></span></div>
+        <div id = "settings">
+            <button data-setting = "settings_menu">
+                <img id = "gear" src = "https://icons.veryicon.com/png/o/miscellaneous/xdh-font-graphics-library/gear-setting-1.png">
+                </button>
+            <span id = "settings_span">
+                <button data-setting = "toggleAudio">Play SFX</button>
+                <button data-setting = "onScreenControls">On-screen Controls</button>
+                <button>Setting 3</button><button>Setting 4</button>
+            </span>
+        </div>
+        <div id = "mobile_movement">
+            <button data-direction = "ArrowUp">Up</button>
+            <button data-direction = "ArrowLeft">Left</button>
+            <button data-direction = "ArrowRight">Right</button>
+            <button data-direction = "ArrowDown">Down</button>
+        </div>
         <script>
             const username = "<?=$username?>";
             const tileObjects = JSON.parse('<?=file_get_contents("https://fathomless.io/json/objects.json")?>');
@@ -186,16 +227,21 @@ if (!$uuid) {
             const objectTypes = ["tile","item","obstacle","entity"];
             var playerInventory = JSON.parse('<?=file_get_contents("https://fathomless.io/json/inventory.json");?>');
             var maps = {};
-            var playerCoordinates = currentMap = currentMapName = sizeX = sizeY = levelStep = inventoryOpened = textInputOpened = isEditMap = editRotation = previousPortal=asciiMode= 0;
+            var onScreenControls = playAudio = closeSetting = isSettingsOpen = playerCoordinates = currentMap = currentMapName = sizeX = sizeY = levelStep = inventoryOpened = textInputOpened = isEditMap = editRotation = previousPortal=asciiMode= 0;
             sendDirection("");
             var viewSizeX = viewSizeY = 5;
-            var isSettingsOpen = false;
-            var closeSetting = "";
+            isMobile()?toggleOnScreenControls():"";
+            function isMobile() {
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            }
+            function toggleOnScreenControls() {
+                document.getElementById('mobile_movement').style.display = onScreenControls?"none":"grid";
+                onScreenControls = !onScreenControls;
+            }
             function toggleSettings() {
                 document.getElementById('settings').style.width=(isSettingsOpen?"0px":"100vw");
-                                document.getElementById('settings').style.fontSize=(isSettingsOpen?"0px":"20px");
-                                document.getElementById('gear').classList.toggle('gearRotate');
-
+                document.getElementById('settings').style.fontSize=(isSettingsOpen?"0px":"20px");
+                document.getElementById('gear').classList.toggle('gearRotate');
                 isSettingsOpen = !isSettingsOpen;
             }
             function setFov(radius) {
@@ -276,7 +322,6 @@ if (!$uuid) {
                     document.getElementById(type).innerHTML = ((type == "alert")?document.getElementById(type).innerHTML:"")+"<p id = '"+uuid+"'>"+message+"</p>";
                     setTimeout(function() {if (document.getElementById(uuid)){document.getElementById(uuid).remove()}}, time*1000);
                 }
-                
             }
             function toggleInventory() {
                 document.getElementById('inventory').style.height = (inventoryOpened)?"0":"100svh";
@@ -311,26 +356,13 @@ if (!$uuid) {
                 updateMap();
             }
             function playSound(index) {
+                if (playAudio) {
                 if (!sfx[index].pasued) {
                     sfx[index].pause();
                     sfx[index].currentTime = 0;
                 }
                 sfx[index].play();
-            }
-             function getMap() {
-                var xmlhttp = new XMLHttpRequest();
-                xmlhttp.onreadystatechange = function () {
-                    if (this.readyState == 4 && this.status == 200) {
-                        var response = JSON.parse(this.responseText);
-                        var mapName = uuidv4();
-                        maps[mapName] = response["map_subset"];
-                        loadMap(mapName);
-                        createMessage("dialogue",response["message"],1);
-                    }
-                  }
-                  xmlhttp.open("GET", "https://fathomless.io/sessionValidate/?sendDirection", true);
-                  xmlhttp.send();
-            
+                }
             }
             function sendDirection(direction) {
                 var xmlhttp = new XMLHttpRequest();
@@ -344,17 +376,19 @@ if (!$uuid) {
                     }
                   }
                   var queryString = (direction !== "")?"="+encodeURIComponent(direction):"";
-                  console.log("https://fathomless.io/sessionValidate/?sendDirection"+queryString);
                   xmlhttp.open("GET", "https://fathomless.io/sessionValidate/?sendDirection"+queryString, true);
                   xmlhttp.send();
             
             }
+            function directionHandler(keycode) {
+                var newDirection = [Math.round(Math.cos((arrowKeys.indexOf(keycode)%4)*Math.PI/2))+0,-Math.round(Math.sin((arrowKeys.indexOf(keycode)%4)*Math.PI/2))+0];
+                sendDirection(((Math.atan2(newDirection[1], newDirection[0])*180)/Math.PI))
+                moveDirection(newDirection,playerCoordinates[0],playerCoordinates[1])
+                playSound(0);
+            }
             document.addEventListener('keyup', (e) => {
                 if (arrowKeys.indexOf(e.code) > -1) {
-                    var newDirection = [Math.round(Math.cos((arrowKeys.indexOf(e.code)%4)*Math.PI/2))+0,-Math.round(Math.sin((arrowKeys.indexOf(e.code)%4)*Math.PI/2))+0];
-                    sendDirection(((Math.atan2(newDirection[1], newDirection[0])*180)/Math.PI))
-                    moveDirection(newDirection,playerCoordinates[0],playerCoordinates[1])
-                    playSound(0);
+                    directionHandler(e.code)
                 }
                 if (e.code === "KeyE")  {
                     toggleInventory();
@@ -362,6 +396,31 @@ if (!$uuid) {
                 if (e.code === "KeyQ") {
                     toggleAscii();
                 }
+            });
+            document.getElementById('settings').addEventListener('mouseenter', (e) => {
+                clearTimeout(closeSetting);
+            });
+            document.getElementById('settings').addEventListener('mouseleave', (e) => {
+                if (isSettingsOpen){
+                    closeSetting = setTimeout(toggleSettings, 3000);
+                }
+            });
+            document.querySelectorAll('button').forEach((item) => {
+                item.addEventListener("click", () => {
+                    if (item.dataset.direction && arrowKeys.includes(item.dataset.direction)){
+                        directionHandler(item.dataset.direction)
+                    }
+                    if (item.dataset.setting && item.dataset.setting == "settings_menu") {
+                        toggleSettings();
+                    }
+                    if (item.dataset.setting && item.dataset.setting == "toggleAudio") {
+                        item.innerHTML = (!playAudio)?"Mute SFX":"Play SFX"
+                        playAudio = !playAudio;
+                    }
+                    if (item.dataset.setting && item.dataset.setting == "onScreenControls") {
+                        toggleOnScreenControls();
+                    }
+                });
             });
         </script>
     </body>
