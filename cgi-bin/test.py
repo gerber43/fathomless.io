@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import sys
-import cgi #https://docs.python.org/2/library/cgi.html
+import cgi #https://docs.python.org/3/library/cgi.html
 print('Content-type:text/html\n') 
 HTTP_FIELDS = cgi.FieldStorage() 
 #DO NOT EDIT ABOVE TEXT
