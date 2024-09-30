@@ -1,140 +1,128 @@
 import random
 
-# Constants for level grid size and room dimensions
-GRID_WIDTH = 150
-GRID_HEIGHT = 150
 MIN_ROOM_SIZE = 10
 MAX_ROOM_SIZE = 30
-NUM_ROOMS = 8 
+NUM_ROOMS = 8  
 
 class Room:
-    def __init__(self, x, y, width, height):
+    def __init__(self, room_id, x, y, width, height):
+        self.room_id = room_id
         self.x = x  # Top-left x coordinate
         self.y = y  # Top-left y coordinate
         self.width = width
         self.height = height
+        self.doors = []  # List of door keys (which door connects to which hallway)
+        self.door_positions = set()  # Track positions where doors are placed
 
-    # Check if this room intersects with another room
-    def intersects(self, other):
-        return not (self.x + self.width <= other.x or 
-                    other.x + other.width <= self.x or
-                    self.y + self.height <= other.y or 
-                    other.y + other.height <= self.y)
-
-
-    # Randomly pick an edge (left, right, top, bottom) and return a position on that edge
     def random_edge_position(self):
+        # Randomly pick an edge (left, right, top, bottom) and return a door position on that edge
         edge = random.choice(['top', 'bottom', 'left', 'right'])
         if edge == 'top':
-            door_x, door_y = random.randint(self.x, self.x + self.width - 1), self.y - 1  
-            hallway_start_x, hallway_start_y = door_x, self.y - 2
+            pos = (random.randint(self.x, self.x + self.width - 1), self.y - 1)
         elif edge == 'bottom':
-            door_x, door_y = random.randint(self.x, self.x + self.width - 1), self.y + self.height  
-            hallway_start_x, hallway_start_y = door_x, self.y + self.height + 1
+            pos = (random.randint(self.x, self.x + self.width - 1), self.y + self.height)
         elif edge == 'left':
-            door_x, door_y = self.x - 1, random.randint(self.y, self.y + self.height - 1)  
-            hallway_start_x, hallway_start_y = self.x - 2, door_y
+            pos = (self.x - 1, random.randint(self.y, self.y + self.height - 1))
         elif edge == 'right':
-            door_x, door_y = self.x + self.width, random.randint(self.y, self.y + self.height - 1)  
-            hallway_start_x, hallway_start_y = self.x + self.width + 1, door_y
-        
-        return (door_x, door_y), (hallway_start_x, hallway_start_y)
+            pos = (self.x + self.width, random.randint(self.y, self.y + self.height - 1))
+
+        return pos, edge
+
+    def add_door(self, door_key, pos):
+        # Ensure there are no overlapping doors in the same position
+        if pos not in self.door_positions:
+            self.door_positions.add(pos)
+            self.doors.append(door_key)
+            return True
+        return False
+
+class Hallway:
+    def __init__(self, door_key_1, door_key_2, direction1, direction2):
+        self.door_key_1 = door_key_1  # Connection to the first room's door
+        self.door_key_2 = door_key_2  # Connection to the second room's door
+        self.direction1 = direction1  # Direction from the first room
+        self.direction2 = direction2  # Direction to the second room
+
+    def __repr__(self):
+        return f"Hallway between {self.door_key_1} and {self.door_key_2} (directions: {self.direction1} -> {self.direction2})"
 
 class Level:
-    def __init__(self, width, height, num_rooms):
-        self.width = width
-        self.height = height
+    def __init__(self, num_rooms):
         self.num_rooms = num_rooms
         self.rooms = []
-        self.grid = [[' ' for _ in range(width)] for _ in range(height)]
+        self.hallways = []
+        self.room_path = []  # List to store the path between rooms
 
-    
-    # Randomly place non-overlapping rooms
     def generate_rooms(self):
-        for _ in range(self.num_rooms):
+        # Randomly create rooms with no overlap
+        for room_id in range(1, self.num_rooms + 1):
             while True:
                 width = random.randint(MIN_ROOM_SIZE, MAX_ROOM_SIZE)
                 height = random.randint(MIN_ROOM_SIZE, MAX_ROOM_SIZE)
-                x = random.randint(0, self.width - width - 1)
-                y = random.randint(0, self.height - height - 1)
+                x = random.randint(0, 100 - width)  # For simplicity, assume a large enough area
+                y = random.randint(0, 100 - height)
                 
-                new_room = Room(x, y, width, height)
+                new_room = Room(room_id, x, y, width, height)
 
-                # check new room doesn't overlap with existing rooms
-                if all(not new_room.intersects(other_room) for other_room in self.rooms):
+                # Ensure the new room doesn't overlap with existing rooms
+                if all(not self.overlaps(new_room, other_room) for other_room in self.rooms):
                     self.rooms.append(new_room)
                     break
 
-    # Prim's algorithm to connect all rooms in a minimal spanning tree
+    def overlaps(self, room1, room2):
+        return not (room1.x + room1.width <= room2.x or
+                    room2.x + room2.width <= room1.x or
+                    room1.y + room1.height <= room2.y or
+                    room2.y + room2.height <= room1.y)
+
     def connect_rooms(self):
+        # Prim's algorithm to create a connected graph (MST)
         connected_rooms = [self.rooms[0]]
         unconnected_rooms = self.rooms[1:]
-        hallways = []
 
         while unconnected_rooms:
             room_a = random.choice(connected_rooms)
             room_b = random.choice(unconnected_rooms)
 
-            # Connect rooms via hallways through door tiles
-            hallway = self.create_hallway(room_a, room_b)
-            hallways.append(hallway)
-            connected_rooms.append(room_b)
-            unconnected_rooms.remove(room_b)
-        
-        return hallways
+            # Get door positions and directions
+            (door1_pos, direction1) = room_a.random_edge_position()
+            (door2_pos, direction2) = room_b.random_edge_position()
 
-    def create_hallway(self, room1, room2):
-        # Get door positions and hallway starting points for both rooms
-        (door1_x, door1_y), (start1_x, start1_y) = room1.random_edge_position()
-        (door2_x, door2_y), (start2_x, start2_y) = room2.random_edge_position()
+            # Generate door keys based on room_id and direction
+            door_key_1 = f"Room{room_a.room_id}_Door{direction1}_{door1_pos}"
+            door_key_2 = f"Room{room_b.room_id}_Door{direction2}_{door2_pos}"
 
-        # Place doors on the grid
-        self.grid[door1_y][door1_x] = 'D'
-        self.grid[door2_y][door2_x] = 'D'
+            # Only connect if there are no overlapping doors in the same position
+            if room_a.add_door(door_key_1, door1_pos) and room_b.add_door(door_key_2, door2_pos):
+                # Create a hallway between the two doors
+                hallway = Hallway(door_key_1, door_key_2, direction1, direction2)
 
-        # Create a hallway (L-shaped, first horizontal then vertical)
-        hallway = []
-        if random.choice([True, False]):
-            # Horizontal first
-            hallway.extend([(x, start1_y) for x in range(min(start1_x, start2_x), max(start1_x, start2_x) + 1)])
-            hallway.extend([(start2_x, y) for y in range(min(start1_y, start2_y), max(start1_y, start2_y) + 1)])
-        else:
-            # Vertical first
-            hallway.extend([(start1_x, y) for y in range(min(start1_y, start2_y), max(start1_y, start2_y) + 1)])
-            hallway.extend([(x, start2_y) for x in range(min(start1_x, start2_x), max(start1_x, start2_x) + 1)])
+                # Add the hallway
+                self.hallways.append(hallway)
 
-        return hallway
+                # Add the connection between rooms to the path
+                self.room_path.append((room_a.room_id, room_b.room_id))
 
-    def place_rooms_and_hallways_on_grid(self, hallways):
-        for room in self.rooms:
-            for i in range(room.y, room.y + room.height):
-                for j in range(room.x, room.x + room.width):
-                    self.grid[i][j] = 'R'
-        for hallway in hallways:
-            for x, y in hallway:
-                self.grid[y][x] = 'H'
+                connected_rooms.append(room_b)
+                unconnected_rooms.remove(room_b)
 
-    def display_grid(self):
-        # Print the grid
-        for row in self.grid:
-            print(''.join(row))
+    def generate_level(self):
+        self.generate_rooms()
+        self.connect_rooms()
+        level_layout = {
+            "rooms": [(room.room_id, room.doors) for room in self.rooms],
+            "hallways": [str(hallway) for hallway in self.hallways],
+            "path_between_rooms": self.room_path  #(room_a_id, room_b_id)
+        }
+        return level_layout
 
-# Generate the level
+
+
+
 def generate_level():
-    # Define the level parameters
-    level = Level(GRID_WIDTH, GRID_HEIGHT, NUM_ROOMS)
+    level = Level(NUM_ROOMS)
+    return level.generate_level()
 
-    # Generate rooms randomly
-    level.generate_rooms()  
-
-    # Connect rooms with hallways
-    hallways = level.connect_rooms()  
-
-    # Place on grid
-    level.place_rooms_and_hallways_on_grid(hallways) 
-
-    # Step 4: Display level grid
-    level.display_grid()  
-
-
-generate_level()
+# Output generated level
+level_layout = generate_level()
+print(level_layout)
