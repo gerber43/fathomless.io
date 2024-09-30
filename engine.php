@@ -59,6 +59,7 @@
             justify-content:center;
             font-size:30px;
             background-size: contain;
+            z-index:1;
             }
             #dialogue, #inventory {
             bottom:0;
@@ -210,7 +211,7 @@
             <span id = "settings_span">
                 <button data-setting = "toggleAudio">Play SFX</button>
                 <button data-setting = "onScreenControls">On-screen Controls</button>
-                <button>Setting 3</button><button>Setting 4</button>
+                <button data-setting = "toggleAscii">Toggle Ascii</button><button>Setting 4</button>
             </span>
         </div>
         <div id = "mobile_movement">
@@ -227,7 +228,7 @@
             const objectTypes = ["tile","item","obstacle","entity"];
             var playerInventory = JSON.parse('<?=file_get_contents("https://fathomless.io/json/inventory.json");?>');
             var maps = {};
-            var onScreenControls = playAudio = closeSetting = isSettingsOpen = playerCoordinates = currentMap = currentMapName = sizeX = sizeY = levelStep = inventoryOpened = textInputOpened = isEditMap = editRotation = previousPortal=asciiMode= 0;
+            var disableMovement = onScreenControls = playAudio = closeSetting = isSettingsOpen = playerCoordinates = currentMap = currentMapName = sizeX = sizeY = levelStep = inventoryOpened = textInputOpened = isEditMap = editRotation = previousPortal=asciiMode= 0;
             getMap();
             var viewSizeX = viewSizeY = 5;
             isMobile()?toggleOnScreenControls():"";
@@ -257,7 +258,7 @@
                     }
                 }
             }
-            function updateMap(loadTypes = "") {
+            function updateMap() {
                 var createTiles = false;
                 if (sizeX != viewSizeX || sizeY != viewSizeY) {
                     createTiles = true;
@@ -279,20 +280,15 @@
                          
                            applyTexture('tile',j+","+i,maps[currentMapName][topLeftCorner[0]+j][topLeftCorner[1]+i]['tile']);
                             applyTexture("obstacle",j+","+i,maps[currentMapName][topLeftCorner[0]+j][topLeftCorner[1]+i]['obstacle']);
-                            if (loadTypes == "") {
-                                
-                           applyTexture('tile',j+","+i,maps[currentMapName][topLeftCorner[0]+j][topLeftCorner[1]+i]['tile']);
-                            applyTexture("obstacle",j+","+i,maps[currentMapName][topLeftCorner[0]+j][topLeftCorner[1]+i]['obstacle']);
-                           
-                                   }
+                          
+                                   
                         } else {
                             applyTexture("item",j+","+i,{"textureIndex":8,"rotation":0});
                                 applyTexture("entity",j+","+i,{"textureIndex":8,"rotation":0});
-                            if (loadTypes == "") {
                                 applyTexture('tile',j+","+i,{"textureIndex":8,"rotation":0});
                             applyTexture("obstacle",j+","+i,{"textureIndex":8,"rotation":0});
                                 
-                            }
+                            
                         }
                     }
                 }
@@ -332,6 +328,7 @@
                     document.getElementById(type).innerHTML = ((type == "alert")?document.getElementById(type).innerHTML:"")+"<p id = '"+uuid+"'>"+message+"</p>";
                     setTimeout(function() {if (document.getElementById(uuid)){document.getElementById(uuid).remove()}}, time*1000);
                 }
+                return uuid;
             }
             function toggleInventory() {
                 document.getElementById('inventory').style.height = (inventoryOpened)?"0":"100svh";
@@ -344,62 +341,39 @@
                 playerCoordinates = getPlayerCoordinate();
                 updateMap();
             }
-            function moveEntity(x,y,currentCoordinates,type,augmentation) {
-                if (currentMap[x][y]['tile']['textureIndex'] != 8 && currentMap[x][y]['obstacle']['textureIndex'] == 8) {
-                    currentMap[currentCoordinates[0]][currentCoordinates[1]]['entity'] = [currentMap[x][y]['entity'], currentMap[x][y]['entity'] = currentMap[currentCoordinates[0]][currentCoordinates[1]]['entity']][0];
-                    if (playerCoordinates[0] == currentCoordinates[0] && playerCoordinates[1] == currentCoordinates[1]) {
-                        playerCoordinates = [x,y];
-                    }
-                } 
-            }
-            function moveDirection(direction,x,y) {
-                var deg = Math.PI*currentMap[x][y]['entity']['rotation']/180
-                if (Math.floor(Math.cos(deg)) == direction[0] && Math.floor(Math.sin(deg)) == direction[1]) {
-                    moveEntity(x + direction[0],y + direction[1],[x,y],currentMap[x][y]['entity']);
-                }  else {
-                    currentMap[x][y]['entity']['rotation'] = (Math.atan2(direction[1], direction[0])*180)/Math.PI;
-                    var topLeftCorner = [playerCoordinates[0] - Math.floor(viewSizeX/2),playerCoordinates[1] - Math.floor(viewSizeX/2)];
-                    if (Math.abs(x - playerCoordinates[0]) <= Math.floor(viewSizeX/2) && Math.abs(y - playerCoordinates[1]) <= Math.floor(viewSizeY/2)) {
-                        applyTexture("entity",(x - topLeftCorner[0])+","+(y - topLeftCorner[1]),currentMap[x][y]['entity']);  
-                    }
-                }
-                updateMap();
-            }
             function playSound(index) {
                 if (playAudio) {
-                if (!sfx[index].pasued) {
-                    sfx[index].pause();
-                    sfx[index].currentTime = 0;
-                }
-                sfx[index].play();
+                    if (!sfx[index].pasued) {
+                        sfx[index].pause();
+                        sfx[index].currentTime = 0;
+                    }
+                    sfx[index].play();
                 }
             }
             function sendDirection(direction) {
+                var loaderId = createMessage("alert","<img src = 'https://cdn.svgator.com/assets/landing-pages/static/css-loader/57579327-0-Loaders-3.svg'>",10);
                 var xmlhttp = new XMLHttpRequest();
                 xmlhttp.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
                         var response = JSON.parse(this.responseText);
-                        applyDyanamics(response["map_subset"]);
+                        maps[currentMapName] = response["map_subset"];
+                        loadMap(currentMapName);
                         createMessage("dialogue",response["message"],1);
                         disableMovement = false;
+                        document.getElementById(loaderId).remove();
                     }
                   }
                   var queryString = (direction !== "")?"="+encodeURIComponent(direction):"";
                   xmlhttp.open("GET", "https://fathomless.io/sessionValidate/?sendDirection"+queryString, true);
                   xmlhttp.send();
-                
-            
             }
             function directionHandler(keycode) {
                 if (!disableMovement) {
                     var newDirection = [Math.round(Math.cos((arrowKeys.indexOf(keycode)%4)*Math.PI/2))+0,-Math.round(Math.sin((arrowKeys.indexOf(keycode)%4)*Math.PI/2))+0];
                     sendDirection(((Math.atan2(newDirection[1], newDirection[0])*180)/Math.PI))
-                    moveDirection(newDirection,playerCoordinates[0],playerCoordinates[1])
                     playSound(0);
                     disableMovement = true;
-                } else {
-                    createMessage("alert","You Are Moving Too Fast!",1);
-                }
+                } 
             }
             function getMap() {
                 var xmlhttp = new XMLHttpRequest();
@@ -414,24 +388,6 @@
                   xmlhttp.open("GET", "https://fathomless.io/sessionValidate/?getMap", true);
                   xmlhttp.send();
             
-            }
-            function applyDyanamics(layer) {
-                var topLeftCorner = [playerCoordinates[0] - Math.floor(viewSizeX/2),playerCoordinates[1] - Math.floor(viewSizeX/2)]
-                
-                for (var i = 0; i < layer.length; i++) {
-                    for (var j = 0; j < layer[0].length; j++) {
-                        if (currentMap[topLeftCorner[0] + i] && currentMap[topLeftCorner[0] + i][topLeftCorner[1] + j]) {
-                            if (currentMap[topLeftCorner[0] + i][topLeftCorner[1] + j]['entity'] != layer[i][j]['entity']) {
-                            currentMap[topLeftCorner[0] + i][topLeftCorner[1] + j]['entity'] = layer[i][j]['entity'];
-                            }
-                            if (currentMap[topLeftCorner[0] + i][topLeftCorner[1] + j]['item'] != layer[i][j]['item']) {
-                            currentMap[topLeftCorner[0] + i][topLeftCorner[1] + j]['item'] = layer[i][j]['item'];
-                            }
-                        }
-                        
-                    }
-                }
-                updateMap("dynamic");
             }
             document.addEventListener('keyup', (e) => {
                 if (arrowKeys.indexOf(e.code) > -1) {
@@ -452,7 +408,6 @@
                     closeSetting = setTimeout(toggleSettings, 3000);
                 }
             });
-            var disableMovement = false;
             document.querySelectorAll('button').forEach((item) => {
                 item.addEventListener("click", () => {
                     if (item.dataset.direction && arrowKeys.includes(item.dataset.direction)){
@@ -464,6 +419,9 @@
                     if (item.dataset.setting && item.dataset.setting == "toggleAudio") {
                         item.innerHTML = (!playAudio)?"Mute SFX":"Play SFX"
                         playAudio = !playAudio;
+                    }
+                    if (item.dataset.setting && item.dataset.setting == "toggleAscii") {
+                        toggleAscii();
                     }
                     if (item.dataset.setting && item.dataset.setting == "onScreenControls") {
                         toggleOnScreenControls();
