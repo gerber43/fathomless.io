@@ -35,19 +35,21 @@ def process_entity_movement(position, direction, game_map):
     current_rotation = game_map[x][y]['entity']['rotation']
 
     # If the entity is not facing the correct direction, just update the rotation
-    if (current_rotation != direction):
+    if (direction != None and current_rotation != direction):
         game_map[x][y]['entity']['rotation'] = direction  # Change the rotation
         return position, "orientation has changed"
 
     # If the entity is facing the correct direction, calculate the new position
     if direction == 0:  # Move right
         new_x, new_y = x + 1, y
-    elif direction == -90:  # Move up
+    elif direction == 270:  # Move up
         new_x, new_y = x, y - 1
     elif direction == 180:  # Move left
         new_x, new_y = x - 1, y
     elif direction == 90:  # Move down
         new_x, new_y = x, y + 1
+    elif direction == None: #initialization case
+        return position, "Map Retrieved"
     else:
         return position, "Invalid direction"
 
@@ -118,9 +120,9 @@ def save_map_subset(subset_file_path, map_subset):
 
 try:
     # Retrieve uuid and direction from the POST request
-    if (HTTP_FIELDS.getvalue('uuid') and HTTP_FIELDS.getvalue('direction')):
+    if (HTTP_FIELDS.getvalue('uuid')):
       uuid = HTTP_FIELDS.getvalue('uuid')
-      direction = int(HTTP_FIELDS.getvalue('direction'))
+      direction = int(HTTP_FIELDS.getvalue('direction')) if (HTTP_FIELDS.getvalue('direction')) else None
 
       
     # Validate session
