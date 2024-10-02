@@ -35,9 +35,8 @@ def process_entity_movement(position, direction, game_map):
     current_rotation = game_map[x][y]['entity']['rotation']
 
     # If the entity is not facing the correct direction, just update the rotation
-    if (direction != None and current_rotation != direction):
-        game_map[x][y]['entity']['rotation'] = direction  # Change the rotation
-        return position, "orientation has changed"
+    
+    game_map[x][y]['entity']['rotation'] = direction  # Change the rotation
 
     # If the entity is facing the correct direction, calculate the new position
     if direction == 0:  # Move right
