@@ -17,18 +17,40 @@
             width:100vw;
             height:100svh;
             }
-            #page,#canvas div,#inventory,#inventory div {
+            #page,#canvas .space,#inventory,#inventory div {
             display:flex;
             align-items:center;
             justify-content:center;
             background-size: contain;
             box-sizing: border-box;
+            position:relative;
             }
             #canvas {
             display: grid;
             }
+            #darkness {
+                background:#333;
+                position:absolute;
+                mix-blend-mode: hard-light;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                
+            }
+            #darkness #hole {
+                position:absolute;
+                width: 60%;
+	            height: 60%;
+	            border-radius:50%;
+            	background-color: gray;
+            }
             .space div {
             position:absolute;
+            background-repeat: no-repeat;  
+            background-size: cover;
+            background-position: center;
+            width:100%;
+            height:100%;
             }
             #inventory {
             transition:.75s;
@@ -112,7 +134,6 @@
             }
             #settings:hover {
             transition:.75s;
-            
             opacity:1;
             }
             #settings button{
@@ -203,6 +224,7 @@
     <body onresize="scaleTextures()">
         <div id = "page">
             <div id = "canvas"></div>
+            <div id = "darkness"><div id = "hole"></div></div>
         </div>
         <div id = "dialogue"></div>
         <div id = "alert"></div>
@@ -272,21 +294,29 @@
                  updateMap();
             }
             function applyTexture(type,tileId, object) {
-                var selectedElement = (type == "tile")?document.getElementById(tileId):document.getElementById(tileId).querySelector('.'+type);
-                if (object['textureIndex'] != 8) {
-                    selectedElement.style.backgroundImage = 'url("'+tileObjects[object['textureIndex']][asciiMode?"ascii":"icon"]+'")';
-                    selectedElement.style.transform = (type == "entity" && object['rotation'] == 180)?('scaleX(-1)'):('rotate('+object['rotation']+'deg)');
-                } else {
-                    selectedElement.style.backgroundImage = 'url()';
-                    selectedElement.style.transform = "rotate(0)";
+                var selectedElement = document.getElementById(tileId).querySelector('.'+type);
+                if (object.length != null ) {
+                    if (object.length > 1) {
+                        selectedElement.style.backgroundImage = 'url("https://forums.terraria.org/index.php?attachments/rainbow-treasure-bag-terraria-new-sprite-2-gif.223687/")';
+                        selectedElement.style.transform = "rotate(0)";
+                        return
+                    } else {
+                        object = object[0];
+                    }
                 }
+                selectedElement.style.backgroundImage = 'url("'+tileObjects[object['textureIndex']][asciiMode?"ascii":"icon"]+'")';
+                selectedElement.style.transform = (type == "entity" && object['rotation'] == 180)?('scaleX(-1)'):('rotate('+object['rotation']+'deg)');
+            }
+            function setDarkness(diameter,intensity) {
+                document.getElementById('hole').style.height = document.getElementById('hole').style.width = (100*diameter/viewDiameter)+"%";
+                document.getElementById('darkness').style.background = "#"+((Math.round(parseInt("0xFFFFFF", 16)*intensity/100)).toString(16)).padStart(6,"0");
+                
             }
             function scaleTextures() {
-                var windowMinimum = Math.min(window.innerWidth,window.innerHeight);
-                var tileMinimum = Math.min(window.innerWidth/viewDiameter,window.innerHeight/viewDiameter);
-                document.getElementById('canvas').style.height = tileMinimum*viewDiameter;
-                document.getElementById('canvas').style.width = tileMinimum*viewDiameter;
-                document.getElementById('canvas').querySelectorAll('div').forEach((item) => {item.style.height = item.style.width = tileMinimum;});
+                document.getElementById('canvas').style.height = document.getElementById('canvas').style.width = Math.min(window.innerWidth,window.innerHeight);
+                document.getElementById('darkness').style.height = document.getElementById('darkness').style.width = Math.min(window.innerWidth,window.innerHeight);
+
+                
             }
             function uuidv4() {
                 return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>(+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16));
