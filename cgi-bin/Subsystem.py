@@ -3,7 +3,7 @@ import sys
 import cgi
 from abc import abstractmethod
 
-#damage type and resistance subsystem
+#damage type and resistance subsystem, resistances are represented by a tuple of floats, use the following methods to figure out the indexes of specific  damage types and resistances
 def lookup_damage_type_id(string):
     match string:
         case "Piercing":
@@ -149,3 +149,93 @@ def lookup_crit_status_effect(type_id):
             return 8
         case _:
             return -1
+
+#skill subsystem, skills are represented by a tuple of integers, use the following methods to figure out the indexes of specific skills
+def lookup_skill_id(string):
+    match string:
+        case "One-Handed Blades":
+            return 0
+        case "One-Handed Blade":
+            return 0
+        case "One-Handed Axes":
+            return 1
+        case "One-Handed Axe":
+            return 1
+        case "One-Handed Maces":
+            return 2
+        case "One-Handed Mace":
+            return 2
+        case "Two-Handed Blades":
+            return 3
+        case "Two-Handed Blade":
+            return 3
+        case "Two-Handed Axes":
+            return 4
+        case "Two-Handed Axe":
+            return 4
+        case "Two-Handed Maces":
+            return 5
+        case "Two-Handed Mace":
+            return 5
+        case "Polearms":
+            return 6
+        case "Polearm":
+            return 6
+        case "Slings":
+            return 7
+        case "Sling":
+            return 7
+        case "Bows":
+            return 8
+        case "Bow":
+            return 8
+        case "Elementalism":
+            return 9
+        case "Elemental":
+            return 9
+        case "Cursing":
+            return 10
+        case "Curse":
+            return 10
+        case "Enhancement":
+            return 11
+        case "Summoning":
+            return 12
+        case "Summon":
+            return 12
+        case "Transmutation":
+            return 12
+        case "Transmute":
+            return 12
+        case "Dual-Wielding":
+            return 13
+        case "Memory":
+            return 14
+        case "Search":
+            return 15
+        case "Hide":
+            return 16
+        case "Lockpicking":
+            return 17
+        case "Lockpick":
+            return 17
+        case "Disarm Trap":
+            return 18
+        case "Disarm":
+            return 18
+        case _:
+            return -1
+
+#equipment subsystem
+class Equipment:
+    def __init__(self, right_hand, left_hand, head, torso, legs, feet, hands, neck, finger_one, finger_two):
+        self.right_hand = right_hand
+        self.left_hand = left_hand
+        self.head = head
+        self.torso = torso
+        self.legs = legs
+        self.feet = feet
+        self.hands = hands
+        self.neck = neck
+        self.finger_one = finger_one
+        self.finger_two = finger_two
