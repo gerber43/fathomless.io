@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+import sys
+import cgi
 from abc import abstractmethod
 import random
 from operator import truediv
@@ -79,7 +82,7 @@ class Creature(GameObject):
                 total = total + random.randint(-damage.var, damage.var)
             if (damage.dmgtype == 0) or (damage.dmgtype == 1) or (damage.dmgtype == 2):
                 total = total + self.fitness
-            total = total * (1-target.damage_resistances[damage.dmgtype])
+            total = int(total * (1.0-target.damage_resistances[damage.dmgtype]))
             target.hp -= total
             if crit:
                 target.gainStatusEffect(lookup_crit_status_effect(damage.dmgtype), total/10, False)

@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+import sys
+import cgi
 from abc import abstractmethod
 
 #damage type and resistance subsystem

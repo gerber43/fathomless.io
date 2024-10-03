@@ -1,4 +1,6 @@
-import LevelMapGenerator
+#!/usr/bin/python3
+import sys
+import cgi
 from LevelMapGenerator import generate_level
 
 class Level:
