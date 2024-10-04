@@ -188,3 +188,63 @@ final_grid, final_traverable_grid = carve_guaranteed_paths(terrain_grid, width, 
 #    print(''.join([terrain.symbol if terrain else '.' for terrain in row]))
 
     
+
+
+
+
+# Now convert level map to json file
+
+texture_mapping = {
+    'EmptySpace': 1,
+    'Water': 2,
+    'Fire': 4,
+    'Spikes': 10,
+    'Pit': 6,
+    'Wall': 5,  
+}
+
+def get_texture_index(terrain):
+    if isinstance(terrain, EmptySpace):
+        return texture_mapping['EmptySpace']
+    elif isinstance(terrain, Water):
+        return texture_mapping['Water']
+    elif isinstance(terrain, Fire):
+        return texture_mapping['Fire']
+    elif isinstance(terrain, Spikes):
+        return texture_mapping['Spikes']
+    elif isinstance(terrain, Pit):
+        return texture_mapping['Pit']
+    elif isinstance(terrain, Wall):
+        return texture_mapping['Wall']
+    else:
+        return texture_mapping['EmptySpace']  # Default to empty space for unknown types
+
+def convert_grid_to_json(grid):
+    json_grid = []
+    
+    for row in grid:
+        json_row = []
+        for terrain in row:
+            texture_index = get_texture_index(terrain)
+            json_tile = {
+                "terrain": {
+                    "textureIndex": texture_index,
+                    "rotation": 0  
+                }
+            }
+            json_row.append(json_tile)
+        json_grid.append(json_row)
+    
+    return json_grid
+
+
+
+json_map = convert_grid_to_json(final_grid)
+
+# Convert the map to JSON format and print
+json_output = json.dumps(json_map, indent=4)
+print(json_output)
+
+# save the output to a file
+with open("level_map.json", "w") as json_file:
+    json_file.write(json_output)
