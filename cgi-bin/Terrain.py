@@ -14,3 +14,15 @@ class Pit(Terrain):
     def onStep(self, creature):
         #if statement to check if creature is not flying, using status effect subsystem
             creature.hp -= 200*(1-creature.resistances.getResistance("BLT"))
+class Water(Terrain):
+    def __init__(self, pos):
+        super().__init__("Wall", "#", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+class Fire(Terrain):
+    def __init__(self, pos):
+        super().__init__("Wall", "#", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+class Spikes(Terrain):
+    def __init__(self, pos):
+        super().__init__("Wall", "#", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+class EmptySpace(Terrain):
+    def __init__(self, pos):
+        super().__init__("Wall", "#", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
