@@ -2,6 +2,7 @@
 import sys
 import json
 import cgi
+import os
 from user_tracking import get_next_direction
 print('Content-type: application/json\n')
 HTTP_FIELDS = cgi.FieldStorage()
@@ -80,8 +81,6 @@ def update_entity_position(game_map, player_pos):
 def is_valid_move(x, y, game_map):
     if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[x]):
         return False
-    if (game_map[y][x].get('obstacle').get('textureIndex') != 8):
-        return False
     return True
 
 #Function to create the subset of map
@@ -93,10 +92,11 @@ def get_map_subset(player_pos, game_map, fov_radius):
         y_max = len(game_map[0])
 
     blank_tile = {
-        "tile": {"textureIndex": 8, "rotation": 0},
+        "terrain": {"textureIndex": 8, "rotation": 0},
         "item": {"textureIndex": 8, "rotation": 0},
-        "obstacle": {"textureIndex": 8, "rotation": 0},
-        "entity": {"textureIndex": "8", "rotation": "0"}
+        "decor": {"textureIndex": 8, "rotation": 0},
+        "entity": {"textureIndex": "8", "rotation": "0"},
+        "light": {"textureIndex": "8", "rotation": "0"}
     }
 
 
@@ -130,7 +130,10 @@ try:
            raise ValueError("Invalid session")
 
     # Load the current map
-      map_file_path = '../json/map.json' # will be adjust to the actuall file path later
+      if (not os.path.exists('../maps/'+uuid+'.json')):
+          from GenerateMap import generateMap
+          generateMap(uuid)
+      map_file_path = '../maps/'+uuid+'.json' # will be adjust to the actuall file path later
       game_map = load_map(map_file_path)
 
     # Process player's movement
