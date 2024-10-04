@@ -1,7 +1,15 @@
+#!/usr/bin/python3
+import sys
+import json
+import cgi
 import random
-from game_object import Terrain
-from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace  
+#print('Content-type: application/json\n')
 
+HTTP_FIELDS = cgi.FieldStorage()
+
+from GameObject import Terrain
+
+from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace  
 
 def is_within_grid(x, y, width, height):
     return 0 <= x < width and 0 <= y < height
@@ -162,47 +170,6 @@ def generate_terrain_with_probabilities(grid_width, grid_height, terrain_probabi
 
     fill_empty_spaces(grid)  
     return grid
-
-# Parameters
-width = 100
-height = 100
-
-# Define probabilities for each terrain type
-terrain_probabilities = {
-    'walls': 0.2,
-    'spikes': 0.1,
-    'water': 0.08,
-    'fire': 0.08,
-    'pits': 0.03,
-    'empty_space': 0.5
-}
-
-# Generate terrain grid with probabilities
-terrain_grid = generate_terrain_with_probabilities(width, height, terrain_probabilities)
-
-# Carve guaranteed paths across the grid
-final_grid, final_traverable_grid = carve_guaranteed_paths(terrain_grid, width, height)
-
-# Example: Printing the terrain grid
-#for row in final_grid:
-#    print(''.join([terrain.symbol if terrain else '.' for terrain in row]))
-
-    
-
-
-
-
-# Now convert level map to json file
-
-texture_mapping = {
-    'EmptySpace': 1,
-    'Water': 2,
-    'Fire': 4,
-    'Spikes': 10,
-    'Pit': 6,
-    'Wall': 5,  
-}
-
 def get_texture_index(terrain):
     if isinstance(terrain, EmptySpace):
         return texture_mapping['EmptySpace']
@@ -230,21 +197,63 @@ def convert_grid_to_json(grid):
                 "terrain": {
                     "textureIndex": texture_index,
                     "rotation": 0  
+                },
+                "entity": {
+                    "textureIndex": 8,
+                    "rotation": 0  
                 }
             }
             json_row.append(json_tile)
         json_grid.append(json_row)
-    
+    json_grid[0][0]['entity']['textureIndex'] = 0
     return json_grid
+    # Parameters
+width = 100
+height = 100
+    
+    # Define probabilities for each terrain type
+terrain_probabilities = {
+    'walls': 0.2,
+    'spikes': 0.1,
+    'water': 0.08,
+    'fire': 0.08,
+    'pits': 0.03,
+    'empty_space': 0.5
+}
+texture_mapping = {
+    'EmptySpace': 1,
+    'Water': 2,
+    'Fire': 4,
+    'Spikes': 17,
+    'Pit': 18,
+    'Wall': 6,  
+}
+    
 
+def generateMap(uuid):
+    # Generate terrain grid with probabilities
+    terrain_grid = generate_terrain_with_probabilities(width, height, terrain_probabilities)
+    # Carve guaranteed paths across the grid
+    final_grid, final_traverable_grid = carve_guaranteed_paths(terrain_grid, width, height)
+    # Example: Printing the terrain grid
+    #for row in final_grid:
+    #    print(''.join([terrain.symbol if terrain else '.' for terrain in row]))
+    
+        
+    
+    
+    
+    
+    # Now convert level map to json file
+    
+    
+    
 
-
-json_map = convert_grid_to_json(final_grid)
-
-# Convert the map to JSON format and print
-json_output = json.dumps(json_map, indent=4)
-print(json_output)
-
-# save the output to a file
-with open("level_map.json", "w") as json_file:
-    json_file.write(json_output)
+    json_map = convert_grid_to_json(final_grid)
+    # Convert the map to JSON format and print
+    json_output = json.dumps(json_map, indent=4)
+    #print(json_output)
+    
+    # save the output to a file
+    with open("../maps/"+uuid+".json", "w") as json_file:
+        json_file.write(json_output)
