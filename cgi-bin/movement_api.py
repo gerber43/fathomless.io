@@ -2,6 +2,7 @@
 import sys
 import json
 import cgi
+from user_tracking import get_next_direction
 print('Content-type: application/json\n')
 HTTP_FIELDS = cgi.FieldStorage()
 
@@ -66,13 +67,13 @@ def process_entity_movement(position, direction, game_map):
     return (new_x, new_y), "entity has moved"
 
 # Function to update all entity positions
-def update_entity_position(game_map):
+def update_entity_position(game_map, player_pos):
     return
     for x, row in enumerate(game_map):
         for y, tile in enumerate(row):
             entity = tile.get("entity")
-            if entity:
-                direction = get_direction(entity) #the pathfinding algorithm to be implement later
+            if entity and entity['textureIndex'] != 0:
+                direction = get_direction((x,y), player_pos, game_map) #the pathfinding algorithm to be implement later
                 process_entity_movement((x,y), direction, game_map)
 
 # Function to validate the movement
@@ -143,7 +144,7 @@ try:
 
     #update the entity's position
       if (message == "orientation has changed" or message == "entity has moved"):
-          update_entity_position(game_map)
+          update_entity_position(game_map, player_pos)
 
     # Save the updated map back to the file
       save_map(map_file_path, game_map)
