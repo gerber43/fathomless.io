@@ -249,6 +249,7 @@
             const tileObjects = JSON.parse('<?=file_get_contents("https://fathomless.io/json/objects.json")?>');
             const sfx = [new Audio('https://fathomless.io/assets/audio//walking.mp3'),new Audio('https://fathomless.io/assets/audio//coin.mp3'),new Audio('https://fathomless.io/assets/audio//crash.mp3'),new Audio('https://fathomless.io/assets/audio//walk2.mp3'), new Audio('https://fathomless.io/assets/audio//woosh.mp3'), new Audio('https://fathomless.io/assets/audio//dead.mp3'), new Audio('https://fathomless.io/assets/audio//attack.mp3'), new Audio('https://fathomless.io/assets/audio//shoot.mp3'), new Audio('https://fathomless.io/assets/audio//hit.mp3'), new Audio('https://fathomless.io/assets/audio//kill.mp3')];
             const arrowKeys = ["ArrowRight","ArrowDown","ArrowLeft","ArrowUp","KeyD","KeyS","KeyA","KeyW"];
+            const defaults = {"terrain":{"textureIndex":3,"rotation":0},"light":{"textureIndex":8,"rotation":0,"intensity":0},"default":{"textureIndex":8,"rotation":0}};
             var playerInventory = JSON.parse('<?=file_get_contents("https://fathomless.io/json/inventory.json");?>');
             var start = objectTypes = disableMovement = onScreenControls = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter = levelStep = inventoryOpened = textInputOpened = isEditMap = editRotation = previousPortal=asciiMode= 0;
             sendDirection();
@@ -284,7 +285,7 @@
             function updateMap() {
                 for (var i = 0; i < viewDiameter; i++) {
                     for (var j = 0; j < viewDiameter; j++) {
-                        objectTypes.forEach((object) => {applyTexture(object,j+","+i,currentMap[j][i][object]);});
+                        objectTypes.forEach((object) => {applyTexture(object,j+","+i,(currentMap[j][i][object])?currentMap[j][i][object]:(defaults[object]?defaults[object]:defaults["default"]));});
                     }
                 }
             }
@@ -295,34 +296,21 @@
             }
             function applyTexture(type,tileId, object) {
                 var selectedElement = document.getElementById(tileId).querySelector('.'+type);
-                if (object.length != null ) {
-                    if (object.length > 1) {
-                        selectedElement.style.backgroundImage = 'url("https://forums.terraria.org/index.php?attachments/rainbow-treasure-bag-terraria-new-sprite-2-gif.223687/")';
-                        selectedElement.style.transform = "rotate(0)";
-                        return
-                    } else {
-                        object = object[0];
-                    }
-                }
                 selectedElement.style.backgroundImage = 'url("'+tileObjects[object['textureIndex']][asciiMode?"ascii":"icon"]+'")';
                 selectedElement.style.transform = (type == "entity" && object['rotation'] == 180)?('scaleX(-1)'):('rotate('+object['rotation']+'deg)');
             }
             function setDarkness(diameter,intensity) {
                 document.getElementById('hole').style.height = document.getElementById('hole').style.width = (100*diameter/viewDiameter)+"%";
                 document.getElementById('darkness').style.background = "#"+((Math.round(parseInt("0xFFFFFF", 16)*intensity/100)).toString(16)).padStart(6,"0");
-                
             }
             function scaleTextures() {
                 document.getElementById('canvas').style.height = document.getElementById('canvas').style.width = Math.min(window.innerWidth,window.innerHeight);
                 document.getElementById('darkness').style.height = document.getElementById('darkness').style.width = Math.min(window.innerWidth,window.innerHeight);
-
-                
             }
             function uuidv4() {
                 return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>(+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16));
             }
-            function createMessage(type,message,time) {
-                var uuid = uuidv4();
+            function createMessage(type,message,time,uuid = uuidv4()) {
                 if (!document.getElementById(type).innerHTML.includes(message)) {
                     document.getElementById(type).innerHTML = ((type == "alert")?document.getElementById(type).innerHTML:"")+"<p id = '"+uuid+"'>"+message+"</p>";
                     setTimeout(function() {if (document.getElementById(uuid)){document.getElementById(uuid).remove()}}, time*1000);
