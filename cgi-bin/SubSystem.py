@@ -7,11 +7,11 @@ from abc import abstractmethod
 damageTypes = ["Piercing","PRC","Slashing","SLH","Blunt","BLT","Fire","FR","Lightning","LTG","Water","WTR","Cold","CL","Acid","AD","Light","LT","Dark","DK","Necrotic","NCT","Arcane","AC","Existence","EXS"]
 statusEffects = ["Bleed","Stun","Burning","Suffocation","Frozen","Blindness","Rot","Manadrain","Nonexistence","Poison","Fear","Confusion","Mindbreak","Bloodsiphon","MidasCurse","Death","Regeneration","Berserk","Flight","Luck","Ironskin","Agility"]
 critStatusEffects = [0,0,1,2,2,3,4,5,5,6,7,8]
-skillIds = ["One-HandedBlades","One-HandedBlade","One-HandedAxes","One-HandedAxe","One-HandedMaces","One-HandedMace","Two-HandedBlades","Two-HandedBlade","Two-HandedAxes","Two-HandedAxe","Two-HandedMaces","Two-HandedMace","Polearms","Polearm","Slings","Sling","Bows","Bow","Elementalism","Elemental","Cursing","Curse","Enhancement","Enhancement","Summoning","Summon","Dual-Wielding","Dual-Wielding","Memory","Memory","Search","Search","Hide","Hide","Lockpicking","Lockpick","DisarmTrap","Disarm"]
+skillIds = ["One-HandedBlades","One-HandedBlade","One-HandedAxes","One-HandedAxe","One-HandedMaces","One-HandedMace","Two-HandedBlades","Two-HandedBlade","Two-HandedAxes","Two-HandedAxe","Two-HandedMaces","Two-HandedMace","Polearms","Polearm","Slings","Sling","Bows","Bow","Elementalism","Elemental","Cursing","Curse","Enhancement","Enhancement","Transmutation","Transmute","Summoning","Summon","Dual-Wielding","Dual-Wielding","Memory","Memory","Search","Search","Hide","Hide","Lockpicking","Lockpick","DisarmTrap","Disarm"]
 #damage type and resistance subsystem, resistances are represented by a tuple of floats, use the following methods to figure out the indexes of specific  damage types and resistances
-def lookup_damage_type_id(damageType):
-    if damageType in damageTypes:
-        return math.floor(damageTypes.index(damageType)/2)
+def lookup_damage_type_id(damage_type):
+    if damage_type in damageTypes:
+        return math.floor(damageTypes.index(damage_type) / 2)
     else:
         return -1
 #Status effect subsystem
@@ -25,9 +25,9 @@ class StatusEffect:
         if not self.infinite:
             self.stacks -= 1
 
-def lookup_status_effect_id(statusEffect):
-    if statusEffect in statusEffects:
-        return statusEffects.index(statusEffect)
+def lookup_status_effect_id(status_effect):
+    if status_effect in statusEffects:
+        return statusEffects.index(status_effect)
     else:
         return -1
         
@@ -38,11 +38,9 @@ def lookup_crit_status_effect(type_id):
         return -1
 
 #skill subsystem, skills are represented by a tuple of integers, use the following methods to figure out the indexes of specific skills
-def lookup_skill_id(string):
-    if (string == "Transmutation" or string == "Transmute"):
-        return 12
-    elif string in skillIds:
-        return skillIds.index(string)
+def lookup_skill_id(skill):
+    if skill in skillIds:
+        return math.floor(skillIds.index(skill)/2)
     else:
         return -1
 

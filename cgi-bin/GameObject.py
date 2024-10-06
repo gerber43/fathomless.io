@@ -4,7 +4,7 @@ import cgi
 from abc import abstractmethod
 import random
 from operator import truediv
-from Subsystem import StatusEffect, lookup_crit_status_effect, lookup_skill_id
+from SubSystem import StatusEffect, lookup_crit_status_effect, lookup_skill_id
 
 
 class GameObject:
@@ -22,7 +22,7 @@ class Item(GameObject):
         self.price = price
 
 class Creature(GameObject):
-    def __init__(self, name, symbol, pos, segments, hp, mp, speed, status_effects, fitness, cunning, magic, dodge, critChance, equipment, skills, abilities, damage_resistances, status_resistances, dropTable):
+    def __init__(self, name, symbol, pos, segments, hp, mp, speed, status_effects, fitness, cunning, magic, dodge, crit_chance, equipment, skills, abilities, damage_resistances, status_resistances, drop_table):
         super().__init__(name, symbol, pos)
         #list of creature segments, should be empty for single-tile creatures
         self.segments = segments
@@ -34,15 +34,15 @@ class Creature(GameObject):
         self.cunning = cunning
         self.magic = magic
         self.dodge = dodge
-        self.critChance = critChance
+        self.crit_chance = crit_chance
         self.equipment = equipment
         self.skills = skills
         self.abilities = abilities
         self.damage_resistances = damage_resistances
         self.status_resistances = status_resistances
-        self.dropTable = dropTable
+        self.drop_table = drop_table
 
-    def gainStatusEffect(self, type_id, stacks, infinite):
+    def gain_status_effect(self, type_id, stacks, infinite):
         if stacks == 0:
             return
         for status in self.status_effects:
@@ -55,22 +55,22 @@ class Creature(GameObject):
                     return
                 status.stacks += stacks
                 return
-        self.status_effects.append(type_id, stacks, infinite)
+        self.status_effects.append(StatusEffect(type_id, stacks, infinite))
 
     def basic_attack_hit_check(self, weapon, target):
         #TODO: Implement ammo checking and ammo decrement
         if isinstance(target, CreatureSegment):
             target = target.creature
-        hitChance = self.skills[lookup_skill_id(weapon.type)] - target.dodge
-        hitRoll = random.random
-        if hitRoll > hitChance:
+        hit_chance = self.skills[lookup_skill_id(weapon.type)] - target.dodge
+        hit_roll = random.random
+        if hit_roll > hit_chance:
             return False
         else:
             return True
 
     def crit_check(self):
-        critRoll = random.random
-        if critRoll < self.critChance:
+        crit_roll = random.random
+        if crit_roll < self.crit_chance:
             return False
         else:
             return True
@@ -87,9 +87,9 @@ class Creature(GameObject):
             total = int(total * (1.0-target.damage_resistances[damage.dmgtype]))
             target.hp -= total
             if crit:
-                target.gainStatusEffect(lookup_crit_status_effect(damage.dmgtype), total/10, False)
+                target.gain_status_effect(lookup_crit_status_effect(damage.dmgtype), total / 10, False)
         for status in weapon.statuses:
-            target.gainStatusEffect(status.type_id, status.stacks, status.infinite)
+            target.gain_status_effect(status.type_id, status.stacks, status.infinite)
 
     def basic_attack(self, target):
         #TODO: apply dual wielding penalty if dual wielding
@@ -161,40 +161,40 @@ class Unavailable(Equippable):
         super().on_unequip(target)
 
 class Terrain(GameObject):
-    def __init__(self, name, symbol, pos, hp, resistances, passable, blockSight, warn, warning):
+    def __init__(self, name, symbol, pos, hp, resistances, passable, block_sight, warn, warning):
         super().__init__(name, symbol, pos)
         self.hp = hp
         self.resistances = resistances
         self.dodge = 0
         self.passable = passable
-        self.blockSight = blockSight
+        self.block_sight = block_sight
         #warn can be NO, YES, or WALK
         self.warn = warn
         #message displayed when warn is triggered
         self.warning = warning
     @abstractmethod
-    def onCreation(self):
+    def on_creation(self):
         pass
     #onStep applies every time a creature ends its turn on the tile with this terrain
     @abstractmethod
-    def onStep(self, creature):
+    def on_step(self, creature):
         pass
 
 class Decor(GameObject):
-    def __init__(self, name, symbol, pos, hp, resistances, passable, blockSight, warn, warning):
+    def __init__(self, name, symbol, pos, hp, resistances, passable, block_sight, warn, warning):
         super().__init__(name, symbol, pos)
         self.hp = hp
         self.resistances = resistances
         self.passable = passable
-        self.blockSight = blockSight
+        self.block_sight = block_sight
         self.dodge = 0
         #warn can be NO, YES, or WALK
         self.warn = warn
         # message displayed when warn is triggered
         self.warning = warning
     @abstractmethod
-    def onInteract(self, ceature):
+    def on_interact(self, ceature):
         pass
     @abstractmethod
-    def passiveBehavior(self):
+    def passive_behavior(self):
         pass
