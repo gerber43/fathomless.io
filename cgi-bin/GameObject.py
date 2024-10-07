@@ -326,8 +326,8 @@ def spread_light(pos, level, touched_tiles):
         return
     spread_light((pos[0]+1, pos[1]), level/2, touched_tiles)
     spread_light((pos[0]-1, pos[1]), level/2, touched_tiles)
-    spread_light((pos[0]+1, pos[1]), level/2, touched_tiles)
-    spread_light((pos[0]-1, pos[1]), level/2, touched_tiles)
+    spread_light((pos[0], pos[1]+1), level/2, touched_tiles)
+    spread_light((pos[0], pos[1]-1), level/2, touched_tiles)
 
 def remove_light(pos, level, touched_tiles):
     if level == 0:
@@ -352,8 +352,8 @@ def remove_light(pos, level, touched_tiles):
         return
     remove_light((pos[0]+1, pos[1]), level/2, touched_tiles)
     remove_light((pos[0]-1, pos[1]), level/2, touched_tiles)
-    remove_light((pos[0]+1, pos[1]), level/2, touched_tiles)
-    remove_light((pos[0]-1, pos[1]), level/2, touched_tiles)
+    remove_light((pos[0], pos[1]+1), level/2, touched_tiles)
+    remove_light((pos[0], pos[1]-1), level/2, touched_tiles)
 
 
 class LightSourceItem(Equippable):
