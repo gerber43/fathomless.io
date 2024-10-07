@@ -58,7 +58,7 @@ class Creature(GameObject):
 
     def move(self, new_pos):
         for item in self.equipment:
-            item.on_move()
+            item.on_move(self, new_pos)
         grid[new_pos[0]][new_pos[1]].append(self)
         grid[self.pos[0]][self.pos[1]].remove(self)
         self.pos = new_pos
@@ -90,6 +90,10 @@ class Creature(GameObject):
         if hit_roll > hit_chance:
             return False
         else:
+            for item in self.equipment:
+                item.on_attack(self, target)
+            for item in target.equipment:
+                item.on_attacked(target, self)
             return True
 
     def crit_check(self):
