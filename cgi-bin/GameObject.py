@@ -4,7 +4,7 @@ import cgi
 from abc import abstractmethod
 import random
 from operator import truediv
-from SubSystem import StatusEffect, lookup_crit_status_effect, lookup_skill_id, lookup_equipment_slot
+from SubSystem import StatusEffect, lookup_crit_status_effect, lookup_skill_id, lookup_equipment_slot, manhattan
 
 
 class GameObject:
@@ -56,7 +56,7 @@ class Creature(GameObject):
         self.inventory_size = inventory_size
         self.drop_table = drop_table
 
-    def move(self, new_pos):
+    def move(self, grid, new_pos):
         for item in self.equipment:
             item.on_move(self, new_pos)
         grid[new_pos[0]][new_pos[1]].append(self)
@@ -64,9 +64,9 @@ class Creature(GameObject):
         self.pos = new_pos
         for game_object in grid[new_pos[0]][new_pos[1]]:
             if isinstance(game_object, Terrain):
-                game_object.on_step(self)
+                game_object.on_step(grid, self)
 
-    def gain_status_effect(self, type_id, stacks, infinite):
+    def gain_status_effect(self, grid, type_id, stacks, infinite):
         if stacks == 0:
             return
         for status in self.status_effects:
@@ -81,7 +81,7 @@ class Creature(GameObject):
                 return
         self.status_effects.append(StatusEffect(type_id, stacks, infinite))
 
-    def basic_attack_hit_check(self, weapon, target):
+    def basic_attack_hit_check(self, grid, weapon, target):
         #TODO: Implement ammo checking and ammo decrement
         if isinstance(target, CreatureSegment):
             target = target.creature
@@ -96,14 +96,14 @@ class Creature(GameObject):
                 item.on_attacked(target, self)
             return True
 
-    def crit_check(self):
+    def crit_check(self, grid):
         crit_roll = random.random
         if crit_roll < self.crit_chance:
             return False
         else:
             return True
 
-    def basic_attack_damage(self, weapon, target, crit):
+    def basic_attack_damage(self, grid, weapon, target, crit):
         for damage in weapon.damages:
             total = damage.base
             if crit:
@@ -118,18 +118,18 @@ class Creature(GameObject):
                 target.gain_status_effect(lookup_crit_status_effect(damage.dmgtype), total / 10, False)
         for status in weapon.statuses:
             target.gain_status_effect(status.type_id, status.stacks, status.infinite)
-    def basic_attack(self, target):
+    def basic_attack(self, grid, target):
         #TODO: apply dual wielding penalty if dual wielding
         if isinstance(self.equipment.right_hand, Weapon):
-            if not self.basic_attack_hit_check(self.equipment.right_hand, target):
+            if not self.basic_attack_hit_check(grid, self.equipment.right_hand, target):
                 return
-            self.basic_attack_damage(self.equipment.right_hand, target, self.crit_check())
+            self.basic_attack_damage(grid, self.equipment.right_hand, target, self.crit_check(grid))
         if isinstance(self.equipment.left_hand, Weapon):
-            if not self.basic_attack_hit_check(self.equipment.left_hand, target):
+            if not self.basic_attack_hit_check(grid, self.equipment.left_hand, target):
                 return
-            self.basic_attack_damage(self.equipment.left_hand, target, self.crit_check())
+            self.basic_attack_damage(grid, self.equipment.left_hand, target, self.crit_check(grid))
 
-    def pickup_item(self, target):
+    def pickup_item(self, grid, target):
         to_append = False
         for item in self.inventory:
             if target == item:
@@ -138,18 +138,12 @@ class Creature(GameObject):
         if to_append:
             self.inventory.append(target)
         grid[target.pos[0]][target.pos[1]].remove(target)
-        target.pos = -1
+        target.pos = (-1, -1)
 
-    def drop_item(self, target):
+    def drop_item(self, grid, target):
         target.pos = self.pos
         grid[target.pos[0]][target.pos[1]].append(target)
         self.inventory.remove(target)
-
-    #will be overloaded in player class to accept input from frontend
-    #will be overloaded in all NPC classes with their AI
-    @abstractmethod
-    def next_action(self):
-        pass
 
 class Player(Creature):
     def __init__(self, name, symbol, pos, fitness, cunning, magic, abilities, damage_resistances, status_resistances):
@@ -169,10 +163,10 @@ class Consumable(Item):
     def __init__(self, name, symbol, pos, amount, max_stack, level, price):
         super().__init__(name, symbol, pos, amount, max_stack, level, price)
     @abstractmethod
-    def use_effect(self, target):
+    def use_effect(self, grid, target):
         pass
     @abstractmethod
-    def throw_effect(self, target):
+    def throw_effect(self, grid, target):
         pass
 
 class Equippable(Item):
@@ -187,7 +181,7 @@ class Equippable(Item):
             return False
         return True
     @abstractmethod
-    def on_equip(self, equipped_creature):
+    def on_equip(self, grid, equipped_creature):
         for slot in self.slots:
             if equipped_creature.equipment[lookup_equipment_slot(slot)] is None:
                 self.equipped = slot
@@ -196,7 +190,7 @@ class Equippable(Item):
                 return True
         return False
     @abstractmethod
-    def on_unequip(self, equipped_creature):
+    def on_unequip(self, grid, equipped_creature):
         if self.equipped is None:
             return False
         equipped_creature.equipment[lookup_equipment_slot(self.equipped)] = None
@@ -207,22 +201,22 @@ class Equippable(Item):
         else:
             equipped_creature.inventory.append(self)
 
-    def on_move(self, equipped_creature, new_pos):
+    def on_move(self, grid, equipped_creature, new_pos):
         if not self.equipped:
             return False
         else:
             return True
-    def on_attack(self, equipped_creature, target):
+    def on_attack(self, grid, equipped_creature, target):
         if not self.equipped:
             return False
         else:
             return True
-    def on_attacked(self, equipped_creature, attacker):
+    def on_attacked(self, grid, equipped_creature, attacker):
         if not self.equipped:
             return False
         else:
             return True
-    def on_ability(self, equipped_creature, target):
+    def on_ability(self, grid, equipped_creature, target):
         if not self.equipped:
             return False
         else:
@@ -248,20 +242,20 @@ class Weapon(Equippable):
             return False
         return True
     @abstractmethod
-    def on_equip(self, equipped_creature):
-        return super().on_equip(equipped_creature)
+    def on_equip(self, grid, equipped_creature):
+        return super().on_equip(grid, equipped_creature)
     @abstractmethod
-    def on_unequip(self, equipped_creature):
-        return super().on_equip(equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        return super().on_equip(grid, equipped_creature)
 
 #When a two-handed weapon is equipped in a hand slot, this is placed in the other hand slot
 class Unavailable(Equippable):
     def __init__(self, pos):
         super().__init__("", "", pos, 0, 0, ("right_hand", "left_hand"))
-    def on_equip(self, equipped_creature):
-        return super().on_equip(equipped_creature)
-    def on_unequip(self, equipped_creature):
-        return super().on_unequip(equipped_creature)
+    def on_equip(self, grid, equipped_creature):
+        return super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        return super().on_unequip(grid, equipped_creature)
 
 class Terrain(GameObject):
     def __init__(self, name, symbol, pos, hp, resistances, passable, block_sight, warn, warning):
@@ -275,10 +269,10 @@ class Terrain(GameObject):
         self.warn = warn
         #message displayed when warn is triggered
         self.warning = warning
-    def on_creation(self):
+    def on_creation(self, grid):
         pass
     #onStep applies every time a creature ends its turn on the tile with this terrain
-    def on_step(self, creature):
+    def on_step(self, grid, creature):
         pass
 
 class Decor(GameObject):
@@ -293,9 +287,9 @@ class Decor(GameObject):
         self.warn = warn
         # message displayed when warn is triggered
         self.warning = warning
-    def on_interact(self, creature):
+    def on_interact(self, grid, creature):
         pass
-    def passive_behavior(self):
+    def passive_behavior(self, grid):
         pass
 
 class Light(GameObject):
@@ -303,11 +297,11 @@ class Light(GameObject):
         super().__init__("Light", "", pos)
         self.level = level
 
-def spread_light(pos, level, touched_tiles):
+def spread_light(grid, pos, level, touched_tiles):
     if level == 0:
         return
     for tile in touched_tiles:
-        if pos == tile:
+        if pos == tile[0]:
             return
     light_pointer = None
     light_blocked = False
@@ -317,75 +311,63 @@ def spread_light(pos, level, touched_tiles):
         if isinstance(game_object, Terrain) or isinstance(game_object, Decor):
             if game_object.block_sight:
                 light_blocked = True
-    touched_tiles.append(pos)
+    if not touched_tiles:
+        true_level = level
+    else:
+        true_level = int(touched_tiles[0][1]*(0.5**manhattan(pos, touched_tiles[0][0])))
+    touched_tiles.append((pos, true_level))
     if light_pointer is None:
-        grid[pos[0]][pos[1]].append(Light(pos, level))
+        grid[pos[0]][pos[1]].append(Light(pos, true_level))
     else:
         light_pointer.level += level
     if light_blocked:
         return
-    spread_light((pos[0]+1, pos[1]), level/2, touched_tiles)
-    spread_light((pos[0]-1, pos[1]), level/2, touched_tiles)
-    spread_light((pos[0], pos[1]+1), level/2, touched_tiles)
-    spread_light((pos[0], pos[1]-1), level/2, touched_tiles)
+    spread_light(grid, (pos[0]+1, pos[1]), level/2, touched_tiles)
+    spread_light(grid, (pos[0]-1, pos[1]), level/2, touched_tiles)
+    spread_light(grid, (pos[0], pos[1]+1), level/2, touched_tiles)
+    spread_light(grid, (pos[0], pos[1]-1), level/2, touched_tiles)
+    return touched_tiles
 
-def remove_light(pos, level, touched_tiles):
-    if level == 0:
-        return
+def remove_light(grid, touched_tiles):
     for tile in touched_tiles:
-        if pos == tile:
-            return
-    light_pointer = None
-    light_blocked = False
-    for game_object in grid[pos[0]][pos[1]]:
-        if isinstance(game_object, Light):
-            light_pointer = game_object
-        if isinstance(game_object, Terrain) or isinstance(game_object, Decor):
-            if game_object.block_sight:
-                light_blocked = True
-    touched_tiles.append(pos)
-    if light_pointer is not None:
-        light_pointer.level -= level
-        if light_pointer.level <= 0:
-            grid[pos[0]][pos[1]].remove(light_pointer)
-    if light_blocked:
-        return
-    remove_light((pos[0]+1, pos[1]), level/2, touched_tiles)
-    remove_light((pos[0]-1, pos[1]), level/2, touched_tiles)
-    remove_light((pos[0], pos[1]+1), level/2, touched_tiles)
-    remove_light((pos[0], pos[1]-1), level/2, touched_tiles)
-
+        for game_object in grid[tile[0][0]][tile[0][1]]:
+            if isinstance(game_object, Light):
+                game_object.level -= tile[1]
+                if game_object.level <= 0:
+                    grid[tile[0][0]][tile[0][1]].remove(game_object)
 
 class LightSourceItem(Equippable):
     def __init__(self, name, symbol, pos, level, price, slots, intensity):
         super().__init__(name, symbol, pos, level, price, slots)
         self.intensity = intensity
-    def on_equip(self, equipped_creature):
-        if not super().on_equip(equipped_creature):
+        self.lit_tiles = []
+    def on_equip(self, grid, equipped_creature):
+        if not super().on_equip(grid, equipped_creature):
             return False
-        spread_light(equipped_creature.pos, self.level, [])
-    def on_unequip(self, equipped_creature):
-        if not super().on_equip(equipped_creature):
+        self.lit_tiles = spread_light(grid, equipped_creature.pos, self.level, [])
+    def on_unequip(self, grid, equipped_creature):
+        if not super().on_equip(grid, equipped_creature):
             return False
-        remove_light(equipped_creature.pos, self.level, [])
-    def on_move(self, equipped_creature, new_pos):
-        if not super().on_move(equipped_creature, new_pos):
+        remove_light(grid, self.lit_tiles)
+        self.lit_tiles = []
+    def on_move(self, grid, equipped_creature, new_pos):
+        if not super().on_move(grid, equipped_creature, new_pos):
             return False
-        remove_light(equipped_creature.pos, self.level, [])
-        spread_light(equipped_creature.pos, self.level, [])
+        remove_light(grid, self.lit_tiles)
+        self.lit_tiles = spread_light(grid, equipped_creature.pos, self.level, [])
 
 class StaticLightSource(Decor):
     def __init__(self, name, symbol, pos, hp, resistances, passable, warn, warning, intensity, lit):
         super().__init__(name, symbol, pos, hp, resistances, passable, False, warn, warning)
         self.intensity = intensity
         self.lit = lit
-    def on_interact(self, creature):
+    def on_interact(self, grid, creature):
         if self.lit:
             self.lit = False
-            remove_light(self.pos, self.intensity, [])
+            remove_light(grid, self.pos, self.intensity, [])
         else:
             self.lit = True
-            spread_light(self.pos, self.intensity, [])
+            spread_light(grid, self.pos, self.intensity, [])
     @abstractmethod
-    def passive_behavior(self):
+    def passive_behavior(self, grid):
         pass

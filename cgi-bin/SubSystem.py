@@ -51,3 +51,7 @@ def lookup_equipment_slot(slot):
         equipmentSlots.index(slot)
     else:
         return -1
+
+#range-checking subsystem
+def manhattan(pos1, pos2):
+    return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos1[1])

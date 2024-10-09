@@ -3,21 +3,22 @@ import sys
 import cgi
 from GameObject import Terrain
 from SubSystem import lookup_status_effect_id
+import Level
 
 class Wall(Terrain):
     def __init__(self, pos):
         super().__init__("Wall", "#", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
-    def on_creation(self):
-        super().on_creation()
-    def on_step(self, creature):
-        super().on_step(creature)
+    def on_creation(self, grid):
+        pass
+    def on_step(self, grid, creature):
+        pass
 
 class Pit(Terrain):
     def __init__(self, pos):
         super().__init__("Pit", "", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "WALK", "Are you sure you want to fall that far?")
-    def on_creation(self):
+    def on_creation(self, grid):
         pass
-    def on_step(self, creature):
+    def on_step(self, grid, creature):
         flight_id = lookup_status_effect_id("Flight")
         not_flying = True
         for status in creature.status_effects:
@@ -29,28 +30,28 @@ class Pit(Terrain):
 class Water(Terrain):
     def __init__(self, pos):
         super().__init__("Wall", "#", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
-    def on_creation(self):
+    def on_creation(self, grid):
         pass
-    def on_step(self, creature):
+    def on_step(self, grid, creature):
         pass
 class Fire(Terrain):
     def __init__(self, pos):
         super().__init__("Wall", "#", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
-    def on_creation(self):
+    def on_creation(self, grid):
         pass
-    def on_step(self, creature):
+    def on_step(self, grid, creature):
         pass
 class Spikes(Terrain):
     def __init__(self, pos):
         super().__init__("Wall", "#", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
-    def on_creation(self):
+    def on_creation(self, grid):
         pass
-    def on_step(self, creature):
+    def on_step(self, grid, creature):
        pass
 class EmptySpace(Terrain):
     def __init__(self, pos):
         super().__init__("Wall", "#", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
-    def on_creation(self):
+    def on_creation(self, grid):
         pass
-    def on_step(self, creature):
+    def on_step(self, grid, creature):
         pass
