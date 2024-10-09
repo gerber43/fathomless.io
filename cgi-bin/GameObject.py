@@ -145,6 +145,9 @@ class Creature(GameObject):
         grid[target.pos[0]][target.pos[1]].append(target)
         self.inventory.remove(target)
 
+    def lose_health(self, amount):
+        self.hp -= amount
+
 class Player(Creature):
     def __init__(self, name, symbol, pos, fitness, cunning, magic, abilities, damage_resistances, status_resistances):
         #TODO: figure out dodge and crit chance algorithms from cunning
