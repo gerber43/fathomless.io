@@ -133,6 +133,7 @@ try:
       if (not os.path.exists('../maps/'+uuid+'.json')):
           from GenerateMap import generateMap
           generateMap(uuid)
+          #print(json.dumps(generateMap(uuid)))
       map_file_path = '../maps/'+uuid+'.json' # will be adjust to the actuall file path later
       game_map = load_map(map_file_path)
 
@@ -153,7 +154,7 @@ try:
       save_map(map_file_path, game_map)
 
     # Caete the subset of the map
-      field_of_view = 5
+      field_of_view = 13
       fov_radius = field_of_view // 2
       map_subset = get_map_subset(new_player_pos, game_map, fov_radius)
 
