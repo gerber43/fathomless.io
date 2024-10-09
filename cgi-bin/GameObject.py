@@ -4,7 +4,8 @@ import cgi
 from abc import abstractmethod
 import random
 from operator import truediv
-from SubSystem import StatusEffect, lookup_crit_status_effect, lookup_skill_id, lookup_equipment_slot, manhattan
+from SubSystem import StatusEffect, lookup_crit_status_effect, lookup_skill_id, lookup_equipment_slot, manhattan, \
+    lookup_damage_type_id
 
 
 class GameObject:
@@ -32,6 +33,10 @@ class Item(GameObject):
         if self.price != other.price:
             return False
         return True
+
+class Gold(Item):
+    def __init__(self, pos, amount):
+        super().__init__("Gold", '.', pos, amount, 9999, 0, 1)
 
 class Creature(GameObject):
     def __init__(self, name, symbol, pos, segments, hp, mp, speed, status_effects, fitness, cunning, magic, dodge, crit_chance, equipment, skills, abilities, damage_resistances, status_resistances, inventory, inventory_size, drop_table):
@@ -105,17 +110,17 @@ class Creature(GameObject):
 
     def basic_attack_damage(self, grid, weapon, target, crit):
         for damage in weapon.damages:
-            total = damage.base
+            total = damage[1]
             if crit:
-                total = total*weapon.critMult
+                total = total*weapon.crit_mult
             else:
-                total = total + random.randint(-damage.var, damage.var)
-            if (damage.dmgtype == 0) or (damage.dmgtype == 1) or (damage.dmgtype == 2):
+                total = total + random.randint(-damage[2], damage[2])
+            if (damage[0] == 0) or (damage[0] == 1) or (damage[0] == 2):
                 total = total + self.fitness
-            total = int(total * (1.0-target.damage_resistances[damage.dmgtype]))
+            total = int(total * (1.0-target.damage_resistances[damage[0]]))
             target.hp -= total
             if crit:
-                target.gain_status_effect(lookup_crit_status_effect(damage.dmgtype), total / 10, False)
+                target.gain_status_effect(lookup_crit_status_effect(damage[0]), total / 10, False)
         for status in weapon.statuses:
             target.gain_status_effect(status.type_id, status.stacks, status.infinite)
     def basic_attack(self, grid, target):
@@ -145,16 +150,10 @@ class Creature(GameObject):
         grid[target.pos[0]][target.pos[1]].append(target)
         self.inventory.remove(target)
 
-    def lose_health(self, amount):
-        self.hp -= amount
-
 class Player(Creature):
     def __init__(self, name, symbol, pos, fitness, cunning, magic, abilities, damage_resistances, status_resistances):
         #TODO: figure out dodge and crit chance algorithms from cunning
         super().__init__(name, symbol, pos, (), fitness*10, magic*10, 1, [], fitness, cunning, magic, 0, 0, (None, None, None, None, None, None, None, None, None, None), (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), abilities, damage_resistances, status_resistances, [], 20, None)
-    def next_action(self):
-        #TODO: obtain action and target from frontend
-        pass
 
 #support multi-tile creatures
 class CreatureSegment(GameObject):
@@ -226,10 +225,11 @@ class Equippable(Item):
             return True
 
 class Weapon(Equippable):
-    def __init__(self, name, symbol, pos, level, price, slots, type, range, damages, statuses):
+    def __init__(self, name, symbol, pos, level, price, slots, type, range, crit_mult, damages, statuses):
         super().__init__(name, symbol, pos, level, price, slots)
         self.type = type
         self.range = range
+        self.crit_mult = crit_mult
         self.damages = damages
         self.statuses = statuses
     def __eq__(self, other):
@@ -367,7 +367,7 @@ class StaticLightSource(Decor):
     def on_interact(self, grid, creature):
         if self.lit:
             self.lit = False
-            remove_light(grid, self.pos, self.intensity, [])
+            remove_light(grid, [])
         else:
             self.lit = True
             spread_light(grid, self.pos, self.intensity, [])

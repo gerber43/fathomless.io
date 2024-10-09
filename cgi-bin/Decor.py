@@ -15,3 +15,11 @@ class Door(Decor):
             self.block_sight = True
     def passive_behavior(self, grid):
         pass
+
+class Stairs(Decor):
+    def __init__(self, pos):
+        super().__init__("Stairs", "=", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "Yes", "Go Down?")
+    def on_interact(self, grid, creature):
+        #TODO: load new level and change to the new level
+    def passive_behavior(self, grid):
+        pass

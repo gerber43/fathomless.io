@@ -2,7 +2,7 @@
 import sys
 import cgi
 from GameObject import Terrain
-from SubSystem import lookup_status_effect_id
+from SubSystem import lookup_status_effect_id, lookup_damage_type_id
 import Level
 
 class Wall(Terrain):
@@ -25,34 +25,34 @@ class Pit(Terrain):
             if status.type_id == flight_id:
                 not_flying = False
         if not_flying:
-            creature.hp -= 200*(1-creature.resistances.getResistance("BLT"))
+            creature.hp -= 200*(1-creature.resistances[lookup_damage_type_id("BLT")])
             #load new level
-class Water(Terrain):
+class ShallowWater(Terrain):
     def __init__(self, pos):
-        super().__init__("Wall", "#", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("Shallow Water", "~", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "NO", "")
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
-        pass
+        creature.hp -= 5*(1-creature.resistances[lookup_damage_type_id("WTR")])
 class Fire(Terrain):
     def __init__(self, pos):
-        super().__init__("Wall", "#", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("Fire", "^", pos, 10, (1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
-        creature.lose_health(10)
+        creature.hp -= 5*(1-creature.resistances[lookup_damage_type_id("Fire")])
         pass
 class Spikes(Terrain):
     def __init__(self, pos):
-        super().__init__("Wall", "#", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("Wall", "#", pos, 20, (0.9, 0.2, 0.5, 1.0, 0.3, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
-        creature.lose_health(10)
+       creature.hp -= 20*(1-creature.resistances[lookup_damage_type_id("Piercing")])
        pass
 class EmptySpace(Terrain):
     def __init__(self, pos):
-        super().__init__("Wall", "#", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("?", "", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):

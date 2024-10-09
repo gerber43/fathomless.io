@@ -5,9 +5,10 @@ import math
 from abc import abstractmethod
 
 damageTypes = ["Piercing","PRC","Slashing","SLH","Blunt","BLT","Fire","FR","Lightning","LTG","Water","WTR","Cold","CL","Acid","AD","Light","LT","Dark","DK","Necrotic","NCT","Arcane","AC","Existence","EXS"]
-statusEffects = ["Bleed","Stun","Burning","Suffocation","Frozen","Blindness","Rot","Manadrain","Nonexistence","Poison","Fear","Confusion","Mindbreak","Bloodsiphon","MidasCurse","Death","Regeneration","Berserk","Flight","Luck","Ironskin","Agility"]
+statusEffects = ["Bleed","Stun","Burning","Suffocation","Frozen","Blindness","Rot","Manadrain","Nonexistence","Poison","Fear","Confusion","Mindbreak","Bloodsiphon","Midas Curse","Death","Regeneration","Berserk","Flight","Luck","Ironskin","Agility"]
+firstPositiveStatusIndex = 16
 critStatusEffects = [0,0,1,2,2,3,4,5,5,6,7,8]
-skillIds = ["One-HandedBlades","One-HandedBlade","One-HandedAxes","One-HandedAxe","One-HandedMaces","One-HandedMace","Two-HandedBlades","Two-HandedBlade","Two-HandedAxes","Two-HandedAxe","Two-HandedMaces","Two-HandedMace","Polearms","Polearm","Slings","Sling","Bows","Bow","Elementalism","Elemental","Cursing","Curse","Enhancement","Enhancement","Transmutation","Transmute","Summoning","Summon","Dual-Wielding","Dual-Wielding","Memory","Memory","Search","Search","Hide","Hide","Lockpicking","Lockpick","DisarmTrap","Disarm"]
+skillIds = ["One-Handed Blades","One-Handed Blade","One-Handed Axes","One-Handed Axe","One-Handed Maces","One-Handed Mace","Two-Handed Blades","Two-Handed Blade","Two-Handed Axes","Two-Handed Axe","Two-Handed Maces","Two-Handed Mace","Polearms","Polearm","Slings","Sling","Bows","Bow","Elementalism","Elemental","Cursing","Curse","Enhancement","Enhancement","Transmutation","Transmute","Summoning","Summon","Dual-Wielding","Dual-Wielding","Memory","Memory","Search","Search","Hide","Hide","Lockpicking","Lockpick","Disarm Trap","Disarm"]
 equipmentSlots = ["Right Hand","Left Hand","Head","Torso","Legs","Feet","Hands","Neck","Right Finger","Left Finger"]
 #damage type and resistance subsystem, resistances are represented by a tuple of floats, use the following methods to figure out the indexes of specific  damage types and resistances
 def lookup_damage_type_id(damage_type):
