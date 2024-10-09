@@ -3,7 +3,6 @@ import sys
 import json
 import cgi
 import random
-#print('Content-type: application/json\n')
 
 HTTP_FIELDS = cgi.FieldStorage()
 
@@ -205,7 +204,7 @@ def convert_grid_to_json(grid):
             }
             json_row.append(json_tile)
         json_grid.append(json_row)
-    json_grid[0][0]['entity']['textureIndex'] = 0
+    json_grid[0][0]['entity'] = {"textureIndex":0,"rotation":0}
     return json_grid
     # Parameters
 width = 100
@@ -238,22 +237,22 @@ def generateMap(uuid):
     # Example: Printing the terrain grid
     #for row in final_grid:
     #    print(''.join([terrain.symbol if terrain else '.' for terrain in row]))
-    
-        
-    
-    
-    
-    
-    # Now convert level map to json file
-    
-    
-    
+    dictGrid = []
+    for i in range(len(final_grid)):
+        tempGrid = []
+        for j in range(len(final_grid[0])):
+            if (final_grid[i][j]):
+                tempGrid.append(final_grid[i][j].__dict__)
+            else: 
+                tempGrid.append({})
+        dictGrid.append(tempGrid)
 
     json_map = convert_grid_to_json(final_grid)
     # Convert the map to JSON format and print
-    json_output = json.dumps(json_map, indent=4)
+    json_output = json.dumps(json_map)
     #print(json_output)
     
     # save the output to a file
     with open("../maps/"+uuid+".json", "w") as json_file:
         json_file.write(json_output)
+    return dictGrid
