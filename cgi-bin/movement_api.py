@@ -4,6 +4,9 @@ import json
 import cgi
 import os
 from user_tracking import get_next_direction
+from GameObject import Terrain
+
+from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace  
 print('Content-type: application/json\n')
 HTTP_FIELDS = cgi.FieldStorage()
 
@@ -113,11 +116,6 @@ def get_map_subset(player_pos, game_map, fov_radius):
     return map_subset
     
 
-# Function to save the map subset to a separate file
-def save_map_subset(subset_file_path, map_subset):
-    with open(subset_file_path, 'w') as file:
-        json.dump(map_subset, file)
-
 try:
     # Retrieve uuid and direction from the POST request
     if (HTTP_FIELDS.getvalue('uuid')):
@@ -130,11 +128,12 @@ try:
            raise ValueError("Invalid session")
 
     # Load the current map
-      if (not os.path.exists('../maps/'+uuid+'.json')):
+      map_file_path = '../maps/'+uuid+'.json' # will be adjust to the actuall file path later
+
+      if (not os.path.exists(map_file_path)):
           from GenerateMap import generateMap
           generateMap(uuid)
-          #print(json.dumps(generateMap(uuid)))
-      map_file_path = '../maps/'+uuid+'.json' # will be adjust to the actuall file path later
+          
       game_map = load_map(map_file_path)
 
     # Process player's movement
@@ -158,9 +157,6 @@ try:
       fov_radius = field_of_view // 2
       map_subset = get_map_subset(new_player_pos, game_map, fov_radius)
 
-    # Save the subset into a separate file (map_subset.json)
-      subset_file_path = 'map_subset.json' #tbd later
-      save_map_subset(subset_file_path, map_subset)
 
     #send subset_map and message back to client
       response = {
