@@ -40,6 +40,7 @@ class Fire(Terrain):
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
+        creature.lose_health(10)
         pass
 class Spikes(Terrain):
     def __init__(self, pos):
@@ -47,6 +48,7 @@ class Spikes(Terrain):
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
+        creature.lose_health(10)
        pass
 class EmptySpace(Terrain):
     def __init__(self, pos):
