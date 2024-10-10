@@ -2,6 +2,8 @@
 import sys
 import cgi
 from GameObject import Decor
+from Level import Level, Biome
+from Biomes import TempBiome
 
 class Door(Decor):
     def __init__(self, pos):
@@ -19,7 +21,9 @@ class Door(Decor):
 class Stairs(Decor):
     def __init__(self, pos):
         super().__init__("Stairs", "=", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "Yes", "Go Down?")
-    def on_interact(self, grid, creature):
+    def on_interact(self, current_level, creature):
         #TODO: load new level and change to the new level
+        if current_level.depth < 22:
+            return Level(current_level.depth+1, TempBiome())
     def passive_behavior(self, grid):
         pass
