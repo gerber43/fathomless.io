@@ -7,7 +7,7 @@ import Level
 
 class Wall(Terrain):
     def __init__(self, pos):
-        super().__init__("Wall", "#", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("Wall", "6", pos, 200, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
@@ -15,7 +15,7 @@ class Wall(Terrain):
 
 class Pit(Terrain):
     def __init__(self, pos):
-        super().__init__("Pit", "", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "WALK", "Are you sure you want to fall that far?")
+        super().__init__("Pit", "18", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "WALK", "Are you sure you want to fall that far?")
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
@@ -27,16 +27,16 @@ class Pit(Terrain):
         if not_flying:
             creature.hp -= 200*(1-creature.resistances[lookup_damage_type_id("BLT")])
             #load new level
-class ShallowWater(Terrain):
+class Water(Terrain):
     def __init__(self, pos):
-        super().__init__("Shallow Water", "~", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "NO", "")
+        super().__init__("Shallow Water", "2", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "NO", "")
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
         creature.hp -= 5*(1-creature.resistances[lookup_damage_type_id("WTR")])
 class Fire(Terrain):
     def __init__(self, pos):
-        super().__init__("Fire", "^", pos, 10, (1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("Fire", "20", pos, 10, (1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
@@ -44,7 +44,7 @@ class Fire(Terrain):
         pass
 class Spikes(Terrain):
     def __init__(self, pos):
-        super().__init__("Wall", "#", pos, 20, (0.9, 0.2, 0.5, 1.0, 0.3, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("Spikes", "21", pos, 20, (0.9, 0.2, 0.5, 1.0, 0.3, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
@@ -52,7 +52,7 @@ class Spikes(Terrain):
        pass
 class EmptySpace(Terrain):
     def __init__(self, pos):
-        super().__init__("?", "", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("EmptySpace", "1", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
