@@ -217,7 +217,7 @@
             const tileObjects = JSON.parse('<?=file_get_contents("https://fathomless.io/json/objects.json")?>');
             const sfx = [new Audio('https://fathomless.io/assets/audio//walking.mp3'),new Audio('https://fathomless.io/assets/audio//coin.mp3'),new Audio('https://fathomless.io/assets/audio//crash.mp3'),new Audio('https://fathomless.io/assets/audio//walk2.mp3'), new Audio('https://fathomless.io/assets/audio//woosh.mp3'), new Audio('https://fathomless.io/assets/audio//dead.mp3'), new Audio('https://fathomless.io/assets/audio//attack.mp3'), new Audio('https://fathomless.io/assets/audio//shoot.mp3'), new Audio('https://fathomless.io/assets/audio//hit.mp3'), new Audio('https://fathomless.io/assets/audio//kill.mp3')];
             const arrowKeys = ["ArrowRight","ArrowDown","ArrowLeft","ArrowUp","KeyD","KeyS","KeyA","KeyW"];
-            const defaults = {"terrain":{"textureIndex":3,"rotation":0},"light":{"textureIndex":8,"rotation":0,"intensity":0},"default":{"textureIndex":8,"rotation":0}};
+            const defaults = {"terrain":{"textureIndex":3},"light":{"textureIndex":8,"intensity":0},"default":{"textureIndex":8}};
             var playerInventory = JSON.parse('<?=file_get_contents("https://fathomless.io/json/inventory.json");?>');
             var start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter = levelStep = inventoryOpened = textInputOpened = isEditMap = editRotation = previousPortal=asciiMode= 0;
             var objectTypes = ["terrain","item","decor","entity","light"];
@@ -276,7 +276,6 @@
             function applyTexture(type,tileId, object) {
                 var selectedElement = document.getElementById(tileId).querySelector('.'+type);
                 selectedElement.style.backgroundImage = 'url("'+tileObjects[object['textureIndex']][asciiMode?"ascii":"icon"]+'")';
-                selectedElement.style.transform = (type == "entity" && object['rotation'] == 180)?('scaleX(-1)'):('rotate('+object['rotation']+'deg)');
             }
             function scaleTextures() {
                 document.getElementById('canvas').style.height = document.getElementById('canvas').style.width = Math.min(window.innerWidth,window.innerHeight);
@@ -370,7 +369,6 @@
                     }
                 });
             });
-          
         </script>
     </body>
 </html>
