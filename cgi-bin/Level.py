@@ -2,7 +2,7 @@
 import random
 import sys
 import cgi
-from GenerateMap import generateMap
+from LevelMapGenerator import generate_level
 
 class Biome:
     def __init__(self, generation_algorithm, default_terrain, exit_decor, creature_spawn_table, other_spawn_table):
@@ -28,4 +28,4 @@ class Level:
     def __init__(self, depth, biome):
         self.depth = depth
         self.biome = biome
-        self.grid = generateMap(100, 100, 1, depth+10)
+        self.grid = generate_level(depth, biome)
