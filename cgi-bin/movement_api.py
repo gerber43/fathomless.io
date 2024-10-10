@@ -37,6 +37,9 @@ def find_player_position(game_map):
 # Function to process creature's movement
 def process_creature_movement(position, direction, game_map):
     x, y = position
+    creature = game_map[x][y].get('creature')
+    if creature is None:
+        return position, "No creature found at the current position"
 
     if direction == 0:  # Move right
         new_x, new_y = x + 1, y
@@ -56,9 +59,7 @@ def process_creature_movement(position, direction, game_map):
         return position, "You cannot move here"  # Invalid move
 
     # Update the creature's position in the map
-    game_map[new_x][new_y]['creature']['textureIndex'] = game_map[x][y]['creature']['textureIndex']  # Move creature to new position
-
-    game_map[x][y]['creature']['textureIndex'] = 8  # Clear old position
+    creature.move(game_map, (new_x, new_y))
 
     return (new_x, new_y), "creature has moved"
 
