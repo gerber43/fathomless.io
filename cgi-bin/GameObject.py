@@ -9,14 +9,14 @@ from SubSystem import StatusEffect, lookup_crit_status_effect, lookup_skill_id, 
 
 
 class GameObject:
-    def __init__(self, name, symbol, pos):
+    def __init__(self, name, textureIndex, pos):
         self.name = name
-        self.symbol = symbol
+        self.textureIndex = textureIndex
         self.pos = pos
 
 class Item(GameObject):
-    def __init__(self, name, symbol, pos, amount, max_stack, level, price):
-        super().__init__(name, symbol, pos)
+    def __init__(self, name, textureIndex, pos, amount, max_stack, level, price):
+        super().__init__(name, textureIndex, pos)
         self.amount = amount
         self.max_stack = max_stack
         #The item's level is a general guide for how powerful it should be
@@ -39,8 +39,8 @@ class Gold(Item):
         super().__init__("Gold", '.', pos, amount, 9999, 0, 1)
 
 class Creature(GameObject):
-    def __init__(self, name, symbol, pos, segments, hp, mp, speed, status_effects, fitness, cunning, magic, dodge, crit_chance, equipment, skills, abilities, damage_resistances, status_resistances, inventory, inventory_size, drop_table):
-        super().__init__(name, symbol, pos)
+    def __init__(self, name, textureIndex, pos, segments, hp, mp, speed, status_effects, fitness, cunning, magic, dodge, crit_chance, equipment, skills, abilities, damage_resistances, status_resistances, inventory, inventory_size, drop_table):
+        super().__init__(name, textureIndex, pos)
         #list of creature segments, should be empty for single-tile creatures
         self.segments = segments
         self.hp = hp
@@ -151,19 +151,19 @@ class Creature(GameObject):
         self.inventory.remove(target)
 
 class Player(Creature):
-    def __init__(self, name, symbol, pos, fitness, cunning, magic, abilities, damage_resistances, status_resistances):
+    def __init__(self, name, textureIndex, pos, fitness, cunning, magic, abilities, damage_resistances, status_resistances):
         #TODO: figure out dodge and crit chance algorithms from cunning
-        super().__init__(name, symbol, pos, (), fitness*10, magic*10, 1, [], fitness, cunning, magic, 0, 0, (None, None, None, None, None, None, None, None, None, None), (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), abilities, damage_resistances, status_resistances, [], 20, None)
+        super().__init__(name, textureIndex, pos, (), fitness*10, magic*10, 1, [], fitness, cunning, magic, 0, 0, (None, None, None, None, None, None, None, None, None, None), (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), abilities, damage_resistances, status_resistances, [], 20, None)
 
 #support multi-tile creatures
 class CreatureSegment(GameObject):
-    def __init__(self, creature, symbol, pos):
-        super().__init__(creature.name, symbol, pos)
+    def __init__(self, creature, textureIndex, pos):
+        super().__init__(creature.name, textureIndex, pos)
         self.creature = creature
 
 class Consumable(Item):
-    def __init__(self, name, symbol, pos, amount, max_stack, level, price):
-        super().__init__(name, symbol, pos, amount, max_stack, level, price)
+    def __init__(self, name, textureIndex, pos, amount, max_stack, level, price):
+        super().__init__(name, textureIndex, pos, amount, max_stack, level, price)
     @abstractmethod
     def use_effect(self, grid, target):
         pass
@@ -172,8 +172,8 @@ class Consumable(Item):
         pass
 
 class Equippable(Item):
-    def __init__(self, name, symbol, pos, level, price, slots):
-        super().__init__(name, symbol, pos, 1, 1, level, price)
+    def __init__(self, name, textureIndex, pos, level, price, slots):
+        super().__init__(name, textureIndex, pos, 1, 1, level, price)
         self.slots = slots
         self.equipped = None
     def __eq__(self, other):
@@ -225,8 +225,8 @@ class Equippable(Item):
             return True
 
 class Weapon(Equippable):
-    def __init__(self, name, symbol, pos, level, price, slots, type, range, crit_mult, damages, statuses):
-        super().__init__(name, symbol, pos, level, price, slots)
+    def __init__(self, name, textureIndex, pos, level, price, slots, type, range, crit_mult, damages, statuses):
+        super().__init__(name, textureIndex, pos, level, price, slots)
         self.type = type
         self.range = range
         self.crit_mult = crit_mult
@@ -261,8 +261,8 @@ class Unavailable(Equippable):
         return super().on_unequip(grid, equipped_creature)
 
 class Terrain(GameObject):
-    def __init__(self, name, symbol, pos, hp, resistances, passable, block_sight, warn, warning):
-        super().__init__(name, symbol, pos)
+    def __init__(self, name, textureIndex, pos, hp, resistances, passable, block_sight, warn, warning):
+        super().__init__(name, textureIndex, pos)
         self.hp = hp
         self.resistances = resistances
         self.dodge = 0
@@ -279,8 +279,8 @@ class Terrain(GameObject):
         pass
 
 class Decor(GameObject):
-    def __init__(self, name, symbol, pos, hp, resistances, passable, block_sight, warn, warning):
-        super().__init__(name, symbol, pos)
+    def __init__(self, name, textureIndex, pos, hp, resistances, passable, block_sight, warn, warning):
+        super().__init__(name, textureIndex, pos)
         self.hp = hp
         self.resistances = resistances
         self.passable = passable
@@ -340,8 +340,8 @@ def remove_light(grid, touched_tiles):
                     grid[tile[0][0]][tile[0][1]].remove(game_object)
 
 class LightSourceItem(Equippable):
-    def __init__(self, name, symbol, pos, level, price, slots, intensity):
-        super().__init__(name, symbol, pos, level, price, slots)
+    def __init__(self, name, textureIndex, pos, level, price, slots, intensity):
+        super().__init__(name, textureIndex, pos, level, price, slots)
         self.intensity = intensity
         self.lit_tiles = []
     def on_equip(self, grid, equipped_creature):
@@ -360,8 +360,8 @@ class LightSourceItem(Equippable):
         self.lit_tiles = spread_light(grid, equipped_creature.pos, self.level, [])
 
 class StaticLightSource(Decor):
-    def __init__(self, name, symbol, pos, hp, resistances, passable, warn, warning, intensity, lit):
-        super().__init__(name, symbol, pos, hp, resistances, passable, False, warn, warning)
+    def __init__(self, name, textureIndex, pos, hp, resistances, passable, warn, warning, intensity, lit):
+        super().__init__(name, textureIndex, pos, hp, resistances, passable, False, warn, warning)
         self.intensity = intensity
         self.lit = lit
     def on_interact(self, grid, creature):
