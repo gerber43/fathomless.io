@@ -29,13 +29,13 @@ def save_map(map_file_path, map_data):
 def find_player_position(game_map):
     for x, row in enumerate(game_map):
         for y, tile in enumerate(row):
-            entity = tile.get('entity')
-            if entity and entity['textureIndex'] == 0:
+            creature = tile.get('creature')
+            if creature and creature['textureIndex'] == 0:
                 return (x, y)
     return None  # If player is not found
 
-# Function to process entity's movement
-def process_entity_movement(position, direction, game_map):
+# Function to process creature's movement
+def process_creature_movement(position, direction, game_map):
     x, y = position
 
     if direction == 0:  # Move right
@@ -55,26 +55,26 @@ def process_entity_movement(position, direction, game_map):
     if not is_valid_move(new_x, new_y, game_map):
         return position, "You cannot move here"  # Invalid move
 
-    # Update the entity's position in the map
-    game_map[new_x][new_y]['entity']['textureIndex'] = game_map[x][y]['entity']['textureIndex']  # Move entity to new position
+    # Update the creature's position in the map
+    game_map[new_x][new_y]['creature']['textureIndex'] = game_map[x][y]['creature']['textureIndex']  # Move creature to new position
 
-    game_map[x][y]['entity']['textureIndex'] = 8  # Clear old position
+    game_map[x][y]['creature']['textureIndex'] = 8  # Clear old position
 
-    return (new_x, new_y), "entity has moved"
+    return (new_x, new_y), "creature has moved"
 
-# Function to update all entity positions
-def update_entity_position(game_map, player_pos):
+# Function to update all creature positions
+def update_creature_position(game_map, player_pos):
     return
     for x, row in enumerate(game_map):
         for y, tile in enumerate(row):
-            entity = tile.get("entity")
-            if entity and entity['textureIndex'] != 0:
+            creature = tile.get("creature")
+            if creature and creature['textureIndex'] != 0:
                 direction = get_direction((x,y), player_pos, game_map) #the pathfinding algorithm to be implement later
-                process_entity_movement((x,y), direction, game_map)
+                process_creature_movement((x,y), direction, game_map)
 
 # Function to validate the movement
 def is_valid_move(x, y, game_map):
-    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[x]):
+    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[x]) or (game_map[x][y]['terrain']['passable'] == False and game_map[x][y].get('decor') is None):
         return False
     return True
 
@@ -90,7 +90,7 @@ def get_map_subset(player_pos, game_map, fov_radius):
         "terrain": {"textureIndex": 8},
         "item": {"textureIndex": 8},
         "decor": {"textureIndex": 8},
-        "entity": {"textureIndex": 8},
+        "creature": {"textureIndex": 8},
         "light": {"textureIndex": 8}
     }
 
@@ -131,21 +131,21 @@ try:
     # Process player's movement
       player_pos = find_player_position(game_map)
       if (player_pos != None):
-          new_player_pos, message = process_entity_movement(player_pos, direction, game_map)
+          new_player_pos, message = process_creature_movement(player_pos, direction, game_map)
       else:
           message = "player not found"
 
 
 
-    #update the entity's position
-      if (message == "orientation has changed" or message == "entity has moved"):
-          update_entity_position(game_map, player_pos)
+    #update the creature's position
+      if (message == "orientation has changed" or message == "creature has moved"):
+          update_creature_position(game_map, player_pos)
 
     # Save the updated map back to the file
       save_map(map_file_path, game_map)
 
     # Caete the subset of the map
-      field_of_view = 5
+      field_of_view = 13
       fov_radius = field_of_view // 2
       map_subset = get_map_subset(new_player_pos, game_map, fov_radius)
 
