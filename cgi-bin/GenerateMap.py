@@ -260,20 +260,9 @@ def get_texture_index(terrain):
         return texture_mapping['EmptySpace']  # Default to empty space for unknown types
 
 
-    # Parameters
-width = 100
-height = 100
-num_creatures = 20
 
     # Define probabilities for each terrain type
-terrain_probabilities = {
-    'walls': 0.2,
-    'spikes': 0.1,
-    'water': 0.08,
-    'fire': 0.08,
-    'pits': 0.03,
-    'empty_space': 0.5
-}
+
 texture_mapping = {
     'EmptySpace': 1,
     'Water': 2,
@@ -285,6 +274,14 @@ texture_mapping = {
 
 def generateMap(width, height, depth, num_creatures):
     # Generate terrain grid with probabilities
+    terrain_probabilities = {
+    'walls': 0.2,
+    'spikes': 0.1,
+    'water': 0.08,
+    'fire': 0.08,
+    'pits': 0.03,
+    'empty_space': 0.5
+    }
     terrain_grid = generate_terrain_with_probabilities(width, height, terrain_probabilities)
     place_creatures(terrain_grid, num_creatures)
     place_doors(terrain_grid, width, height)
