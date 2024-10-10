@@ -189,6 +189,7 @@ def get_texture_index(terrain):
     # Parameters
 width = 100
 height = 100
+num_creatures = 20
     
     # Define probabilities for each terrain type
 terrain_probabilities = {
