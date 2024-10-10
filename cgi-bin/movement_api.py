@@ -123,8 +123,8 @@ try:
       map_file_path = '../maps/'+uuid+'.json' # will be adjust to the actuall file path later
 
       if (not os.path.exists(map_file_path)):
-          from GenerateMap import generateMap
-          generateMap(uuid)
+          from MasterGenerator import generateMap
+          generateMap(0,uuid)
           
       game_map = load_map(map_file_path)
 
