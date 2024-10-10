@@ -1,5 +1,14 @@
+#!/usr/bin/python3
+import sys
+import json
+import cgi
 import random
-from terrain import Wall, EmptySpace, Spikes, Water, Fire
+
+HTTP_FIELDS = cgi.FieldStorage()
+
+from GameObject import Terrain
+
+from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace  
 
 def generate_path_level(width, height, num_paths, spike_prob, water_prob, fire_prob):
     # Initialize grid filled with Wall objects
@@ -129,7 +138,8 @@ spike_prob = 0.1  # 10% chance to place Spikes in empty spaces
 water_prob = 0.05  # 5% chance for Water on walls
 fire_prob = 0.05  # 5% chance for Fire on walls
 
-grid = generate_path_level(width, height, num_paths, spike_prob, water_prob, fire_prob)
+def generateMap():
+    return generate_path_level(width, height, num_paths, spike_prob, water_prob, fire_prob)
 
-for row in grid:
-    print(''.join([cell.symbol for cell in row]))
+
+        
