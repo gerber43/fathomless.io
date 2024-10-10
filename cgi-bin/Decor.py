@@ -24,6 +24,9 @@ class Stairs(Decor):
     def on_interact(self, current_level, creature):
         #TODO: load new level and change to the new level
         if current_level.depth < 22:
-            return Level(current_level.depth+1, TempBiome())
+            new_level = Level(current_level.depth+1, TempBiome())
+            current_level.grid = new_level.grid
+            current_level.depth = new_level.depth
+        pass
     def passive_behavior(self, grid):
         pass
