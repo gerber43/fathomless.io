@@ -52,7 +52,7 @@ class Spikes(Terrain):
        pass
 class EmptySpace(Terrain):
     def __init__(self, pos):
-        super().__init__("EmptySpace", "1", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("EmptySpace", "1", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, True, "NO", "")
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
