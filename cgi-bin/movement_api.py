@@ -64,18 +64,49 @@ def process_creature_movement(position, direction, game_map):
 
 # Function to update all creature positions
 def update_creature_position(game_map, player_pos):
-    return
     for x, row in enumerate(game_map):
         for y, tile in enumerate(row):
             creature = tile.get("creature")
-            if creature and creature['textureIndex'] != 0:
-                direction = get_direction((x,y), player_pos, game_map) #the pathfinding algorithm to be implement later
-                process_creature_movement((x,y), direction, game_map)
+            if creature and creature['textureIndex'] != 0:  # if creature exist and not player
+                speed = creature.speed
+                path = a_star((x, y), player_pos, game_map)
+
+                if not path or len(path) < 2:
+                    continue
+
+                current_pos = (x, y)
+                for move_num in range(min(speed, len(path) - 1)):
+                    next_pos = path[move_num + 1]
+                    direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
+                    current_pos, message = process_entity_movement(current_pos, direction, game_map)
+                    if message != "entity has moved":
+                        break
+
+# Helper function to get direction between two points
+def get_direction_from_step(current_pos, next_pos):
+    dx = next_pos[0] - current_pos[0]
+    dy = next_pos[1] - current_pos[1]
+
+    if dx == 1 and dy == 0:
+        return 0  # Right
+    elif dx == -1 and dy == 0:
+        return 180  # Left
+    elif dx == 0 and dy == 1:
+        return 90  # Down
+    elif dx == 0 and dy == -1:
+        return 270  # Up
+    else:
+        return None  # No valid direction
 
 # Function to validate the movement
 def is_valid_move(x, y, game_map):
-    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[x]) or (game_map[x][y]['terrain']['passable'] == False and game_map[x][y].get('decor') is None):
+    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[x]):
         return False
+    if not game_map[x][y][terrian].passable:
+        return false
+    if not game_map[x][y][decor].passable:
+        return false
+
     return True
 
 #Function to create the subset of map
