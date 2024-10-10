@@ -283,32 +283,17 @@ texture_mapping = {
     'Wall': 6,  
 }
 
-def saveMap(uuid, final_grid):
-    dictGrid = []
-    for i in range(len(final_grid)):
-        tempGrid = []
-        for j in range(len(final_grid[0])):
-            if (final_grid[i][j]):
-                tempGrid.append({"terrain": final_grid[i][j].__dict__,"entity": {"textureIndex":8}})
-            else: 
-                tempGrid.append({"terrain": EmptySpace((i, j)).__dict__,"entity": {"textureIndex":8}})
-        dictGrid.append(tempGrid)
-    dictGrid[0][0]['entity'] = {"textureIndex":0}
-    json_grid = json.dumps(dictGrid)
-    with open("../maps/"+uuid+".json", "w") as json_file:
-        json_file.write(json_grid)
-
-def generateMap(uuid):
+def generateMap():
     # Generate terrain grid with probabilities
     terrain_grid = generate_terrain_with_probabilities(width, height, terrain_probabilities)
     place_creatures(terrain_grid, num_creatures)
     place_doors(terrain_grid, width, height)
     # Carve guaranteed paths across the grid
-    final_grid, final_traverable_grid = carve_guaranteed_paths(terrain_grid, width, height)
+    final_grid, final_traversable_grid = carve_guaranteed_paths(terrain_grid, width, height)
     place_staircase(final_grid, final_traversable_grid)
     
     
-    saveMap(uuid,final_grid)
+    return final_grid
     #json_map = convert_grid_to_json(final_grid)
     # Convert the map to JSON format and print
     #json_output = json.dumps(json_map)
