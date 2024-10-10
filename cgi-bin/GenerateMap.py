@@ -283,7 +283,7 @@ texture_mapping = {
     'Wall': 6,  
 }
 
-def generateMap():
+def generateMap(width, height, depth, num_creatures):
     # Generate terrain grid with probabilities
     terrain_grid = generate_terrain_with_probabilities(width, height, terrain_probabilities)
     place_creatures(terrain_grid, num_creatures)
