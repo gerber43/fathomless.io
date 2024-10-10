@@ -37,13 +37,7 @@ def find_player_position(game_map):
 # Function to process entity's movement
 def process_entity_movement(position, direction, game_map):
     x, y = position
-    current_rotation = game_map[x][y]['entity']['rotation']
 
-    # If the entity is not facing the correct direction, just update the rotation
-    
-    game_map[x][y]['entity']['rotation'] = direction  # Change the rotation
-
-    # If the entity is facing the correct direction, calculate the new position
     if direction == 0:  # Move right
         new_x, new_y = x + 1, y
     elif direction == 270:  # Move up
@@ -63,10 +57,8 @@ def process_entity_movement(position, direction, game_map):
 
     # Update the entity's position in the map
     game_map[new_x][new_y]['entity']['textureIndex'] = game_map[x][y]['entity']['textureIndex']  # Move entity to new position
-    game_map[new_x][new_y]['entity']['rotation'] = direction  # Update entity rotation
 
     game_map[x][y]['entity']['textureIndex'] = 8  # Clear old position
-    game_map[x][y]['entity']['rotation'] = "0"  # Clear old position
 
     return (new_x, new_y), "entity has moved"
 
@@ -95,11 +87,11 @@ def get_map_subset(player_pos, game_map, fov_radius):
         y_max = len(game_map[0])
 
     blank_tile = {
-        "terrain": {"textureIndex": 8, "rotation": 0},
-        "item": {"textureIndex": 8, "rotation": 0},
-        "decor": {"textureIndex": 8, "rotation": 0},
-        "entity": {"textureIndex": "8", "rotation": "0"},
-        "light": {"textureIndex": "8", "rotation": "0"}
+        "terrain": {"textureIndex": 8},
+        "item": {"textureIndex": 8},
+        "decor": {"textureIndex": 8},
+        "entity": {"textureIndex": 8},
+        "light": {"textureIndex": 8}
     }
 
 
@@ -153,7 +145,7 @@ try:
       save_map(map_file_path, game_map)
 
     # Caete the subset of the map
-      field_of_view = 13
+      field_of_view = 5
       fov_radius = field_of_view // 2
       map_subset = get_map_subset(new_player_pos, game_map, fov_radius)
 
