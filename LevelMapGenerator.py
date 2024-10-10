@@ -1,3 +1,8 @@
+#!/usr/bin/python3
+import sys
+import json
+import cgi
+HTTP_FIELDS = cgi.FieldStorage()
 import random
 
 MIN_ROOM_SIZE = 10
@@ -125,4 +130,3 @@ def generate_level():
 
 # Output generated level
 level_layout = generate_level()
-print(level_layout)
