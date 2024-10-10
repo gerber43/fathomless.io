@@ -71,13 +71,16 @@ def a_star(start, goal, game_map):
 def is_valid_move(position, game_map):
     x, y = position
     # Check if the position is out of bounds of the map
-    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]):
+    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[x]):
         return False
-    # Check if there is an obstacle at this position
-    tile = game_map[x][y]
-    obstacle = tile.get('obstacle')
-    if obstacle and obstacle.get('textureIndex') != 8:
-        return False
+    # Check if there is a terrain is passable
+    if not game_map[x][y][terrian].passable:
+        return false
+
+    # Check if there is a decor is passable
+    if not game_map[x][y][decor].passable:
+        return false
+
     # If all checks pass, the move is valid
     return True
 
@@ -90,24 +93,5 @@ def reconstruct_path_from_node(current_node):
     path.reverse()  # Reverse to get path from start to goal
     return path
 
-# Function to get the direction for the next step in the path
-def get_next_direction(entity_position, player_position, game_map):
-    # Use A* to find the shortest path from the entity to the player
-    path = a_star(entity_position, player_position, game_map)
-    # If there's no path or the entity is already at the player, there's no move to make
-    if not path or len(path) < 2:
-        return None
 
-    # The next step on the path towards the player
-    next_step = path[1]
-    dx = next_step[0] - entity_position[0]
-    dy = next_step[1] - entity_position[1]
-
-    # Find the corresponding direction from the delta values
-    for direction, (dir_dx, dir_dy) in DIRECTIONS.items():
-        if (dx, dy) == (dir_dx, dir_dy):
-            return direction
-
-    # If we can't determine the direction, return None (shouldn't happen with a valid path)
-    return None
 
