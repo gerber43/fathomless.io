@@ -28,4 +28,4 @@ class Level:
     def __init__(self, depth, biome):
         self.depth = depth
         self.biome = biome
-        self.grid = generateMap(100, 100, 1, 20)
+        self.grid = generateMap(100, 100, 1, depth+10)
