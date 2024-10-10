@@ -138,8 +138,11 @@ spike_prob = 0.1  # 10% chance to place Spikes in empty spaces
 water_prob = 0.05  # 5% chance for Water on walls
 fire_prob = 0.05  # 5% chance for Fire on walls
 
-def generateMap():
-    return generate_path_level(width, height, num_paths, spike_prob, water_prob, fire_prob)
-
+def generateMap(width, height, depth, num_creatures):
+    final_grid = generate_path_level(width, height, num_paths, spike_prob, water_prob, fire_prob)
+    for i in range(len(final_grid)):
+        for j in range(len(final_grid[0])):
+            final_grid[i][j] = [final_grid[i][j]]
+    return final_grid
 
         
