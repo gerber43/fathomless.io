@@ -103,14 +103,16 @@ def place_doors(grid, width, height, door_probability=0.6):
                         # Remove the wall and place a door
                         #grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, Wall)]  # Remove the wall
                         grid[y][x].append(Door((x, y)))
-def place_creatures(grid, num_creatures):
+def place_creatures(grid, num_creatures, depth):
     for _ in range(num_creatures):
         while True:
             x = random.randint(0, len(grid) - 1)
             y = random.randint(0, len(grid[0]) - 1)
             # Check if the current cell contains EmptySpace and no creature yet
             if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
-                grid[y][x].append(Goblin((x, y)))
+                goblin = Goblin((x, y))
+                goblin.hp += int(depth.split(",")[0])
+                grid[y][x].append(goblin)
                 break
 
 def place_player(grid):
@@ -293,10 +295,9 @@ def generateMap(width, height, depth, num_creatures):
     'pits': 0.03,
     'empty_space': 0.5
     }
-    
     terrain_grid = generate_terrain_with_probabilities(width, height, terrain_probabilities)
     
-    place_creatures(terrain_grid, num_creatures)
+    place_creatures(terrain_grid, num_creatures, depth)
     
     place_doors(terrain_grid, width, height)
     
@@ -316,4 +317,3 @@ def generateMap(width, height, depth, num_creatures):
     # save the output to a file
     #with open("../maps/"+uuid+".json", "w") as json_file:
         #json_file.write(json_output)
-generateMap(10, 10, 1, 20)
