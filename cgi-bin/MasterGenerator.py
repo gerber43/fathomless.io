@@ -12,12 +12,12 @@ from Creatures import Goblin
 from GameObject import Creature, CreatureSegment, Gold
 from Items import IronDagger, WoodenClub
 
-def generateMap(algorithm_index,uuid):
+def generateMap(algorithm_index,uuid, depth):
     if algorithm_index == 0:
         from GenerateMap import generateMap
     if algorithm_index == 1:
         from PathCarvedMap import generateMap
-    saveMap(uuid, generateMap(100,100,1,20))
+    saveMap(uuid, generateMap(10 + 2*depth,10 + 2*depth,depth,depth))
 
 
 def saveMap(uuid, final_grid):
@@ -36,7 +36,6 @@ def saveMap(uuid, final_grid):
             tempGrid.append(internalGrid)
         dictGrid.append(tempGrid)
     
-    dictGrid[0][0]['creature'] = {"textureIndex":0}
     json_grid = json.dumps(dictGrid)
     with open("../maps/"+uuid+".json", "w") as json_file:
         json_file.write(json_grid)
