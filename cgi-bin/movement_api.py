@@ -76,16 +76,16 @@ def update_creature_position(game_map, player_pos):
             if creature and creature['textureIndex'] != '0' and creature['textureIndex'] != 8 and creature['textureIndex'] != '8':  # if creature exist and not player
                 speed = 1
                 '''
-                path = a_star((x, y), player_pos, game_map)
+                # path = a_star((x, y), player_pos, game_map)
                 
-                if not path or len(path) < 2:
-                    continue
+                # if not path or len(path) < 2:
+                #    continue
                 '''
                 current_pos = (x, y)
-                for move_num in range(min(speed, len(path) - 1)):
+                for move_num in range(speed):
                     '''
-                    next_pos = path[move_num + 1]
-                    direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
+                    # next_pos = path[move_num + 1]
+                    # direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
                     '''
                     direction = 0
                     current_pos, message = process_creature_movement(current_pos, direction, game_map)
