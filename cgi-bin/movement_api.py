@@ -75,19 +75,15 @@ def update_creature_position(game_map, player_pos):
             
             if creature and creature['textureIndex'] != '0' and creature['textureIndex'] != 8 and creature['textureIndex'] != '8':  # if creature exist and not player
                 speed = 1
-                '''
-                # path = a_star((x, y), player_pos, game_map)
+                path = a_star((x, y), player_pos, game_map)
                 
-                # if not path or len(path) < 2:
-                #    continue
-                '''
+                if not path or len(path) < 2:
+                    continue
+
                 current_pos = (x, y)
-                for move_num in range(speed):
-                    '''
-                    # next_pos = path[move_num + 1]
-                    # direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
-                    '''
-                    direction = 0
+                for move_num in range(min(speed, len(path) - 1)):
+                    next_pos = path[move_num + 1]
+                    direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
                     current_pos, message = process_creature_movement(current_pos, direction, game_map)
                     if message != "creature has moved":
                         break
@@ -179,17 +175,21 @@ try:
     #update the creature's position
       if (message == "orientation has changed" or message == "creature has moved"):
           update_creature_position(game_map, player_pos)
-    
-    # Save the updated map back to the file
-      save_map(map_file_path, game_map)
       if (game_map[new_player_pos[0]][new_player_pos[1]].get('decor') and game_map[new_player_pos[0]][new_player_pos[1]]['decor']['name'] == "Stairs"):
+          player = game_map[new_player_pos[0]][new_player_pos[1]]['creature']
           from MasterGenerator import generateMap
           depth = game_map[new_player_pos[0]][new_player_pos[1]]['decor']['hp'] + 1
-          generateMap(0,uuid, depth)
+          
+          generateMap(2 if (depth % 2 == 0) else 0,uuid, depth)
           
           game_map = load_map(map_file_path)
           message = "New Map"
           new_player_pos = find_player_position(game_map)
+          player['pos']=[new_player_pos[1],new_player_pos[0]]
+          game_map[new_player_pos[0]][new_player_pos[1]]['creature'] = player
+      
+    # Save the updated map back to the file
+      save_map(map_file_path, game_map)
       
           
 
