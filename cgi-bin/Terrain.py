@@ -36,7 +36,7 @@ class Water(Terrain):
         creature.hp -= 5*(1-creature.resistances[lookup_damage_type_id("WTR")])
 class Fire(Terrain):
     def __init__(self, pos):
-        super().__init__("Fire", "20", pos, 10, (1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("Fire", "20", pos, 10, (1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, True, "NO", "")
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
