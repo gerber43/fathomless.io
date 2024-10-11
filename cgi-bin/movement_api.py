@@ -61,7 +61,7 @@ def process_creature_movement(position, direction, game_map):
     game_map[new_x][new_y]['creature']['pos'] = [new_y,new_x]
     game_map[x][y]['creature'] = {"textureIndex": "8"}  # Clear old position
     message = "creature has moved"
-    if (game_map[new_x][new_y]['terrain']['name'] == "Fire"):
+    if (game_map[new_x][new_y]['terrain']['name'] == "Fire" or game_map[new_x][new_y]['terrain']['name'] == "Shallow Water"):
         game_map[new_x][new_y]['creature']['hp'] = game_map[new_x][new_y]['creature']['hp'] - 1
         message = "Current HP "+str(game_map[new_x][new_y]['creature']['hp'])
     
@@ -73,8 +73,8 @@ def update_creature_position(game_map, player_pos):
     for x, row in enumerate(game_map):
         for y, tile in enumerate(row):
             creature = tile.get("creature")
-            
-            if creature and creature['textureIndex'] != '0' and creature['textureIndex'] != 8 and creature['textureIndex'] != '8':  # if creature exist and not player
+            manhattan = abs(player_pos[0] - x) + abs(player_pos[1] - y)
+            if manhattan < 3 and creature and creature['textureIndex'] != '0' and creature['textureIndex'] != 8 and creature['textureIndex'] != '8':  # if creature exist and not player
                 
                 # Check if this creature has already moved in this turn
                 if (x, y) in moved_creatures:
@@ -153,6 +153,7 @@ try:
     if (HTTP_FIELDS.getvalue('uuid')):
       uuid = HTTP_FIELDS.getvalue('uuid')
       direction = int(HTTP_FIELDS.getvalue('direction')) if (HTTP_FIELDS.getvalue('direction')) else None
+      difficulty = HTTP_FIELDS.getvalue('difficulty') if (HTTP_FIELDS.getvalue('difficulty')) else None
       
       
     # Validate session
@@ -164,8 +165,9 @@ try:
       
       if (not os.path.exists(map_file_path)):
           from MasterGenerator import generateMap
-          generateMap(0,uuid,0)
-      
+          
+          generateMap(0,uuid,"0,"+difficulty)
+
       game_map = load_map(map_file_path)
       
     # Process player's movement
@@ -178,19 +180,18 @@ try:
           message = "player not found"
     
 
-
+    
     #update the creature's position
       if (message == "orientation has changed" or message == "creature has moved"):
           update_creature_position(game_map, player_pos)
       if (game_map[new_player_pos[0]][new_player_pos[1]].get('decor') and game_map[new_player_pos[0]][new_player_pos[1]]['decor']['name'] == "Stairs"):
           player = game_map[new_player_pos[0]][new_player_pos[1]]['creature']
           from MasterGenerator import generateMap
-          depth = game_map[new_player_pos[0]][new_player_pos[1]]['decor']['hp'] + 1
-          
-          generateMap(2 if (depth % 2 == 0) else 0,uuid, depth)
+          depth = str(int(game_map[new_player_pos[0]][new_player_pos[1]]['decor']['hp'].split(",")[0]) + 1)+","+game_map[new_player_pos[0]][new_player_pos[1]]['decor']['hp'].split(",")[1]
+          generateMap(2 if (int(depth.split(",")[0]) % 2 == 0) else 0,uuid, depth)
           
           game_map = load_map(map_file_path)
-          message = "New Map"
+          message = "New Map: Level "+str(depth)
           new_player_pos = find_player_position(game_map)
           player['pos']=[new_player_pos[1],new_player_pos[0]]
           game_map[new_player_pos[0]][new_player_pos[1]]['creature'] = player
