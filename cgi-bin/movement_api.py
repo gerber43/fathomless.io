@@ -74,13 +74,18 @@ def update_creature_position(game_map, player_pos):
         for y, tile in enumerate(row):
             creature = tile.get("creature")
             manhattan = abs(player_pos[0] - x) + abs(player_pos[1] - y)
-            if manhattan < 3 and creature and creature['textureIndex'] != '0' and creature['textureIndex'] != 8 and creature['textureIndex'] != '8':  # if creature exist and not player
+            check = 3
+            if creature and creature.get("name") is not None and creature['name'] == "Boss":
+                check = 10
+            if creature and manhattan < check and creature['textureIndex'] != '0' and creature['textureIndex'] != 8 and creature['textureIndex'] != '8':  # if creature exist and not player
                 
                 # Check if this creature has already moved in this turn
                 if (x, y) in moved_creatures:
                     continue
                 
                 speed = 1
+                if creature['name'] == "Boss":
+                    speed = 3
                 path = a_star((x, y), player_pos, game_map)
                 
                 if not path or len(path) < 2:
