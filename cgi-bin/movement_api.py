@@ -3,7 +3,7 @@ import sys
 import json
 import cgi
 import os
-from user_tracking import get_next_direction
+from user_tracking import a_star
 from GameObject import Terrain
 
 from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace  
