@@ -12,13 +12,21 @@ from Creatures import Goblin
 from GameObject import Creature, CreatureSegment, Gold
 from Items import IronDagger, WoodenClub
 
-def generateMap(algorithm_index,uuid, depth):
+def generateMap(algorithm_index,uuid,depth):
+    depths = depth.split(",")
+    multipier = 1
+    if (depths[1] == "medium"):
+        multipier = 2
+    if (depths[1] == "hard"):
+        multipier = 3
+
     if algorithm_index != 2:
         if algorithm_index == 0:
             from GenerateMap import generateMap
         if algorithm_index == 1:
             from PathCarvedMap import generateMap
-        saveMap(uuid, generateMap(10 + 2*depth,10 + 2*depth,depth,depth))
+        saveMap(uuid, generateMap(10 + 2*int(depths[0]), 10 + 2*int(depths[0]) ,depth, multipier*int(depths[0])))
+        
     else:
         from GenerateBoss import generateMap
         with open("../maps/"+uuid+".json", 'w') as file:
