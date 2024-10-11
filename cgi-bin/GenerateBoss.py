@@ -23,7 +23,7 @@ def save_map(map_file_path, map_data):
         
 def generateMap(depth):
     randomInt = random.randint(0, 1)
-    bossMap = load_map("../maps/boss_map.json" if (randomInt == 0) else "../maps/boss_map2.json")
+    bossMap = load_map("../json/boss_map.json" if (randomInt == 0) else "../json/boss_map2.json")
     for i in range(len(bossMap)):
         for j in range(len(bossMap[0])):
             bossMap[i][j]['creature'] = {"textureIndex": 8}
