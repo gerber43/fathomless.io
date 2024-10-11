@@ -25,7 +25,7 @@ class Pit(Terrain):
             if status.type_id == flight_id:
                 not_flying = False
         if not_flying:
-            creature.hp -= 200*(1-creature.resistances[lookup_damage_type_id("BLT")])
+            creature.hp -= 200*(1.0-creature.resistances[lookup_damage_type_id("BLT")])
             #load new level
 class Water(Terrain):
     def __init__(self, pos):
@@ -33,14 +33,14 @@ class Water(Terrain):
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
-        creature.hp -= 5*(1-creature.resistances[lookup_damage_type_id("WTR")])
+        creature.hp -= 5*(1.0-creature.resistances[lookup_damage_type_id("WTR")])
 class Fire(Terrain):
     def __init__(self, pos):
         super().__init__("Fire", "20", pos, 10, (1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, True, "NO", "")
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
-        creature.hp -= 5*(1-creature.resistances[lookup_damage_type_id("Fire")])
+        creature.hp -= 5*(1.0-creature.resistances[lookup_damage_type_id("Fire")])
         pass
 class Spikes(Terrain):
     def __init__(self, pos):
@@ -48,7 +48,7 @@ class Spikes(Terrain):
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
-       creature.hp -= 20*(1-creature.resistances[lookup_damage_type_id("Piercing")])
+       creature.hp -= 20*(1.0-creature.resistances[lookup_damage_type_id("Piercing")])
        pass
 class EmptySpace(Terrain):
     def __init__(self, pos):
