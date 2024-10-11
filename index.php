@@ -9,6 +9,7 @@ function guidv4($data = null) {
     if (isset($_REQUEST['guest_session'])) {
         $_SESSION['uuid'] = guidv4();
         $_SESSION['username'] = "Guest";
+        $_SESSION['difficulty'] = $_REQUEST['difficulty'];
         header("Location: https://fathomless.io/engine/");
     }
     if (isset($_REQUEST['create_account'])) {
@@ -25,6 +26,7 @@ function guidv4($data = null) {
                 $dbParams = json_decode(file_get_contents("dbPass.pem"),true);
                 $conn = new mysqli($dbParams[0],$dbParams[1],$dbParams[2],$dbParams[3]);
                 $username = $_REQUEST['username'];
+                $_SESSION['difficulty'] = $_REQUEST['difficulty'];
                 $hash = password_hash($_REQUEST['password'],PASSWORD_DEFAULT);
                 $result = $conn->query("INSERT INTO `users`(`user`, `hash`, `uuid`) VALUES ('".$username."','".$hash."','".$_SESSION['uuid']."')");
                 $conn->close();
@@ -51,14 +53,6 @@ function guidv4($data = null) {
             header("Location: https://fathomless.io/engine/");
         }
         
-    }
-    
-    if (isset($_REQUEST['login'])) {
-        $conn = new mysqli($dbParams[0],$dbParams[1],$dbParams[2],$dbParams[3]);
-        $username = $_REQUEST['username'];
-        $hash = password_hash($_REQUEST['password'],PASSWORD_DEFAULT);
-        $result = $conn->query("INSERT INTO `users`(`user`, `hash`, `uuid`) VALUES ('".$username."','".$hash."','".$_SESSION['uuid']."')");
-        $conn->close();
     }
 ?>
 <html>
@@ -168,7 +162,9 @@ function guidv4($data = null) {
     <body>
         <h1>Fathomless Caverns of Peril</h1>
         <hr>
+        
         <form method = "post" action = "">
+            <span><input type="radio" id  = "easy" name="difficulty" value="easy" checked><label for="easy">Easy</label><input type="radio" id  = "medium" name="difficulty" value="medium"><label for="medium">Medium</label><input type="radio" id  = "hard" name="difficulty" value="hard"><label for="hard">Hard</label></span>
             <div>
                 <?=$accountText?>
                 <span><input type = "text" placeholder = "Username" name = "username">
