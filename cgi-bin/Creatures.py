@@ -16,3 +16,20 @@ class Goblin(Creature):
         else:
             weapon = WoodenClub((-1, -1), 1)
         super().__init__("Goblin", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, (weapon, None, None, None, None, None, None, None, None, None), (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [], basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+        
+class Player(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Player", "0", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, (weapon, None, None, None, None, None, None, None, None, None), (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [], basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+class Boss(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Boss", "11", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, (weapon, None, None, None, None, None, None, None, None, None), (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [], basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
