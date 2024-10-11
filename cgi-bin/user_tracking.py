@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import heapq
 
 class Node:
@@ -28,37 +29,41 @@ def heuristic(a, b):
 
 # A* pathfinding function to find the shortest path from `start` to `goal`.
 def a_star(start, goal, game_map):
-
+    
     open_set = [] # A open set as a priority queue to explore nodes by their priority (lowest f_score first)
+    
     start_node = Node(start)
+    
     heapq.heappush(open_set, (0, start_node))  # Add the start position with an initial f_score of 0
-
-    g_score = {start_node: 0} # cost of getting from the start to each position
-    f_score = {start_node: heuristic(start, goal)} # estimated total cost from start to goal (g_score + heuristic)
-
+    
+    g_score = {start: 0} # cost of getting from the start to each position
+    
+    f_score = {start: heuristic(start, goal)} # estimated total cost from start to goal (g_score + heuristic)
+    
     # while the open set is not empty
     while open_set:
         # Get the node with the lowest f_score from the priority queue
         current_node = heapq.heappop(open_set)[1]
-
+        
         # If we have reached the goal, reconstruct the path
         if current_node.position == goal:
             return reconstruct_path_from_node(current_node)
-
+        
         # Iterate through each possible direction (right, up, left, down)
         for direction, (dx, dy) in DIRECTIONS.items():
             # Calculate the neighbor position by adding direction deltas to the current position
             neighbor_position = (current_node.position[0] + dx, current_node.position[1] + dy)
-
+            
             # Skip this neighbor if it's not a valid move (e.g., out of bounds, obstacle)
-            if not is_valid_move(neighbor, game_map):
+            
+            if not is_valid_move(neighbor_position[0], neighbor_position[1] , game_map):
                 continue
-
+            
             # The cost to move to this neighbor is current cost (`g_score[current]`) + 1 (assuming each move has a cost of 1)
             tentative_g_score = g_score[current_node.position] + 1
-
+            
             # If this neighbor is unvisited, add it to the open_set
-            if neighbor not in g_score:
+            if neighbor_position not in g_score:
                 neighbor_node = Node(neighbor_position, current_node)
                 g_score[neighbor_position] = tentative_g_score
                 f_score[neighbor_position] = tentative_g_score + heuristic(neighbor_position, goal)
@@ -68,21 +73,11 @@ def a_star(start, goal, game_map):
     return None
 
 # Function to check if a move is valid (not out of bounds and no obstacle)
-def is_valid_move(position, game_map):
-    x, y = position
-    # Check if the position is out of bounds of the map
-    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[x]):
+def is_valid_move(x, y, game_map):
+    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[x]) or (game_map[x][y]['terrain']['passable'] == False and game_map[x][y].get('decor') is None):
         return False
-    # Check if there is a terrain is passable
-    if not game_map[x][y][terrian].passable:
-        return false
-
-    # Check if there is a decor is passable
-    if not game_map[x][y][decor].passable:
-        return false
-
-    # If all checks pass, the move is valid
     return True
+
 
 # Function to reconstruct the path from the end node
 def reconstruct_path_from_node(current_node):
@@ -92,6 +87,3 @@ def reconstruct_path_from_node(current_node):
         current_node = current_node.parent  # Move to the parent node
     path.reverse()  # Reverse to get path from start to goal
     return path
-
-
-
