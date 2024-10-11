@@ -9,7 +9,7 @@ HTTP_FIELDS = cgi.FieldStorage()
 from GameObject import Terrain, Decor, Creature
 from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace  
 from Decor import Stairs, Door
-from Creatures import Goblin
+from Creatures import Goblin, Player
 
 def is_within_grid(x, y, width, height):
     return 0 <= x < width and 0 <= y < height
@@ -106,8 +106,8 @@ def place_doors(grid, width, height, door_probability=0.6):
 def place_creatures(grid, num_creatures):
     for _ in range(num_creatures):
         while True:
-            x = random.randint(0, width - 1)
-            y = random.randint(0, height - 1)
+            x = random.randint(0, len(grid) - 1)
+            y = random.randint(0, len(grid[0]) - 1)
             # Check if the current cell contains EmptySpace and no creature yet
             if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
                 grid[y][x].append(Goblin((x, y)))
@@ -115,8 +115,8 @@ def place_creatures(grid, num_creatures):
 
 def place_player(grid):
     while True:
-        x = random.randint(0, width - 1)
-        y = random.randint(0, height - 1)
+        x = random.randint(0, len(grid) - 1)
+        y = random.randint(0, len(grid[0]) - 1)
         # Check if the current cell contains EmptySpace and no creature yet
         if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
             grid[y][x].append(Player((x, y)))
@@ -130,13 +130,15 @@ def fill_empty_spaces(grid):
         for x in range(width):
             if not grid[y][x]:
                 grid[y][x].append(EmptySpace((x, y)))
-def place_staircase(grid, traversable_path):
+def place_staircase(grid, traversable_path,depth):
     # Randomly select a position from the traversable path
     staircase_position = random.choice(list(traversable_path))
     # Get the x, y position for the staircase
     x, y = staircase_position
     # Append the staircase to the space without removing the terrain
-    grid[y][x].append(Stairs((x, y)))
+    stairs = Stairs((x, y))
+    stairs.hp = depth
+    grid[y][x].append(stairs)
 
 
 # Carve a guaranteed path between sides of the map
@@ -281,7 +283,6 @@ texture_mapping = {
     'Pit': 18,
     'Wall': 6,  
 }
-
 def generateMap(width, height, depth, num_creatures):
     # Generate terrain grid with probabilities
     terrain_probabilities = {
@@ -292,15 +293,20 @@ def generateMap(width, height, depth, num_creatures):
     'pits': 0.03,
     'empty_space': 0.5
     }
+    
     terrain_grid = generate_terrain_with_probabilities(width, height, terrain_probabilities)
+    
     place_creatures(terrain_grid, num_creatures)
+    
     place_doors(terrain_grid, width, height)
+    
     # Carve guaranteed paths across the grid
     final_grid, final_traversable_grid = carve_guaranteed_paths(terrain_grid, width, height)
-    place_staircase(final_grid, final_traversable_grid)
+    
+    place_staircase(final_grid, final_traversable_grid,depth)
+    
     place_player(final_grid)
-    
-    
+
     return final_grid
     #json_map = convert_grid_to_json(final_grid)
     # Convert the map to JSON format and print
@@ -310,3 +316,4 @@ def generateMap(width, height, depth, num_creatures):
     # save the output to a file
     #with open("../maps/"+uuid+".json", "w") as json_file:
         #json_file.write(json_output)
+generateMap(10, 10, 1, 20)
