@@ -13,11 +13,18 @@ from GameObject import Creature, CreatureSegment, Gold
 from Items import IronDagger, WoodenClub
 
 def generateMap(algorithm_index,uuid, depth):
-    if algorithm_index == 0:
-        from GenerateMap import generateMap
-    if algorithm_index == 1:
-        from PathCarvedMap import generateMap
-    saveMap(uuid, generateMap(10 + 2*depth,10 + 2*depth,depth,depth))
+    if algorithm_index != 2:
+        if algorithm_index == 0:
+            from GenerateMap import generateMap
+        if algorithm_index == 1:
+            from PathCarvedMap import generateMap
+        saveMap(uuid, generateMap(10 + 2*depth,10 + 2*depth,depth,depth))
+    else:
+        from GenerateBoss import generateMap
+        with open("../maps/"+uuid+".json", 'w') as file:
+            json.dump(generateMap(depth), file)
+        
+        
 
 
 def saveMap(uuid, final_grid):
