@@ -112,6 +112,16 @@ def place_creatures(grid, num_creatures):
             if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
                 grid[y][x].append(Goblin((x, y)))
                 break
+
+def place_player(grid):
+    while True:
+        x = random.randint(0, width - 1)
+        y = random.randint(0, height - 1)
+        # Check if the current cell contains EmptySpace and no creature yet
+        if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
+            grid[y][x].append(Player((x, y)))
+            break
+
 def fill_empty_spaces(grid):
     width = len(grid[0])
     height = len(grid)
@@ -288,6 +298,7 @@ def generateMap(width, height, depth, num_creatures):
     # Carve guaranteed paths across the grid
     final_grid, final_traversable_grid = carve_guaranteed_paths(terrain_grid, width, height)
     place_staircase(final_grid, final_traversable_grid)
+    place_player(final_grid)
     
     
     return final_grid
