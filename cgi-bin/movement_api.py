@@ -69,11 +69,17 @@ def process_creature_movement(position, direction, game_map):
 
 # Function to update all creature positions
 def update_creature_position(game_map, player_pos):
+    moved_creatures = set()  # Track creatures that have already moved
     for x, row in enumerate(game_map):
         for y, tile in enumerate(row):
             creature = tile.get("creature")
             
             if creature and creature['textureIndex'] != '0' and creature['textureIndex'] != 8 and creature['textureIndex'] != '8':  # if creature exist and not player
+                
+                # Check if this creature has already moved in this turn
+                if (x, y) in moved_creatures:
+                    continue
+                
                 speed = 1
                 path = a_star((x, y), player_pos, game_map)
                 
@@ -87,6 +93,7 @@ def update_creature_position(game_map, player_pos):
                     current_pos, message = process_creature_movement(current_pos, direction, game_map)
                     if message != "creature has moved":
                         break
+                moved_creatures.add(current_pos)
 
 # Helper function to get direction between two points
 def get_direction_from_step(current_pos, next_pos):
