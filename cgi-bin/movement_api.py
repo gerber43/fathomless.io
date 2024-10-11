@@ -5,11 +5,12 @@ import cgi
 import os
 from user_tracking import a_star
 from GameObject import Terrain
+from Creatures import Goblin, Player
 
 from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace  
 print('Content-type: application/json\n')
 HTTP_FIELDS = cgi.FieldStorage()
-
+depth = 0
 #Function to validate the player session
 def validate_session(uuid):
     # TODO
@@ -28,18 +29,15 @@ def save_map(map_file_path, map_data):
 # Function to find the player's current position on the map
 def find_player_position(game_map):
     for x, row in enumerate(game_map):
+        
         for y, tile in enumerate(row):
-            creature = tile.get('creature')
-            if creature and creature['textureIndex'] == 0:
+            if tile.get('creature') != None and tile.get('creature')['textureIndex'] == "0":
                 return (x, y)
     return None  # If player is not found
 
 # Function to process creature's movement
 def process_creature_movement(position, direction, game_map):
     x, y = position
-    creature = game_map[x][y].get('creature')
-    if creature is None:
-        return position, "No creature found at the current position"
 
     if direction == 0:  # Move right
         new_x, new_y = x + 1, y
@@ -57,21 +55,28 @@ def process_creature_movement(position, direction, game_map):
     # Validate the new position
     if not is_valid_move(new_x, new_y, game_map):
         return position, "You cannot move here"  # Invalid move
-
+    
     # Update the creature's position in the map
-    creature.move(game_map, (new_x, new_y))
-
-    return (new_x, new_y), "creature has moved"
+    game_map[new_x][new_y]['creature'] = game_map[x][y]['creature']  # Move creature to new position
+    game_map[new_x][new_y]['creature']['pos'] = [new_y,new_x]
+    game_map[x][y]['creature'] = {"textureIndex": "8"}  # Clear old position
+    message = "creature has moved"
+    if (game_map[new_x][new_y]['terrain']['name'] == "Fire"):
+        game_map[new_x][new_y]['creature']['hp'] = game_map[new_x][new_y]['creature']['hp'] - 1
+        message = "Current HP "+str(game_map[new_x][new_y]['creature']['hp'])
+    
+    return (new_x, new_y), message
 
 # Function to update all creature positions
 def update_creature_position(game_map, player_pos):
     for x, row in enumerate(game_map):
         for y, tile in enumerate(row):
             creature = tile.get("creature")
-            if creature and creature['textureIndex'] != 0:  # if creature exist and not player
-                speed = creature.speed
+            
+            if creature and creature['textureIndex'] != '0' and creature['textureIndex'] != 8 and creature['textureIndex'] != '8':  # if creature exist and not player
+                speed = 1
                 path = a_star((x, y), player_pos, game_map)
-
+                
                 if not path or len(path) < 2:
                     continue
 
@@ -79,8 +84,8 @@ def update_creature_position(game_map, player_pos):
                 for move_num in range(min(speed, len(path) - 1)):
                     next_pos = path[move_num + 1]
                     direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
-                    current_pos, message = process_entity_movement(current_pos, direction, game_map)
-                    if message != "entity has moved":
+                    current_pos, message = process_creature_movement(current_pos, direction, game_map)
+                    if message != "creature has moved":
                         break
 
 # Helper function to get direction between two points
@@ -101,13 +106,8 @@ def get_direction_from_step(current_pos, next_pos):
 
 # Function to validate the movement
 def is_valid_move(x, y, game_map):
-    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[x]):
+    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[x]) or game_map[x][y]['creature']['textureIndex'] == '0' or (game_map[x][y]['terrain']['passable'] == False and game_map[x][y].get('decor') is None):
         return False
-    if not game_map[x][y][terrian].passable:
-        return false
-    if not game_map[x][y][decor].passable:
-        return false
-
     return True
 
 #Function to create the subset of map
@@ -142,42 +142,55 @@ def get_map_subset(player_pos, game_map, fov_radius):
 
 try:
     # Retrieve uuid and direction from the POST request
+    
     if (HTTP_FIELDS.getvalue('uuid')):
       uuid = HTTP_FIELDS.getvalue('uuid')
       direction = int(HTTP_FIELDS.getvalue('direction')) if (HTTP_FIELDS.getvalue('direction')) else None
-
+      
       
     # Validate session
       if not validate_session(uuid):
            raise ValueError("Invalid session")
-
+      
     # Load the current map
       map_file_path = '../maps/'+uuid+'.json' # will be adjust to the actuall file path later
-
+      
       if (not os.path.exists(map_file_path)):
           from MasterGenerator import generateMap
-          generateMap(0,uuid)
-          
+          generateMap(0,uuid,0)
+      
       game_map = load_map(map_file_path)
-
+      
     # Process player's movement
       player_pos = find_player_position(game_map)
+      
       if (player_pos != None):
+          
           new_player_pos, message = process_creature_movement(player_pos, direction, game_map)
       else:
           message = "player not found"
-
+    
 
 
     #update the creature's position
       if (message == "orientation has changed" or message == "creature has moved"):
           update_creature_position(game_map, player_pos)
-
+    
     # Save the updated map back to the file
       save_map(map_file_path, game_map)
+      if (game_map[new_player_pos[0]][new_player_pos[1]].get('decor') and game_map[new_player_pos[0]][new_player_pos[1]]['decor']['name'] == "Stairs"):
+          from MasterGenerator import generateMap
+          depth = game_map[new_player_pos[0]][new_player_pos[1]]['decor']['hp'] + 1
+          generateMap(0,uuid, depth)
+          
+          game_map = load_map(map_file_path)
+          message = "New Map"
+          new_player_pos = find_player_position(game_map)
+      
+          
 
     # Caete the subset of the map
-      field_of_view = 13
+      field_of_view = 11
       fov_radius = field_of_view // 2
       map_subset = get_map_subset(new_player_pos, game_map, fov_radius)
 
