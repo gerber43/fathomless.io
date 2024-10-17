@@ -3,6 +3,7 @@ import sys
 import json
 import cgi
 import os
+import pickle
 from user_tracking import a_star
 from GameObject import Terrain
 from Creatures import Goblin, Player
@@ -25,6 +26,17 @@ def load_map(map_file_path):
 def save_map(map_file_path, map_data):
     with open(map_file_path, 'w') as file:
         json.dump(map_data, file)
+
+def save_pickle(map_file_path, map_data):
+    with open(map_file_path, 'wb') as pickle_file:
+        pickle.dump(map_data, pickle_file)
+    
+        
+def load_pickle(map_file_path):
+    with open(map_file_path, 'rb') as pickle_file:
+        return pickle.load(pickle_file)
+
+
 
 # Function to find the player's current position on the map
 def find_player_position(game_map):
@@ -167,14 +179,14 @@ try:
       
     # Load the current map
       map_file_path = '../maps/'+uuid+'.json' # will be adjust to the actuall file path later
-      
+      pickle_file_path = '../maps/'+uuid+'.pkl' # will be adjust to the actuall file path later
       if (not os.path.exists(map_file_path)):
           from MasterGenerator import generateMap
           
           generateMap(0,uuid,"0,"+difficulty)
 
       game_map = load_map(map_file_path)
-      
+      pickle_map = load_pickle(pickle_file_path)
     # Process player's movement
       player_pos = find_player_position(game_map)
       
@@ -187,7 +199,7 @@ try:
 
     
     #update the creature's position
-      if (message == "orientation has changed" or message == "creature has moved"):
+      if (message == "creature has moved"):
           update_creature_position(game_map, player_pos)
       if (game_map[new_player_pos[0]][new_player_pos[1]].get('decor') and game_map[new_player_pos[0]][new_player_pos[1]]['decor']['name'] == "Stairs"):
           player = game_map[new_player_pos[0]][new_player_pos[1]]['creature']
@@ -196,6 +208,7 @@ try:
           generateMap(2 if (int(depth.split(",")[0]) % 2 == 0) else 0,uuid, depth)
           
           game_map = load_map(map_file_path)
+          pickle_map = load_pickle(pickle_file_path)
           message = "New Map: Level "+str(depth)
           new_player_pos = find_player_position(game_map)
           player['pos']=[new_player_pos[1],new_player_pos[0]]
@@ -203,6 +216,7 @@ try:
       
     # Save the updated map back to the file
       save_map(map_file_path, game_map)
+      save_pickle(pickle_file_path, pickle_map)
       
           
 
