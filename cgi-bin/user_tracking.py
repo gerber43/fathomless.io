@@ -46,17 +46,16 @@ def a_star(start, goal, game_map):
         current_node = heapq.heappop(open_set)[1]
         
         # If we have reached the goal, reconstruct the path
-        if current_node.position == goal:
+        if current_node.position[0] == goal[0] and current_node.position[1] == goal[1]:
             return reconstruct_path_from_node(current_node)
         
         # Iterate through each possible direction (right, up, left, down)
         for direction, (dx, dy) in DIRECTIONS.items():
+            
             # Calculate the neighbor position by adding direction deltas to the current position
             neighbor_position = (current_node.position[0] + dx, current_node.position[1] + dy)
-            
             # Skip this neighbor if it's not a valid move (e.g., out of bounds, obstacle)
-            
-            if not is_valid_move(neighbor_position[0], neighbor_position[1] , game_map):
+            if not is_valid_move(neighbor_position[0], neighbor_position[1], game_map):
                 continue
             
             # The cost to move to this neighbor is current cost (`g_score[current]`) + 1 (assuming each move has a cost of 1)
@@ -68,15 +67,21 @@ def a_star(start, goal, game_map):
                 g_score[neighbor_position] = tentative_g_score
                 f_score[neighbor_position] = tentative_g_score + heuristic(neighbor_position, goal)
                 heapq.heappush(open_set, (f_score[neighbor_position], neighbor_node))
-
+            
     # no path found
     return None
 
+
+def get_object_by_class(tile,className):
+    parsedTile = [gameObject for gameObject in tile if gameObject.__class__.__base__.__name__ == className]
+    return None if (len(parsedTile) == 0) else parsedTile[0]
+    
 # Function to check if a move is valid (not out of bounds and no obstacle)
 def is_valid_move(x, y, game_map):
-    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[x]) or (game_map[x][y]['terrain']['passable'] == False and game_map[x][y].get('decor') is None):
+    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]) or get_object_by_class(game_map[x][y],"Creature"):
         return False
     return True
+
 
 
 # Function to reconstruct the path from the end node
