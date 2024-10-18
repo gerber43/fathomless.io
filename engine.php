@@ -228,21 +228,22 @@
             outline: inherit;
                 
             }
-            #inspection div img {
-                width:100px;
-                max-height:100px;
-                position:absolute;
-                top:20px;
-                right:20px;
-                
+            #inspection img {
+                width:75px;
+                max-height:75px;
+                float:right;
+                margin:20px;
+
+            }
+            #inspection > div > div {
+                width:80%;
             }
             #inspection div {
                 padding:20px;
                 border-radius:20px;
                 border:solid rgb(212,175,55) 5px;
                 margin:20px;
-                position:relative;
-                
+
             }
             #inspection div p {
                 word-wrap: break-word;
@@ -253,6 +254,12 @@
             .inspecting {
                 transition:.75s;
                 border:#eee dotted 2px;
+            }
+            hr {
+            width:90%;
+            height:5px;
+            background:rgb(212,175,55);
+            border:none;
             }
         </style>
     </head>
@@ -331,10 +338,38 @@
                     if (tile[object]['name']) {
                     attributes = "";
                     Object.keys(tile[object]).forEach((attribute) => {
+                        specialFormats = ["equipment","drop_table"];
+                        if (!specialFormats.includes(attribute)) {
+                                
+                            
                         if (attribute == "textureIndex") {
                             attributes+="<img src = '"+tileObjects[tile[object][attribute]]['icon']+"'>"
                         } else {
+                            
                             attributes+="<p><span>"+attribute + "</span> : "+tile[object][attribute]+"</p>"
+                        }
+                        } else {
+                            var attributeArray = Object.keys(tile[object][attribute]).map((key) => tile[object][attribute][key]);
+                            buffer = ""
+                            for (var i = 0; i < attributeArray.length; i++) {
+                                if (typeof(attributeArray[i]) == "object") {
+                                    objectKeys = Object.keys(attributeArray[i]);
+                                    for (var j = 0; j < objectKeys.length; j++) {
+                                         if (objectKeys[j] == "textureIndex") {
+                            attributes+="<img src = '"+tileObjects[attributeArray[i][objectKeys[j]]]['icon']+"'>"
+                        } else {
+                                        buffer += "<p>"+objectKeys[j]+" : "+attributeArray[i][objectKeys[j]]+"</p>";
+                        }
+                                    }
+                                } else {
+                                    buffer += "<p>"+attributeArray[i]+"</p>";
+                                }
+                                
+                                
+                                    
+
+                            }
+                            attributes+="<div><p><span>"+attribute + "</span> : </p><hr>"+buffer+"</div>";
                         }
 
                         
@@ -467,8 +502,14 @@ inspecting = false;
                 if (e.code === "KeyE")  {
                     toggleInventory();
                 }
-                if (e.code === "Escape")  {
+                if (e.code === "Escape" && !inspecting)  {
                     toggleSettings();
+                }
+                if (e.code === "Escape" && inspecting)  {
+                    document.getElementById('inspection').style.width = "0px";
+                    document.getElementById('inspection').innerHTML = "";
+                    document.getElementById(inspecting).classList.remove("inspecting");
+                    inspecting = ""
                 }
             });
             document.getElementById('settings').addEventListener('mouseenter', (e) => {clearTimeout(closeSetting);});
@@ -481,10 +522,6 @@ inspecting = false;
                 item.addEventListener("click", () => {
                     if (item.dataset.direction && arrowKeys.includes(item.dataset.direction)){
                         directionHandler(item.dataset.direction)
-                    }closeInspecting
-                    if (item.dataset.setting && item.dataset.setting == "closeInspection") {
-                        document.getElementById('inspection').style.width = "0px";
-                        document.getElementById('inspection').innerHTML = "";
                     }
                     if (item.dataset.setting && item.dataset.setting == "settings_menu") {
                         toggleSettings();
