@@ -11,8 +11,8 @@ while ($row = $result->fetch_assoc()) {
 }
 foreach ($maps as $map) {
     $currentTime = time();
-    if (str_contains($map,".json")) {
-        if (!in_array(str_replace(".json","",$map),$uuids) && $currentTime - filemtime("maps/".$map) >= 3600) {
+    if (str_contains($map,".pkl")) {
+        if (!in_array(str_replace(".pkl","",$map),$uuids) && $currentTime - filemtime("maps/".$map) >= 3600) {
             unlink("maps/".$map);
         }
     }
