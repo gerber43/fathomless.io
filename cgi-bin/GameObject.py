@@ -62,8 +62,8 @@ class Creature(GameObject):
         self.drop_table = drop_table
 
     def move(self, grid, new_pos):
-        for item in self.equipment:
-            item.on_move(self, new_pos)
+        #for item in self.equipment:
+            #item.on_move(self, new_pos)
         grid[new_pos[0]][new_pos[1]].append(self)
         grid[self.pos[0]][self.pos[1]].remove(self)
         self.pos = new_pos
