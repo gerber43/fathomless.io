@@ -73,6 +73,8 @@ def process_creature_movement(position, direction, game_map):
     game_map[new_x][new_y]['creature']['pos'] = [new_y,new_x]
     game_map[x][y]['creature'] = {"textureIndex": "8"}  # Clear old position
     message = "creature has moved"
+    [gameObject for gameObject in pickle_map[x][y] if gameObject.__class__.__base__.__name__ == "Creature"][0].move(pickle_map,[new_x, new_y])
+
     if (game_map[new_x][new_y]['terrain']['name'] == "Fire" or game_map[new_x][new_y]['terrain']['name'] == "Shallow Water"):
         game_map[new_x][new_y]['creature']['hp'] = game_map[new_x][new_y]['creature']['hp'] - 1
         message = "Current HP "+str(game_map[new_x][new_y]['creature']['hp'])
@@ -199,7 +201,7 @@ try:
 
     
     #update the creature's position
-      if (message == "creature has moved"):
+      if (message == "orientation has changed" or message == "creature has moved"):
           update_creature_position(game_map, player_pos)
       if (game_map[new_player_pos[0]][new_player_pos[1]].get('decor') and game_map[new_player_pos[0]][new_player_pos[1]]['decor']['name'] == "Stairs"):
           player = game_map[new_player_pos[0]][new_player_pos[1]]['creature']
