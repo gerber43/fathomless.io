@@ -23,12 +23,12 @@ def add_spike_line(grid, x1, y1, length, direction):
             if is_within_grid(x, y1, width, height):
                 # Remove existing terrain before adding spikes
                 grid[y1][x] = [obj for obj in grid[y1][x] if not isinstance(obj, Terrain)]
-                grid[y1][x].append(Spikes((x, y1)))  
+                grid[y1][x].append(Spikes((y1, x)))  
     elif direction == 'vertical':
         for y in range(y1, min(y1 + length, height)):  
             if is_within_grid(x1, y, width, height):
                 grid[y][x1] = [obj for obj in grid[y][x1] if not isinstance(obj, Terrain)]
-                grid[y][x1].append(Spikes((x1, y)))  
+                grid[y][x1].append(Spikes((y, x1)))  
 
 def add_walls(grid, x1, y1, x2, y2):
     width = len(grid[0])
@@ -40,18 +40,18 @@ def add_walls(grid, x1, y1, x2, y2):
         if is_within_grid(x, y1, width, height):
             # Remove existing terrain before adding Wall
             grid[y1][x] = [obj for obj in grid[y1][x] if not isinstance(obj, Terrain)]
-            grid[y1][x].append(Wall((x, y1)))  
+            grid[y1][x].append(Wall((y1, x)))  
         if is_within_grid(x, y2, width, height):
             grid[y2][x] = [obj for obj in grid[y2][x] if not isinstance(obj, Terrain)]
-            grid[y2][x].append(Wall((x, y2)))
+            grid[y2][x].append(Wall((y2, x)))
     
     for y in range(y1, y2 + 1):
         if is_within_grid(x1, y, width, height):
             grid[y][x1] = [obj for obj in grid[y][x1] if not isinstance(obj, Terrain)]
-            grid[y][x1].append(Wall((x1, y)))
+            grid[y][x1].append(Wall((y, x1)))
         if is_within_grid(x2, y, width, height):
             grid[y][x2] = [obj for obj in grid[y][x2] if not isinstance(obj, Terrain)]
-            grid[y][x2].append(Wall((x2, y)))
+            grid[y][x2].append(Wall((y, x2)))
 
 # Filled rectangle grid placement for water and fire Terrain 
 def add_filled_rectangle(grid, x1, y1, x2, y2, terrain_class):
@@ -65,7 +65,7 @@ def add_filled_rectangle(grid, x1, y1, x2, y2, terrain_class):
             if is_within_grid(x, y, width, height):
                 # Remove existing terrain before adding the new terrain object
                 grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, Terrain)]
-                grid[y][x].append(terrain_class((x, y)))  
+                grid[y][x].append(terrain_class((y, x)))  
 
 def add_random_pits(grid, num_pits, width, height):
     for _ in range(num_pits):
@@ -73,14 +73,14 @@ def add_random_pits(grid, num_pits, width, height):
         y = random.randint(0, height - 1)
         if is_within_grid(x, y, width, height):
             grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, Terrain)]
-            grid[y][x].append(Pit((x, y)))  
+            grid[y][x].append(Pit((y, x)))  
 
 def add_random_empty(grid, num_empty, width, height):
     for _ in range(num_empty):
         x = random.randint(0, width - 1)
         y = random.randint(0, height - 1)
         if is_within_grid(x, y, width, height):
-            grid[y][x].append(EmptySpace((x, y)))
+            grid[y][x].append(EmptySpace((y, x)))
 def place_doors(grid, width, height, door_probability=0.6):
     for y in range(1, height - 1):  # Iterate through the grid, avoiding the borders
         for x in range(1, width - 1):
@@ -102,7 +102,7 @@ def place_doors(grid, width, height, door_probability=0.6):
                     if random.random() < door_probability:
                         # Remove the wall and place a door
                         #grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, Wall)]  # Remove the wall
-                        grid[y][x].append(Door((x, y)))
+                        grid[y][x].append(Door((y, x)))
 def place_creatures(grid, num_creatures, depth):
     for _ in range(num_creatures):
         while True:
@@ -110,7 +110,7 @@ def place_creatures(grid, num_creatures, depth):
             y = random.randint(0, len(grid[0]) - 1)
             # Check if the current cell contains EmptySpace and no creature yet
             if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
-                goblin = Goblin((x, y))
+                goblin = Goblin((y, x))
                 goblin.hp += int(depth.split(",")[0])
                 grid[y][x].append(goblin)
                 break
@@ -121,7 +121,7 @@ def place_player(grid):
         y = random.randint(0, len(grid[0]) - 1)
         # Check if the current cell contains EmptySpace and no creature yet
         if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
-            grid[y][x].append(Player((x, y)))
+            grid[y][x].append(Player((y, x)))
             break
 
 def fill_empty_spaces(grid):
@@ -131,14 +131,14 @@ def fill_empty_spaces(grid):
     for y in range(height):
         for x in range(width):
             if not grid[y][x]:
-                grid[y][x].append(EmptySpace((x, y)))
+                grid[y][x].append(EmptySpace((y, x)))
 def place_staircase(grid, traversable_path,depth):
     # Randomly select a position from the traversable path
     staircase_position = random.choice(list(traversable_path))
     # Get the x, y position for the staircase
     x, y = staircase_position
     # Append the staircase to the space without removing the terrain
-    stairs = Stairs((x, y))
+    stairs = Stairs((y, x))
     stairs.hp = depth
     grid[y][x].append(stairs)
 
@@ -154,21 +154,21 @@ def carve_path(grid, start, end):
     while current != end:
         # Replace any existing terrain with free space
         grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, Terrain)]
-        grid[y][x].append(EmptySpace((x, y)))  # Carve out free space
+        grid[y][x].append(EmptySpace((y, x)))  # Carve out free space
         # Determine direction towards the goal
         x_dir = 1 if x_goal > x else -1 if x_goal < x else 0
         y_dir = 1 if y_goal > y else -1 if y_goal < y else 0
         # Create a bias for moving towards the destination with some variation
         next_steps = []
         if x_dir != 0:
-            next_steps.append((x + x_dir, y))  # Move horizontally towards the goal
+            next_steps.append((y ,x + x_dir))  # Move horizontally towards the goal
         if y_dir != 0:
-            next_steps.append((x, y + y_dir))  # Move vertically towards the goal
+            next_steps.append((y + y_dir, x))  # Move vertically towards the goal
         # Add small side variations but limit them
         if x_dir != 0:  # Horizontal movement allowed
-            next_steps.append((x + x_dir, y + random.choice([-1, 0, 1])))  # Slight vertical deviation
+            next_steps.append((y + random.choice([-1, 0, 1]), x + x_dir))  # Slight vertical deviation
         if y_dir != 0:  # Vertical movement allowed
-            next_steps.append((x + random.choice([-1, 0, 1]), y + y_dir))  # Slight horizontal deviation
+            next_steps.append((y + y_dir, x + random.choice([-1, 0, 1])))  # Slight horizontal deviation
         # Filter valid next steps (within bounds and not visited)
         valid_next_steps = [(nx, ny) for nx, ny in next_steps
                             if 0 <= nx < len(grid[0]) and 0 <= ny < len(grid)
@@ -199,7 +199,7 @@ def carve_guaranteed_paths(grid, width, height):
     for pos in traversable_path:
         x, y = pos
         grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, Terrain)]  # Remove terrain
-        grid[y][x].append(EmptySpace((x, y)))  # Replace with free space
+        grid[y][x].append(EmptySpace((y, x)))  # Replace with free space
     return grid, traversable_path
 
 
