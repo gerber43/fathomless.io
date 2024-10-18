@@ -36,7 +36,7 @@ class Item(GameObject):
 
 class Gold(Item):
     def __init__(self, pos, amount):
-        super().__init__("Gold", '.', pos, amount, 9999, 0, 1)
+        super().__init__("Gold", '7', pos, amount, 9999, 0, 1)
 
 class Creature(GameObject):
     def __init__(self, name, textureIndex, pos, segments, hp, mp, speed, status_effects, fitness, cunning, magic, dodge, crit_chance, equipment, skills, abilities, damage_resistances, status_resistances, inventory, inventory_size, drop_table):
