@@ -39,14 +39,19 @@ def load_pickle(map_file_path):
 
 
 # Function to find the player's current position on the map
-def find_player_position(game_map):
-    for x, row in enumerate(game_map):
-        
+def find_player_position(pickle_map):
+    for x, row in enumerate(pickle_map):
         for y, tile in enumerate(row):
-            if tile.get('creature') != None and tile.get('creature')['textureIndex'] == "0":
-                return (x, y)
+            for gameObject in (tile):
+                if isinstance(gameObject, Player):
+                    return[x,y]
     return None  # If player is not found
 
+#given a tile and a gameObject className (Creature, Terrain, ...) object is returned
+def get_object_by_class(tile,className):
+    parsedTile = [gameObject for gameObject in tile if gameObject.__class__.__base__.__name__ == className]
+    return None if (len(parsedTile) == 0) else parsedTile[0]
+    
 # Function to process creature's movement
 def process_creature_movement(position, direction, game_map):
     x, y = position
@@ -65,7 +70,7 @@ def process_creature_movement(position, direction, game_map):
         return position, "Invalid direction"
 
     # Validate the new position
-    if not is_valid_move(new_x, new_y, game_map):
+    if not is_valid_move(new_x, new_y, pickle_map):
         return position, "You cannot move here"  # Invalid move
     
     # Update the creature's position in the map
@@ -83,28 +88,27 @@ def process_creature_movement(position, direction, game_map):
 
 # Function to update all creature positions
 def update_creature_position(game_map, player_pos):
+    
     moved_creatures = set()  # Track creatures that have already moved
+    
     for x, row in enumerate(game_map):
         for y, tile in enumerate(row):
-            creature = tile.get("creature")
+            creature = get_object_by_class(pickle_map[x][y],"Creature")
             manhattan = abs(player_pos[0] - x) + abs(player_pos[1] - y)
-            check = 3
-            if creature and creature.get("name") is not None and creature['name'] == "Boss":
-                check = 10
-            if creature and manhattan < check and creature['textureIndex'] != '0' and creature['textureIndex'] != 8 and creature['textureIndex'] != '8':  # if creature exist and not player
+            check = 10
+            
+            if creature != None and manhattan < check and creature.name != "Player":  # if creature exist and not player
                 
                 # Check if this creature has already moved in this turn
                 if (x, y) in moved_creatures:
                     continue
                 
                 speed = 1
-                if creature['name'] == "Boss":
-                    speed = 3
-                path = a_star((x, y), player_pos, game_map)
-                
+                path = a_star((x, y), player_pos, pickle_map)
+
                 if not path or len(path) < 2:
                     continue
-
+                
                 current_pos = (x, y)
                 for move_num in range(min(speed, len(path) - 1)):
                     next_pos = path[move_num + 1]
@@ -132,7 +136,7 @@ def get_direction_from_step(current_pos, next_pos):
 
 # Function to validate the movement
 def is_valid_move(x, y, game_map):
-    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[x]) or game_map[x][y]['creature']['textureIndex'] == '0' or (game_map[x][y]['terrain']['passable'] == False and game_map[x][y].get('decor') is None):
+    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]) or get_object_by_class(game_map[x][y],"Creature"):
         return False
     return True
 
@@ -151,8 +155,7 @@ def get_map_subset(player_pos, game_map, fov_radius):
         "creature": {"textureIndex": 8},
         "light": {"textureIndex": 8}
     }
-
-
+    
     map_subset = []
     for i in range(x - fov_radius, x + fov_radius + 1):
         row_subset = []
@@ -160,12 +163,20 @@ def get_map_subset(player_pos, game_map, fov_radius):
             if i < 0 or i >= x_max or j < 0  or j >= y_max:
                 row_subset.append(blank_tile)
             else:
-                row_subset.append(game_map[i][j])
+                internalGrid = {gameObject.__class__.__base__.__name__.lower(): gameObject.__dict__ for gameObject in pickle_map[i][j]}
+                if (internalGrid.get('creature') is not None):
+                    internalGrid['creature']['equipment'] = ""
+                    internalGrid['creature']['drop_table'] = ""
+                else:
+                    internalGrid["creature"] = {"textureIndex":8}
+                row_subset.append(internalGrid)
         map_subset.append(row_subset)
-
+    
+        
+    
     return map_subset
     
-
+    
 try:
     # Retrieve uuid and direction from the POST request
     
@@ -174,7 +185,7 @@ try:
       direction = int(HTTP_FIELDS.getvalue('direction')) if (HTTP_FIELDS.getvalue('direction')) else None
       difficulty = HTTP_FIELDS.getvalue('difficulty') if (HTTP_FIELDS.getvalue('difficulty')) else None
       
-      
+
     # Validate session
       if not validate_session(uuid):
            raise ValueError("Invalid session")
@@ -189,33 +200,37 @@ try:
 
       game_map = load_map(map_file_path)
       pickle_map = load_pickle(pickle_file_path)
-    # Process player's movement
-      player_pos = find_player_position(game_map)
       
+    # Process player's movement
+      player_pos = find_player_position(pickle_map)
       if (player_pos != None):
-          
           new_player_pos, message = process_creature_movement(player_pos, direction, game_map)
       else:
           message = "player not found"
-    
-
-    
+      
     #update the creature's position
       if (message == "orientation has changed" or message == "creature has moved"):
           update_creature_position(game_map, player_pos)
-      if (game_map[new_player_pos[0]][new_player_pos[1]].get('decor') and game_map[new_player_pos[0]][new_player_pos[1]]['decor']['name'] == "Stairs"):
+      playerTile = pickle_map[new_player_pos[0]][new_player_pos[1]]
+      if get_object_by_class(playerTile,"Decor") and get_object_by_class(playerTile,"Decor").name == "Stairs":
+          stair = get_object_by_class(playerTile,"Decor")
           player = game_map[new_player_pos[0]][new_player_pos[1]]['creature']
+          pickle_player = get_object_by_class(pickle_map[new_player_pos[0]][new_player_pos[1]],"Creature")
+          
           from MasterGenerator import generateMap
-          depth = str(int(game_map[new_player_pos[0]][new_player_pos[1]]['decor']['hp'].split(",")[0]) + 1)+","+game_map[new_player_pos[0]][new_player_pos[1]]['decor']['hp'].split(",")[1]
-          generateMap(2 if (int(depth.split(",")[0]) % 2 == 0) else 0,uuid, depth)
+          depth = str(int(stair.hp.split(",")[0]) + 1)+","+stair.hp.split(",")[1]
+          generateMap(0,uuid, depth)
           
           game_map = load_map(map_file_path)
           pickle_map = load_pickle(pickle_file_path)
           message = "New Map: Level "+str(depth)
-          new_player_pos = find_player_position(game_map)
-          player['pos']=[new_player_pos[1],new_player_pos[0]]
+          new_player_pos = find_player_position(pickle_map)
+          player['pos']= [new_player_pos[1],new_player_pos[0]]
+          pickle_player.pos = [new_player_pos[1],new_player_pos[0]]
           game_map[new_player_pos[0]][new_player_pos[1]]['creature'] = player
-      
+          
+          
+
     # Save the updated map back to the file
       save_map(map_file_path, game_map)
       save_pickle(pickle_file_path, pickle_map)
@@ -225,7 +240,7 @@ try:
     # Caete the subset of the map
       field_of_view = 11
       fov_radius = field_of_view // 2
-      map_subset = get_map_subset(new_player_pos, game_map, fov_radius)
+      map_subset = get_map_subset(new_player_pos, pickle_map, fov_radius)
 
 
     #send subset_map and message back to client
