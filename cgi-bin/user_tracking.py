@@ -78,7 +78,7 @@ def get_object_by_class(tile,className):
     
 # Function to check if a move is valid (not out of bounds and no obstacle)
 def is_valid_move(x, y, game_map):
-    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]) or get_object_by_class(game_map[x][y],"Creature"):
+    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]) or get_object_by_class(game_map[x][y],"Creature") or not get_object_by_class(game_map[x][y],"Terrain").passable:
         return False
     return True
 
