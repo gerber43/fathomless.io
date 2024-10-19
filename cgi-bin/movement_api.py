@@ -5,6 +5,7 @@ import cgi
 import os
 import pickle
 from user_tracking import a_star
+from map_simplifier import delete_blank_object
 from GameObject import Terrain
 from Creatures import Goblin, Player
 from MasterGenerator import generateMap
@@ -149,11 +150,40 @@ def get_map_subset(player_pos, game_map, fov_radius):
         
     
     return map_subset
-    
-    
+
+
+#Function to get the target creature
+def get_target_creature(game_map, player_pos, tile, fov_radius):
+    player_x, player_y = player_pos
+    fov_x_start = player_x - fov_radius
+    fov_y_start = player_y - fov_radius
+    target_x = fov_x_start + tile[0]
+    target_y = fov_y_start + tile[1]
+    if target_x < 0 or target_x >= len(game_map) or target_y < 0 or target_y >= len(game_map[0]):
+        return None
+    return game_map[target_x][target_y].get("creature")
+
+#funtion to process the acttack action
+def process_attack(attacker, target, attack_method = None):
+    # calculate the damage based on attack_method, now just set to 1
+    if (attack_method == None):
+        damage = 1
+
+    # reduce target's hp
+    target['hp'] -= damage
+
+    #check did the creature dead
+    if target['hp'] <= 0:
+        target["textureIndex"] = 8
+    return "target hit"
+
+
+
+
 if (HTTP_FIELDS.getvalue('uuid')):
       uuid = HTTP_FIELDS.getvalue('uuid')
       direction = int(HTTP_FIELDS.getvalue('direction')) if (HTTP_FIELDS.getvalue('direction')) else None
+      target_tile = json.loads(HTTP_FIELDS.getvalue('target_tile')) if HTTP_FIELDS.getvalue('direction') else None
       difficulty = HTTP_FIELDS.getvalue('difficulty') if (HTTP_FIELDS.getvalue('difficulty')) else None
       
 
@@ -165,15 +195,27 @@ if (HTTP_FIELDS.getvalue('uuid')):
       else:
           game_map = load_map(file_path)
       
-    # Process player's movement
+    # Process player's action
       player_pos = find_player_position(game_map)
       if (player_pos != None):
-          new_player_pos, message = process_creature_movement(player_pos, direction, game_map)
+          if (direction != None):
+              new_player_pos, message = process_creature_movement(player_pos, direction, game_map)
+          else if (target_tile != None)；
+              filed_of_view = 11
+              fov_radius = filed_of_view // 2
+              target_creature = get_target_creature(game_map, player_pos, target_tile, fov_radius)
+              if (target_creature):
+                  message = process_attack(game_map[player_pos[0]][player_pos[1]]['creature'], target_creature)
+                  delete_blank_object(game_map)
+              else:
+                  message = "no target at this position"
+          else:
+              message = "invalide action"
       else:
           message = "player not found"
       
     #update the creature's position
-      if (message == "creature has moved"):
+      if (message == "creature has moved" or message == "target hit"):
           update_creature_position(game_map, player_pos)
       playerTile = game_map[new_player_pos[0]][new_player_pos[1]]
       if get_object_by_class(playerTile,"Decor") and get_object_by_class(playerTile,"Decor").name == "Stairs":
