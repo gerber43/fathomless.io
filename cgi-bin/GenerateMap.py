@@ -130,17 +130,23 @@ def place_doors(grid, width, height, door_probability=0.6):
                         # Remove the wall and place a door
                         #grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, Wall)]  # Remove the wall
                         grid[y][x].append(Door((y, x)))
+                        
 def place_creatures(grid, num_creatures, depth):
-    for _ in range(num_creatures):
-        while True:
-            x = random.randint(0, len(grid) - 1)
-            y = random.randint(0, len(grid[0]) - 1)
-            # Check if the current cell contains EmptySpace and no creature yet
-            if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
-                goblin = Goblin((y, x))
-                goblin.hp += int(depth.split(",")[0])
-                grid[y][x].append(goblin)
-                break
+    current_biome = int(depth.split(",")[0])
+
+    if current_biome in biomes:
+        available_creatures = biomes[current_biome]
+        
+        for _ in range(num_creatures):
+            while True:
+                x = random.randint(0, len(grid) - 1)
+                y = random.randint(0, len(grid[0]) - 1)
+                if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
+                    CreatureClass = random.choice(available_creatures)
+                    creature = CreatureClass((y, x))
+                    creature.hp += current_biome  
+                    grid[y][x].append(creature)
+                    break
 
 def place_player(grid):
     while True:
