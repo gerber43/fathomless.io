@@ -9,32 +9,32 @@ HTTP_FIELDS = cgi.FieldStorage()
 from GameObject import Terrain, Decor, Creature
 from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace  
 from Decor import Stairs, Door
-from Creatures import Player, Goblin, Spider, Bat, Fishman, UndeadSailor, Pirate, GoblinMiner, RockWorm, GiantSlime, SewerGator, DiseasedDenizen, BloatedScavenger, MagmaGolem, FireElemental, DarkElf, DarkDwarf, XotilWarrior, XotilAbomination, XotilHighPriest, AshGolem, ObsidianGolem, AshGhoul, AshWight, SkeletonSoldier, WraithLeader, FleshGolem, Polyp, Parasite, BloodCrawler, Liche, DeathKnight, Archdemon, Demon, NewGodServant, MistBeast, OldGodCultist, EldritchMinion,  VoidBeast, CosmicDragon
+from Creatures import Player, Goblin, Spider, Bat, Fishman, DrownedSailor, Pirate, GoblinMiner, RockWorm, GiantSlime, SewerCroc, DiseasedScavenger, BloatedGuard, MagmaGolem, FireElemental, DarkElf, DarkDwarf, XotilWarrior, XotilAbomination, XotilHighPriest, AshGolem, ObsidianGolem, AshGhoul, AshWight, Skeleton, Necromancer, FleshAmalgam, Polyp, Parasite, BloodCrawler, Lich, DeathKnight, TricksterImp, DeceitArchdemon, AncientServant, Apparition, Cultist, Shambler,  VoidBeast, AbyssDragon
 
 
 biomes = {
     1: [Goblin, Spider, Bat],             # Cave creatures
     2: [Goblin, Spider, Bat],             # Cave creatures
-    3: [Fishman, UndeadSailor, Pirate],   # Cove creatures
+    3: [Fishman, DrownedSailor, Pirate],   # Cove creatures
     4: [GoblinMiner, RockWorm],           # Mine creatures
     5: [GoblinMiner, RockWorm],           # Mine creatures
-    6: [GiantSlime, SewerGator],          # Sewer creatures
-    7: [GiantSlime, SewerGator],          # Sewer creatures
-    8: [DiseasedDenizen, BloatedScavenger],  # Shantytown creatures
+    6: [GiantSlime, SewerCroc],          # Sewer creatures
+    7: [GiantSlime, SewerCroc],          # Sewer creatures
+    8: [DiseasedScavenger, BloatedGuard],  # Shantytown creatures
     9: [MagmaGolem, FireElemental],       # Magma Core creatures
     10: [DarkElf, DarkDwarf],              # Deep Cave creatures
     11: [XotilWarrior, XotilAbomination, XotilHighPriest],  # Ziggurat creatures
     12: [AshGolem, ObsidianGolem],         # Ember creatures
     13: [AshGhoul, AshWight],             # Columbarium creatures
-    14: [SkeletonSoldier, WraithLeader],  # Catacomb creatures
-    15: [FleshGolem, Polyp],              # Carrion creatures
+    14: [Skeleton, Necromancer],  # Catacomb creatures
+    15: [FleshAmalgam, Polyp],              # Carrion creatures
     16: [Parasite, BloodCrawler],         # Worldeater’s Gut creatures
-    17: [Liche, DeathKnight],             # Necropolis creatures
-    18: [Archdemon, Demon],               # Underworld creatures
-    19: [NewGodServant, MistBeast],       # Ancient City creatures
-    20: [OldGodCultist, EldritchMinion],  # Temple of the Old One creatures
+    17: [Lich, DeathKnight],             # Necropolis creatures
+    18: [TricksterImp, DeceitArchdemon], # Underworld creatures
+    19: [AncientServant, Apparition],       # Ancient City creatures
+    20: [Cultist, Shambler],  # Temple of the Old One creatures
     21: [VoidBeast],                      # Cosmic Void creatures
-    22: [CosmicDragon],                   # Heart of the World (Final Boss)
+    22: [AbyssDragon],                   # Heart of the World (Final Boss)
 }
 
 
