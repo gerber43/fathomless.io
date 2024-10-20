@@ -64,7 +64,7 @@ class Spider(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Spider", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, (weapon, None, None, None, None, None, None, None, None, None), (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [], basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+        super().__init__("Spider", "26", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, (weapon, None, None, None, None, None, None, None, None, None), (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [], basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
 # cave
 class Bat(Creature):
@@ -74,7 +74,7 @@ class Bat(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Bat", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Bat", "27", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
@@ -87,7 +87,7 @@ class Fishman(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Deep One", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Deep One", "28", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
@@ -113,7 +113,7 @@ class GiantCrab(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Bloodclaw", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Bloodclaw", "10", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
@@ -127,7 +127,7 @@ class Pirate(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Pirate", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Pirate", "29", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
@@ -166,7 +166,7 @@ class DrownedPirate(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Drowned Pirate", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Drowned Pirate", "30", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
@@ -180,7 +180,7 @@ class DrownedCaptain(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Drowned Captain", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Drowned Captain", "31", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
@@ -193,7 +193,7 @@ class GoblinMiner(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Goblin Miner", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Goblin Miner", "32", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
@@ -219,7 +219,7 @@ class RockWorm(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Tunneler", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Tunneler", "33", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
