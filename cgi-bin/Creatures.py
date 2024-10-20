@@ -907,7 +907,7 @@ class Parasite(Creature):
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
 # Worldeater’s Gut
-class Bloodcrawler(Creature):
+class BloodCrawler(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
