@@ -170,9 +170,12 @@ def process_attack(attacker, target, attack_method = None):
 
     #check did the creature dead
     if target.hp <= 0:
-        game_map[target.pos[0]][target.pos[1]].remove(target)
-        return "target killed"
-        #replace with actual death target
+        if target.name == Player:
+            return "game over"
+        else:
+            game_map[target.pos[0]][target.pos[1]].remove(target)
+            return "target killed"
+            #replace with actual death target
     return "target hit"
     
     
