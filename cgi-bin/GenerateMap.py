@@ -167,13 +167,15 @@ def fill_empty_spaces(grid):
                 grid[y][x].append(EmptySpace((y, x)))
 def place_staircase(grid, traversable_path,depth):
     # Randomly select a position from the traversable path
-    staircase_position = random.choice(list(traversable_path))
-    # Get the x, y position for the staircase
-    x, y = staircase_position
-    # Append the staircase to the space without removing the terrain
-    stairs = Stairs((y, x))
-    stairs.hp = depth
-    grid[y][x].append(stairs)
+    num_staircases = random.randint(1, 3)
+    for staircase in range(num_staircases)
+        staircase_position = random.choice(list(traversable_path))
+        # Get the x, y position for the staircase
+        x, y = staircase_position
+        # Append the staircase to the space without removing the terrain
+        stairs = Stairs((y, x))
+        stairs.hp = depth
+        grid[y][x].append(stairs)
 
 
 # Carve a guaranteed path between sides of the map
