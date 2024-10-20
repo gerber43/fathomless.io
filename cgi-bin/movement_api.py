@@ -73,7 +73,17 @@ def update_Creature_position(game_map, player_pos):
             Creature = get_object_by_class(game_map[x][y],"Creature")
             manhattan = abs(player_pos[0] - x) + abs(player_pos[1] - y)
             check = 3
-            
+            attack_range = 1
+
+            # if player is in the attacking range of the creature, it will attack player instead of move
+            if manhattan < attack_range and Creature.name != "player":
+                attack_message = (Creature, get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Creature"))
+                if attack_message == "game over":
+                    continue    # Todo, end the game when the message is game over
+            else:
+                    continue
+
+            # if the player is in the tracking range of the creature, it will start to track the player
             if Creature != None and manhattan < check and Creature.name != "Player":  # if Creature exist and not player
                 
                 # Check if this Creature has already moved in this turn
