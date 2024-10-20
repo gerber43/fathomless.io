@@ -8,6 +8,24 @@ basicDamageResistances = (0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
 #Bleed, Stun, Burning, Suffocation, Frozen, Blindness, Rot, Manadrain, Nonexistence, Poison, Fear, Confusion, Mindbreak, Bloodsiphon, Midas Curse, Death
 basicStatusResistances = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
+class Player(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Player", "0", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, (weapon, None, None, None, None, None, None, None, None, None), (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [], basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+class Boss(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Boss", "11", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, (weapon, None, None, None, None, None, None, None, None, None), (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [], basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
 # cave
 class Goblin(Creature):
     def __init__(self, pos):
@@ -17,23 +35,26 @@ class Goblin(Creature):
         else:
             weapon = WoodenClub((-1, -1), 1)
         super().__init__("Goblin", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, (weapon, None, None, None, None, None, None, None, None, None), (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [], basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
-        
-class Player(Creature):
+
+#cave
+class Bandit(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Player", "0", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, (weapon, None, None, None, None, None, None, None, None, None), (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [], basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
-class Boss(Creature):
+        super().__init__("Bandit", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, (weapon, None, None, None, None, None, None, None, None, None), (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [], basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+#cave
+class Ogre(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Boss", "11", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, (weapon, None, None, None, None, None, None, None, None, None), (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [], basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+        super().__init__("Ogre", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, (weapon, None, None, None, None, None, None, None, None, None), (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [], basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
 # cave
 class Spider(Creature):
@@ -66,23 +87,37 @@ class Fishman(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Fishman", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Deep One", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
 # cove
-class UndeadSailor(Creature):
+class FishmanShaman(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("UndeadSailor", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Deep One Shaman", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# cove
+class GiantCrab(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Bloodclaw", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
 
 # cove
 class Pirate(Creature):
@@ -96,20 +131,61 @@ class Pirate(Creature):
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
-# boss in cove 2
-class Captain(Creature):
+
+# cove
+class Drowned(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Captain", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Drowned", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
-# Mine
+# cove
+class DrownedSailor(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Drowned Sailor", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# cove
+class DrownedPirate(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Drowned Pirate", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+
+# boss in cove 2
+class DrownedCaptain(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Drowned Captain", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Mine and Corruptite Mine
 class GoblinMiner(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
@@ -117,12 +193,25 @@ class GoblinMiner(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("GoblinMiner", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Goblin Miner", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
-# Mine
+# Mine and Corruptite Mine
+class HobgoblinMiner(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Hobgoblin Miner", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Mine and Corruptite Mine
 class RockWorm(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
@@ -130,21 +219,60 @@ class RockWorm(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("RockWorm", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Tunneler", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
-
-# boss in Corruptite Mine 2
-class CorruptedBehemoth(Creature):
+# Mine and Corruptite Mine
+class Troll(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("CorruptedBehemoth", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Troll", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Corruptite Mine
+class CorruptWorm(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Corrupted Tunneler", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Corruptite Mine
+class CorruptTroll(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Corrupted Troll", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+
+# boss in Corruptite Mine 2
+class CorruptBehemoth(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Corrupted Behemoth", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
@@ -157,49 +285,143 @@ class GiantSlime(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("GiantSlime", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Giant Slime", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
 # sewer
-class SewerGator(Creature):
+class Frogman(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("SewerGator", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Frogman", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# sewer
+#giant lobster-type creature that eats trash
+class TrashLobster(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Refuse Ravager", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# sewer
+class SewerCroc(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Sewer Crocodile", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# sewer
+class Gorefish(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Gorefish", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# sewer
+class Psyfish(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Psyfish", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# sewer
+class MasterThief(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Master Thief", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+
+# Shantytown
+class DiseasedScavenger(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Diseased Scavenger", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
 # Shantytown
-class DiseasedDenizen(Creature):
+class BloatedGuard(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("DiseasedDenizen", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Bloated Guard", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
 # Shantytown
-class BloatedScavenger(Creature):
+class Stinkfly(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("BloatedScavenger", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Stinkfly", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Shantytown 2 boss
+class Rotmother(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Rotmother", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
 
 # magma Core
 class MagmaGolem(Creature):
@@ -209,10 +431,24 @@ class MagmaGolem(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("MagmaGolem", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Magma Golem", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# magma core and embers
+class FireSprite(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Fire Sprite", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
 
 # magma core
 class FireElemental(Creature):
@@ -222,7 +458,7 @@ class FireElemental(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("FireElemental", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Fire Elemental", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
@@ -254,17 +490,59 @@ class DarkDwarf(Creature):
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
 # Deep Cave
-class DarkDwarf(Creature):
+#giant blind salamander, mild magic abilities
+class Uln(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("DarkDwarf", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Uln", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Deep Cave
+#giant blind salamander, strong magic abilities
+class ElderUln(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Elder Uln", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Deep Cave
+class CaveToad(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Cave Toad", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Deep Cave
+class CaveGiant(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Cave Giant", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
 
 # Ziggurat
 class XotilWarrior(Creature):
@@ -274,7 +552,7 @@ class XotilWarrior(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("XotilWarrior", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Xotil Warrior", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
@@ -287,12 +565,39 @@ class XotilAbomination(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("XotilAbomination", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Xotil Abomination", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
-# Ziggurat
+ #Ziggurat
+class XotilPriest(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Xotil Priest", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+#Ziggurat
+#A ferocious serpent made out of obsidian and blood
+class DarkSerpent(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Dark Serpent", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Boss of Ziggurat 3
 class XotilHighPriest(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
@@ -300,12 +605,52 @@ class XotilHighPriest(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("XotilHighPriest", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Xotil High Priest", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
-# Ember and Columbarium
+# Undercity
+class DarkElfSorceress(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Dark Elf Sorceress", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Undercity
+class Drider(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Drider", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Undercity
+class DarkElfQueen(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Dark Elf Queen", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+
+# Embers and Columbarium
 class AshGolem(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
@@ -313,12 +658,12 @@ class AshGolem(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("AshGolem", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Ash Golem", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
-# Ember
+# Embers
 class ObsidianGolem(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
@@ -326,10 +671,24 @@ class ObsidianGolem(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("ObsidianGolem", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Obsidian Golem", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Boss of Embers
+class AshColossus(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Obsidian Golem", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
 
 # Columbarium
 class AshGhoul(Creature):
@@ -357,41 +716,137 @@ class AshWight(Creature):
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
-# Catacomb
-class SkeletonSoldier(Creature):
+ #Columbarium and Catacomb and Necropolis
+class Ghost(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("SkeletonSoldier", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("AshGhoul", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+#Columbarium and Catacomb
+class Wraith(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Wraith", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+
+
+# Catacomb and Necropolis
+class Skeleton(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Skeleton", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Catacomb and Necropolis
+class Zombie(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Zombie", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+
+# Catacomb and Necropolis
+class Ghoul(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Ghoul", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Catacomb and Necropolis
+class Ghast(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Ghast", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Catacomb and Necropolis
+class Wight(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Wight", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+
+# Catacomb
+class Necromancer(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Necromancer", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
 # Catacomb
-class WraithLeader(Creature):
+class Vampire(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("WraithLeader", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Vampire", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
 
 # Carrion
-class FleshGolem(Creature):
+class FleshAmalgam(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("FleshGolem", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Flesh Amalgam", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
@@ -409,6 +864,35 @@ class Polyp(Creature):
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
+# Carrion
+#seemingly human looking but without a soul or much higher intelligence
+class Blank(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Blank", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Carrion
+#an unfinished blank, no skin and bleeds everywhere
+class Unfinished(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Unfinished", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+
 # Worldeater’s Gut
 class Parasite(Creature):
     def __init__(self, pos):
@@ -423,27 +907,53 @@ class Parasite(Creature):
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
 # Worldeater’s Gut
-class BloodCrawler(Creature):
+class Bloodcrawler(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("BloodCrawler", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Bloodcrawler", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Worldeater’s Gut
+class Devourer(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Devourer", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Boss of Worldeater’s Gut 2
+class WorldeaterHeart(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Worldeater's Heart", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
 # Necropolis
-class Liche(Creature):
+class Lich(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Liche", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Lich", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
@@ -456,25 +966,39 @@ class DeathKnight(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("DeathKnight", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Death Knight", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
-# Underworld
-class Archdemon(Creature):
+# Necropolis
+class WraithLord(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Archdemon", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Wraith Lord", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
-# UnderWorld
+
+# Underworld
+class Imp(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Imp", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Underworld
 class Demon(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
@@ -487,57 +1011,432 @@ class Demon(Creature):
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
-# Ancient City
-class NewGodServant(Creature):
+# Underworld
+class Hellhound(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("NewGodServant", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Hellhound", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Underworld
+class Hellbat(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Hellbat", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Underworld 1
+class TricksterImp(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Trickster Imp", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Underworld 1
+class ConfusedSoul(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Confused Soul", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+
+# Underworld 1
+class DeceitDemon(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Demon of Deceit", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Boss of Underworld 1
+class DeceitArchdemon(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Archdemon of Deceit", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Underworld 2
+class AngryImp(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Angry Imp", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Underworld 2
+class RageDemon(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Demon of Rage", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Boss of Underworld 2
+class RageArchdemon(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Archdemon of Rage", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Underworld 3
+class CovetousImp(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Covetous Imp", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Underworld 3
+class CharitableSoul(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Charitable Soul", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Underworld 3
+class GreedDemon(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Demon of Greed", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Boss of Underworld 3
+class GreedArchdemon(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Archdemon of Greed", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Underworld 4
+class SadImp(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Sad Imp", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Underworld 4
+class LostSoul(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Lost Soul", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Underworld 4
+class DepressedDemon(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Demon of Depression", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Boss of Underworld 4
+class HopelessArchdemon(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Archdemon of Hopelessness", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Underworld 5
+class PeacefulSoul(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Peaceful Soul", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Underworld 5
+class FateDemon(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Demon of Fate", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+
+# Underworld 5
+class FinalDemon(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Demon of Finality", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Boss of Underworld 5
+class DoomArchdemon(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Archdemon of Doom", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
 # Ancient City
-class MistBeast(Creature):
+#Strange constructs of stone and clockwork that servet the new gods
+class AncientServant(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("MistBeast", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Ancient Servant", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
-# Temple of the old one
-class OldGodCultist(Creature):
+# Ancient City
+class Apparition(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("OldGodCultist", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Apparition", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
-# Temple of the old one
-class EldritchMinion(Creature):
+# Ancient City
+class Memory(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("EldritchMinion", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Memory of the Past", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+#The bosses of the Ancient City, the new gods, will be the same gods that you can choose to worship throughout the game so as I come up with gods to worship I will also add them here. The one you are currently worshipping cannot spawn as a boss.
+
+# Temple of the old ones
+class Cultist(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Cultist", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Temple of the old ones
+class Shambler(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Shambler", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Temple of the old ones
+class WrithingOne(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Writhing One", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Boss of Temple of the old ones
+#Man builds up, he builds down
+class DeepLord(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Lord of the Deep", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Boss of Temple of the old ones
+#All descend from her
+class Mother(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("The Mother", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Boss of Temple of the old ones
+# He will be the only one left in the end
+class Destroyer(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("The Destroyer", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Boss of Temple of the old ones
+#He remembers all that has been forgotten
+class Scholar(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("The Scholar", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Boss of Temple of the old ones
+#You serve her whether you know it or not
+class Schemer(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("The Schemer", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
 
 # Cosmic Void
 class VoidBeast(Creature):
@@ -547,20 +1446,59 @@ class VoidBeast(Creature):
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("VoidBeast", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Void Beast", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
 
-# Heart of the World , final boss
-class CosmicDragon(Creature):
+# Cosmic Void
+class StarEater(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), 1)
         else:
             weapon = WoodenClub((-1, -1), 1)
-        super().__init__("CosmicDragon", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+        super().__init__("Star Eater", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Cosmic Void
+class Annihilator(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Void Beast", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Boss of Cosmic Void
+class GreatDreamer(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Great Dreamer", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
+
+# Heart of the World , final boss
+class AbyssDragon(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Abyssal Dragon", "22", pos, (), 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, (), 0, ((Gold((-1, -1), 3), 0.7)))
