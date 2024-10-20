@@ -62,14 +62,17 @@ class Creature(GameObject):
         self.drop_table = drop_table
 
     def move(self, grid, new_pos):
+        
         #for item in self.equipment:
             #item.on_move(self, new_pos)
         grid[new_pos[0]][new_pos[1]].append(self)
         grid[self.pos[0]][self.pos[1]].remove(self)
         self.pos = new_pos
-        for game_object in grid[new_pos[0]][new_pos[1]]:
-            if isinstance(game_object, Terrain):
-                game_object.on_step(grid, self)
+        
+        #for game_object in grid[new_pos[0]][new_pos[1]]:
+            
+            #if isinstance(game_object, Terrain):
+                #game_object.on_step(grid, self)
 
     def gain_status_effect(self, grid, type_id, stacks, infinite):
         if stacks == 0:
