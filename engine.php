@@ -178,11 +178,8 @@
             transition:.75s;
             transform:scale(.9);
             }
-            .manhattan {
-            background: purple;
-            opacity:.3;
-            }
-            .tile[data-manhattan="1"]:hover .Light{
+
+            .tile[data-manhattan="1"]:hover .Light, .manhattan{
             background: purple;
             opacity:.3;
             cursor:pointer;
@@ -393,10 +390,15 @@ inspecting = false;
             }
             function clickTile(tileId) {
                 var coordinates = tileId.split(",");
-                if (document.getElementById(tileId).dataset.manhattan == 1) {
+                if (document.getElementById(tileId).dataset.manhattan == 1 && !attacking) {
                     var index = Math.atan2(coordinates[1] - Math.floor(viewDiameter/2),coordinates[0] - Math.floor(viewDiameter/2))*2/Math.PI
                     directionHandler(arrowKeys[(index != -1)?index:3])
                 }
+                if (attacking) {
+                    sendAttack(tileId);
+                    toggleAttack();
+                }
+                
             }
             function displayManhattan(distance) {
                 document.getElementById('canvas').querySelectorAll('.manhattan').forEach((object) => {object.classList.remove("manhattan")});
@@ -460,11 +462,8 @@ inspecting = false;
                     sfx[index].play();
                 }
             }
-            function sendDirection(direction = "") {
-                var xmlhttp = new XMLHttpRequest();
-                xmlhttp.onreadystatechange = function () {
-                    if (this.readyState == 4 && this.status == 200) {
-                        var response = JSON.parse(this.responseText);
+            function receiveMap(response) {
+                 response = JSON.parse(response);
                         if (response['map_subset'].length != viewDiameter) {
                             viewDiameter = response['map_subset'].length;
                             initializeMap();
@@ -476,7 +475,9 @@ inspecting = false;
                         player.style.transform = "";
 
                         createMessage("dialogue",response["message"],1);
-                        
+                        if (response['message'] == "target hit") {
+                            playSound(7);
+                        }
                         disableMovement = false;
                         console.log(`Time taken: `+(performance.now() - start)+` milliseconds`);
                         displayManhattan(0);
@@ -486,6 +487,14 @@ inspecting = false;
                         if (document.getElementById("cover")){
                             document.getElementById("cover").remove()
                         }
+            }
+            function sendDirection(direction = "") {
+                                    start = performance.now();
+
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        receiveMap(this.responseText)
                     }
                   }
                   var queryString = (direction !== "")?"="+encodeURIComponent(direction):"";
@@ -497,20 +506,48 @@ inspecting = false;
                     var player = document.getElementById(Math.floor(viewDiameter/2)+","+Math.floor(viewDiameter/2)).querySelector(".Creature");
                     var offset = player.getBoundingClientRect().width;
                     player.style.transition = ".2s";
+                    player.style.transitionTimingFunction= "ease-in-out";
                     player.style.zIndex = 100000
                     player.style.transform = "translate("+(offset*Math.cos((arrowKeys.indexOf(keycode)%4)*Math.PI/2))+"px, "+(offset*Math.sin((arrowKeys.indexOf(keycode)%4)*Math.PI/2))+"px)";
                     document.body.appendChild(Object.assign(document.createElement('div'),{id:("cover")}));
-                    start = performance.now();
                     sendDirection((arrowKeys.indexOf(keycode)%4)*90);
                     disableMovement = true;
                 } 
             }
+            var attacking = 0;
+            function toggleAttack(){
+                attacking = !attacking;
+                var player = currentMap[Math.floor(viewDiameter/2)][Math.floor(viewDiameter/2)]["Creature"];
+                if (attacking) {
+                    displayManhattan(player.equipment[0].range)
+                } else {
+                    displayManhattan(0)
+                }
+                
+                console.log(player.equipment[0].range)
+            }
+            function sendAttack(tile) {
+                                    start = performance.now();
+
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                     receiveMap(this.responseText);
+                    }
+                  }
+                  xmlhttp.open("GET", "https://fathomless.io/sessionValidate/?sendAttack="+encodeURIComponent(tile), true);
+                  xmlhttp.send();
+            }
+            
             document.addEventListener('keyup', (e) => {
                 if (arrowKeys.indexOf(e.code) > -1) {
                     directionHandler(e.code)
                 }
                 if (e.code === "KeyE")  {
                     toggleInventory();
+                }
+                if (e.code === "KeyF")  {
+                    toggleAttack();
                 }
                 if (e.code === "Escape" && !inspecting)  {
                     toggleSettings();
