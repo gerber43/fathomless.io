@@ -12,7 +12,7 @@ from Creatures import Goblin
 from GameObject import Creature, CreatureSegment, Gold
 from Items import IronDagger, WoodenClub
 
-def generateMap(algorithm_index,depth):
+def generateMap(algorithm_index,depth,player = None):
     depths = depth.split(",")
     multipier = 1
     if (depths[1] == "medium"):
@@ -24,5 +24,5 @@ def generateMap(algorithm_index,depth):
         from GenerateMap import generateMap
     if algorithm_index == 1:
         from PathCarvedMap import generateMap
-    final_grid = generateMap(10 + 2*int(depths[0]), 10 + 2*int(depths[0]) ,depth, multipier*int(depths[0]))
+    final_grid = generateMap(10 + 2*int(depths[0]), 10 + 2*int(depths[0]) ,depth, multipier*int(depths[0]),player)
     return final_grid
