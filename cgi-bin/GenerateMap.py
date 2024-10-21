@@ -148,13 +148,17 @@ def place_creatures(grid, num_creatures, depth):
                     grid[y][x].append(creature)
                     break
 
-def place_player(grid):
+def place_player(grid,player):
     while True:
         x = random.randint(0, len(grid) - 1)
         y = random.randint(0, len(grid[0]) - 1)
         # Check if the current cell contains EmptySpace and no creature yet
         if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
-            grid[y][x].append(Player((y, x)))
+            if player == None:
+                grid[y][x].append(Player((y, x)))
+            else:
+                player.pos = [y,x]
+                grid[y][x].append(player)
             break
 
 def fill_empty_spaces(grid):
@@ -166,9 +170,9 @@ def fill_empty_spaces(grid):
             if not grid[y][x]:
                 grid[y][x].append(EmptySpace((y, x)))
 def place_staircase(grid, traversable_path,depth):
-    # Randomly select a position from the traversable path
-    num_staircases = random.randint(1, 3)
-    for staircase in range(num_staircases)
+    
+    for i in range(random.randint(1, 3)):
+        # Randomly select a position from the traversable path
         staircase_position = random.choice(list(traversable_path))
         # Get the x, y position for the staircase
         x, y = staircase_position
@@ -320,7 +324,7 @@ texture_mapping = {
     'Pit': 18,
     'Wall': 6,  
 }
-def generateMap(width, height, depth, num_creatures):
+def generateMap(width, height, depth, num_creatures, player):
     # Generate terrain grid with probabilities
     terrain_probabilities = {
     'walls': 0.2,
@@ -341,7 +345,7 @@ def generateMap(width, height, depth, num_creatures):
     
     place_staircase(final_grid, final_traversable_grid,depth)
     
-    place_player(final_grid)
+    place_player(final_grid,player)
 
     return final_grid
     #json_map = convert_grid_to_json(final_grid)
