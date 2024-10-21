@@ -64,7 +64,7 @@ def process_Creature_movement(position, direction, game_map):
     return (new_x, new_y), message
 
 # Function to update all Creature positions
-def update_Creature_position(game_map, player_pos):
+def update_Creature_position(game_map, player_pos,player_pos_old):
     
     moved_Creatures = set()  # Track Creatures that have already moved
     
@@ -74,28 +74,21 @@ def update_Creature_position(game_map, player_pos):
             manhattan = abs(player_pos[0] - x) + abs(player_pos[1] - y)
             check = 3
             attack_range = 1
-
-            # if player is in the attacking range of the creature, it will attack player instead of move
-            if manhattan < attack_range and Creature.name != "player":
-                attack_message = (Creature, get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Creature"))
+            if Creature and Creature.name != "Player" and manhattan <= attack_range :
+                attack_message = process_attack(Creature,(get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Creature")))
                 if attack_message == "game over":
-                    continue    # Todo, end the game when the message is game over
-            else:
-                    continue
-
-            # if the player is in the tracking range of the creature, it will start to track the player
-            if Creature != None and manhattan < check and Creature.name != "Player":  # if Creature exist and not player
-                
+                    return "game over"
+                    # Todo, end the game when the message is game over
+                continue
+            
+            if Creature and manhattan <= check and Creature.name != "Player":  # if Creature exist and not player
                 # Check if this Creature has already moved in this turn
                 if (x, y) in moved_Creatures:
                     continue
-                
                 speed = 1
-                path = a_star((x, y), player_pos, game_map)
-
+                path = a_star((x, y), player_pos_old, game_map)
                 if not path or len(path) < 2:
                     continue
-                
                 current_pos = (x, y)
                 for move_num in range(min(speed, len(path) - 1)):
                     next_pos = path[move_num + 1]
@@ -180,7 +173,7 @@ def process_attack(attacker, target, attack_method = None):
 
     #check did the creature dead
     if target.hp <= 0:
-        if target.name == Player:
+        if target.name == "Player":
             return "game over"
         else:
             game_map[target.pos[0]][target.pos[1]].remove(target)
@@ -204,11 +197,12 @@ if (HTTP_FIELDS.getvalue('uuid')):
           game_map = load_map(file_path)
       
     # Process player's movement
+      
       player_pos = find_player_position(game_map)
       if (player_pos != None):
           if (direction != None):
-              new_player_pos, message = process_Creature_movement(player_pos, direction, game_map)
 
+              new_player_pos, message = process_Creature_movement(player_pos, direction, game_map)
           elif (attack != None):
               attack  = [int(coordinate) for coordinate in attack]
               field_of_view = 11
@@ -227,17 +221,17 @@ if (HTTP_FIELDS.getvalue('uuid')):
     
       
       if (message == "Creature has moved"):
-          update_Creature_position(game_map, player_pos)
+          update_Creature_position(game_map, new_player_pos,player_pos)
           if get_object_by_class(game_map[new_player_pos[0]][new_player_pos[1]],"Decor") and get_object_by_class(game_map[new_player_pos[0]][new_player_pos[1]],"Decor").name == "Stairs":
               stair = get_object_by_class(game_map[new_player_pos[0]][new_player_pos[1]],"Decor")
               player = get_object_by_class(game_map[new_player_pos[0]][new_player_pos[1]],"Creature")
               
               depth = str(int(stair.hp.split(",")[0]) + 1)+","+stair.hp.split(",")[1]
-              game_map = generateMap(0, depth)
+              game_map = generateMap(0, depth,player)
     
               message = "New Map: Level "+str(depth)
               new_player_pos = find_player_position(game_map)
-              player.pos = [new_player_pos[1],new_player_pos[0]]
+
           
               
           player_pos = new_player_pos
