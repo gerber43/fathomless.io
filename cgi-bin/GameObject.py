@@ -295,6 +295,8 @@ class Decor(GameObject):
         self.warning = warning
     def on_interact(self, grid, creature):
         pass
+    def on_destroy(self, grid):
+        grid[self.pos[0]][self.pos[1]].remove(self)
     def passive_behavior(self, grid):
         pass
 
@@ -362,11 +364,13 @@ class LightSourceItem(Equippable):
         remove_light(grid, self.lit_tiles)
         self.lit_tiles = spread_light(grid, equipped_creature.pos, self.level, [])
 
-class StaticLightSource(Decor):
-    def __init__(self, name, textureIndex, pos, hp, resistances, passable, warn, warning, intensity, lit):
+class LightDecor(Decor):
+    def __init__(self, grid, name, textureIndex, pos, hp, resistances, passable, warn, warning, intensity, lit):
         super().__init__(name, textureIndex, pos, hp, resistances, passable, False, warn, warning)
         self.intensity = intensity
         self.lit = lit
+        if lit:
+           spread_light(grid, pos, intensity, [])
     def on_interact(self, grid, creature):
         if self.lit:
             self.lit = False
@@ -376,4 +380,18 @@ class StaticLightSource(Decor):
             spread_light(grid, self.pos, self.intensity, [])
     @abstractmethod
     def passive_behavior(self, grid):
+        pass
+
+class LightTerrain(Terrain):
+    def __init__(self, grid, name, textureIndex, pos, hp, resistances, passable, warn, warning, intensity, lit):
+        super().__init__(name, textureIndex, pos, hp, resistances, passable, False, warn, warning)
+        self.intensity = intensity
+        self.lit = lit
+        if lit:
+           spread_light(grid, pos, intensity, [])
+    @abstractmethod
+    def on_creation(self, grid):
+        pass
+    @abstractmethod
+    def on_step(self, grid, creature):
         pass
