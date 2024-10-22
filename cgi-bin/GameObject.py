@@ -1,12 +1,12 @@
 #!/usr/bin/python3
+import math
 import sys
 import cgi
 from abc import abstractmethod
 import random
 from operator import truediv
-from SubSystem import StatusEffect, lookup_crit_status_effect, lookup_skill_id, lookup_equipment_slot, manhattan, \
-    lookup_damage_type_id
-
+from SubSystem import StatusEffect, lookup_crit_status_effect, lookup_skill_id, lookup_equipment_slot, manhattan, lookup_damage_type_id
+from Decor import Corpse
 
 class GameObject:
     def __init__(self, name, textureIndex, pos):
@@ -39,12 +39,16 @@ class Gold(Item):
         super().__init__("Gold", '7', pos, amount, 9999, 0, 1)
 
 class Creature(GameObject):
-    def __init__(self, name, textureIndex, pos, segments, hp, mp, speed, status_effects, fitness, cunning, magic, dodge, crit_chance, equipment, skills, abilities, damage_resistances, status_resistances, inventory, inventory_size, drop_table):
+    def __init__(self, name, textureIndex, pos, segments, hp, mp, speed, status_effects, fitness, cunning, magic, dodge,
+                 crit_chance, equipment, skills, abilities, damage_resistances, status_resistances, inventory,
+                 inventory_size, drop_table, xp, level):
         super().__init__(name, textureIndex, pos)
         #list of creature segments, should be empty for single-tile creatures
         self.segments = segments
         self.hp = hp
         self.mp = mp
+        self.max_hp = hp
+        self.max_mp = mp
         self.speed = speed
         self.status_effects = status_effects
         self.fitness = fitness
@@ -60,11 +64,14 @@ class Creature(GameObject):
         self.inventory = inventory
         self.inventory_size = inventory_size
         self.drop_table = drop_table
+        self.xp = xp
+        self.level = level
 
     def move(self, grid, new_pos):
         
         #for item in self.equipment:
-            #item.on_move(self, new_pos)
+            #if item is not None:
+                #item.on_move(self, new_pos)
         grid[new_pos[0]][new_pos[1]].append(self)
         grid[self.pos[0]][self.pos[1]].remove(self)
         self.pos = new_pos
@@ -93,15 +100,21 @@ class Creature(GameObject):
         #TODO: Implement ammo checking and ammo decrement
         if isinstance(target, CreatureSegment):
             target = target.creature
-        hit_chance = self.skills[lookup_skill_id(weapon.type)] - target.dodge
+        if isinstance(weapon, Weapon):
+            hit_diff = self.skills[lookup_skill_id(weapon.type)] - target.dodge
+        else:
+            hit_diff = weapon - target.dodge
+        hit_chance = 1.0 / (1.0 + (math.e ** (float(-hit_diff) / 4.0)))
         hit_roll = random.random
         if hit_roll > hit_chance:
             return False
         else:
             for item in self.equipment:
-                item.on_attack(self, target)
+                if item is not None:
+                    item.on_attack(self, target)
             for item in target.equipment:
-                item.on_attacked(target, self)
+                if item is not None:
+                    item.on_attacked(target, self)
             return True
 
     def crit_check(self, grid):
@@ -138,11 +151,11 @@ class Creature(GameObject):
             self.basic_attack_damage(grid, self.equipment.left_hand, target, self.crit_check(grid))
 
     def pickup_item(self, grid, target):
-        to_append = False
+        to_append = True
         for item in self.inventory:
-            if target == item:
+            if target == item and item.amount + target.amount <= target.max_stack:
                 item.amount += target.amount
-                to_append = True
+                to_append = False
         if to_append:
             self.inventory.append(target)
         grid[target.pos[0]][target.pos[1]].remove(target)
@@ -153,10 +166,34 @@ class Creature(GameObject):
         grid[target.pos[0]][target.pos[1]].append(target)
         self.inventory.remove(target)
 
+    def die(self, grid, player):
+        if self == player:
+            return
+        grid[self.pos[0]][self.pos[1]].append(Corpse(self.pos, self.hp, self.damage_resistances))
+        for entry in self.drop_table:
+            roll = random.random
+            if entry[1] >= roll:
+                grid[self.pos[0]][self.pos[1]].append(entry[0])
+        player.xp += self.xp
+        player.check_level(grid)
+        grid[self.pos[0]][self.pos[1]].remove(self)
+
 class Player(Creature):
     def __init__(self, name, textureIndex, pos, fitness, cunning, magic, abilities, damage_resistances, status_resistances):
-        #TODO: figure out dodge and crit chance algorithms from cunning
-        super().__init__(name, textureIndex, pos, (), fitness*10, magic*10, 1, [], fitness, cunning, magic, 0, 0, (None, None, None, None, None, None, None, None, None, None), (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), abilities, damage_resistances, status_resistances, [], 20, None)
+        super().__init__(name, textureIndex, pos, (), fitness * 10, magic * 10, 1, [], fitness, cunning, magic, cunning*2, (float(cunning) ** (2.0/3.0))/10.0,
+                         (None, None, None, None, None, None, None, None, None, None),
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), abilities, damage_resistances,
+                         status_resistances, [], 20, None, 0, 1)
+    def check_level(self, grid):
+        if self.xp >= 100*self.level:
+            #TODO: display levelup screen, where player chooses to place their stat point in fitness, cunning, or magic and allocates their 5 (6 in case of human) skill points among their skills
+            self.xp -= 100*self.level
+            self.level += 1
+            self.max_hp = self.fitness*10
+            self.max_mp = self.magic*10
+            self.dodge = self.cunning*2
+            self.crit_chance = (float(self.cunning) ** (2.0/3.0))/10.0
+
 
 #support multi-tile creatures
 class CreatureSegment(GameObject):

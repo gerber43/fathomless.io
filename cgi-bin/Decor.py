@@ -7,6 +7,11 @@ from Biomes import TempBiome
 from Items import Pebble, Ore, Corruptite
 from Creatures import Ghost
 
+class Corpse(Decor):
+    def __init__(self, pos, hp, resistances):
+        super().__init__("Corpse", "70", pos, hp, resistances, True, False, "NO", "")
+
+
 class Stairs(Decor):
     def __init__(self, pos):
         super().__init__("Stairs", "23", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "Yes", "Go Down?")
