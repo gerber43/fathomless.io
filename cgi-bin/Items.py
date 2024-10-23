@@ -18,7 +18,8 @@ class Corruptite(Consumable):
 
 class IronDagger(Weapon):
     def __init__(self, pos, level):
-        super().__init__("Iron Dagger", "17", pos, level, 5, ("Right Hand", "Left Hand"), "One-Handed Blade", 1, 3, [(lookup_damage_type_id("Piercing"), 3, 1)], [])
+        super().__init__("Iron Dagger", "17", pos, level, 5, 1, "One-Handed Blade", 1, 3,
+                         [(lookup_damage_type_id("Piercing"), 3, 1)], [], ("Right Hand", "Left Hand"))
     def on_equip(self, grid, equipped_creature):
         pass
     def on_unequip(self, grid, equipped_creature):
@@ -26,7 +27,8 @@ class IronDagger(Weapon):
 
 class WoodenClub(Weapon):
     def __init__(self, pos, level):
-        super().__init__("Wooden Club", "17", pos, level, 1, ("Right Hand", "Left Hand"), "One-Handed Mace", 1, 1.5, [(lookup_damage_type_id("Blunt"), 5, 0)], [])
+        super().__init__("Wooden Club", "17", pos, level, 1, 1, "One-Handed Mace", 1, 1.5,
+                         [(lookup_damage_type_id("Blunt"), 5, 0)], [], ("Right Hand", "Left Hand"))
     def on_equip(self, grid, equipped_creature):
         pass
     def on_unequip(self, grid, equipped_creature):

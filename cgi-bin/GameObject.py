@@ -100,6 +100,8 @@ class Creature(GameObject):
         #TODO: Implement ammo checking and ammo decrement
         if isinstance(target, CreatureSegment):
             target = target.creature
+        if not isinstance(target, Creature):
+            return True
         if isinstance(weapon, Weapon):
             hit_diff = self.skills[lookup_skill_id(weapon.type)] - target.dodge
         else:
@@ -141,14 +143,12 @@ class Creature(GameObject):
             target.gain_status_effect(status.type_id, status.stacks, status.infinite)
     def basic_attack(self, grid, target):
         #TODO: apply dual wielding penalty if dual wielding
-        if isinstance(self.equipment.right_hand, Weapon):
-            if not self.basic_attack_hit_check(grid, self.equipment.right_hand, target):
-                return
-            self.basic_attack_damage(grid, self.equipment.right_hand, target, self.crit_check(grid))
-        if isinstance(self.equipment.left_hand, Weapon):
-            if not self.basic_attack_hit_check(grid, self.equipment.left_hand, target):
-                return
-            self.basic_attack_damage(grid, self.equipment.left_hand, target, self.crit_check(grid))
+        if isinstance(self.equipment[0], Weapon):
+            if self.basic_attack_hit_check(grid, self.equipment[0], target):
+                self.basic_attack_damage(grid, self.equipment[0], target, self.crit_check(grid))
+        if isinstance(self.equipment[1], Weapon):
+            if not self.basic_attack_hit_check(grid, self.equipment[1], target):
+                self.basic_attack_damage(grid, self.equipment[1], target, self.crit_check(grid))
 
     def pickup_item(self, grid, target):
         to_append = True
@@ -197,8 +197,9 @@ class Player(Creature):
 
 #support multi-tile creatures
 class CreatureSegment(GameObject):
-    def __init__(self, creature, textureIndex, pos):
+    def __init__(self, creature, textureIndex, pos, type):
         super().__init__(creature.name, textureIndex, pos)
+        self.type = type
         self.creature = creature
 
 class Consumable(Item):
@@ -212,8 +213,9 @@ class Consumable(Item):
         pass
 
 class Equippable(Item):
-    def __init__(self, name, textureIndex, pos, level, price, slots):
+    def __init__(self, name, textureIndex, pos, level, price, weight, slots):
         super().__init__(name, textureIndex, pos, 1, 1, level, price)
+        self.weight = weight
         self.slots = slots
         self.equipped = None
     def __eq__(self, other):
@@ -265,8 +267,8 @@ class Equippable(Item):
             return True
 
 class Weapon(Equippable):
-    def __init__(self, name, textureIndex, pos, level, price, slots, type, range, crit_mult, damages, statuses):
-        super().__init__(name, textureIndex, pos, level, price, slots)
+    def __init__(self, name, textureIndex, pos, level, price, weight, type, range, crit_mult, damages, statuses, slots):
+        super().__init__(name, textureIndex, pos, level, price, weight, slots)
         self.type = type
         self.range = range
         self.crit_mult = crit_mult
@@ -294,7 +296,7 @@ class Weapon(Equippable):
 #When a two-handed weapon is equipped in a hand slot, this is placed in the other hand slot
 class Unavailable(Equippable):
     def __init__(self, pos):
-        super().__init__("", "", pos, 0, 0, ("right_hand", "left_hand"))
+        super().__init__("", "", pos, 0, 0, 0, ("right_hand", "left_hand"))
     def on_equip(self, grid, equipped_creature):
         return super().on_equip(grid, equipped_creature)
     def on_unequip(self, grid, equipped_creature):
