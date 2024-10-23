@@ -73,8 +73,7 @@ def update_Creature_position(game_map, player_pos,player_pos_old):
             Creature = get_object_by_class(game_map[x][y],"Creature")
             manhattan = abs(player_pos[0] - x) + abs(player_pos[1] - y)
             check = 3
-            attack_range = 1
-            if Creature and Creature.name != "Player" and manhattan <= attack_range :
+            if Creature and Creature.name != "Player" and manhattan <= int((Creature.equipment[0]).range):
                 attack_message = process_attack(Creature,(get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Creature")))
                 if attack_message == "game over":
                     return "game over"
