@@ -1,12 +1,13 @@
 #!/usr/bin/python3
-import math
 import sys
 import cgi
+import math
 from abc import abstractmethod
 import random
 from operator import truediv
-from SubSystem import StatusEffect, lookup_crit_status_effect, lookup_skill_id, lookup_equipment_slot, manhattan, lookup_damage_type_id
-from Decor import Corpse
+from SubSystem import *
+
+
 
 class GameObject:
     def __init__(self, name, textureIndex, pos):
@@ -194,13 +195,13 @@ class Player(Creature):
             self.dodge = self.cunning*2
             self.crit_chance = (float(self.cunning) ** (2.0/3.0))/10.0
 
-
 #support multi-tile creatures
 class CreatureSegment(GameObject):
     def __init__(self, creature, textureIndex, pos, type):
         super().__init__(creature.name, textureIndex, pos)
         self.type = type
         self.creature = creature
+
 
 class Consumable(Item):
     def __init__(self, name, textureIndex, pos, amount, max_stack, level, price):
@@ -382,7 +383,7 @@ def remove_light(grid, touched_tiles):
                 game_object.level -= tile[1]
                 if game_object.level <= 0:
                     grid[tile[0][0]][tile[0][1]].remove(game_object)
-
+                    
 class LightSourceItem(Equippable):
     def __init__(self, name, textureIndex, pos, level, price, slots, intensity):
         super().__init__(name, textureIndex, pos, level, price, slots)
