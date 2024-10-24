@@ -6,35 +6,35 @@ import random
 
 HTTP_FIELDS = cgi.FieldStorage()
 
-from GameObject import Terrain, Decor, Creature
-from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace  
-from Decor import Stairs, Door
-from Creatures import Player, Goblin, Spider, Bat, Fishman, DrownedSailor, Pirate, GoblinMiner, RockWorm, GiantSlime, SewerCroc, DiseasedScavenger, BloatedGuard, MagmaGolem, FireElemental, DarkElf, DarkDwarf, XotilWarrior, XotilAbomination, XotilHighPriest, AshGolem, ObsidianGolem, AshGhoul, AshWight, Skeleton, Necromancer, FleshAmalgam, Polyp, Parasite, BloodCrawler, Lich, DeathKnight, TricksterImp, DeceitArchdemon, AncientServant, Apparition, Cultist, Shambler,  VoidBeast, AbyssDragon
+from GameObject import *
+from Terrain import *  
+from Decor import *
+from Creatures import *
 
 
 biomes = {
-    1: [Goblin, Spider, Bat],             # Cave creatures
-    2: [Goblin, Spider, Bat],             # Cave creatures
-    3: [Fishman, DrownedSailor, Pirate],   # Cove creatures
-    4: [GoblinMiner, RockWorm],           # Mine creatures
-    5: [GoblinMiner, RockWorm],           # Mine creatures
-    6: [GiantSlime, SewerCroc],          # Sewer creatures
-    7: [GiantSlime, SewerCroc],          # Sewer creatures
-    8: [DiseasedScavenger, BloatedGuard],  # Shantytown creatures
-    9: [MagmaGolem, FireElemental],       # Magma Core creatures
-    10: [DarkElf, DarkDwarf],              # Deep Cave creatures
-    11: [XotilWarrior, XotilAbomination, XotilHighPriest],  # Ziggurat creatures
-    12: [AshGolem, ObsidianGolem],         # Ember creatures
-    13: [AshGhoul, AshWight],             # Columbarium creatures
-    14: [Skeleton, Necromancer],  # Catacomb creatures
-    15: [FleshAmalgam, Polyp],              # Carrion creatures
-    16: [Parasite, BloodCrawler],         # Worldeater’s Gut creatures
-    17: [Lich, DeathKnight],             # Necropolis creatures
-    18: [TricksterImp, DeceitArchdemon], # Underworld creatures
-    19: [AncientServant, Apparition],       # Ancient City creatures
-    20: [Cultist, Shambler],  # Temple of the Old One creatures
-    21: [VoidBeast],                      # Cosmic Void creatures
-    22: [AbyssDragon],                   # Heart of the World (Final Boss)
+    1: {"Creature":[Goblin, Spider, Bat]},             # Cave creatures
+    2: {"Creature":[Goblin, Spider, Bat]},             # Cave creatures
+    3: {"Creature":[Fishman, DrownedSailor, Pirate]},   # Cove creatures
+    4: {"Creature":[GoblinMiner, RockWorm]},           # Mine creatures
+    5: {"Creature":[GoblinMiner, RockWorm]},           # Mine creatures
+    6: {"Creature":[GiantSlime, SewerCroc]},          # Sewer creatures
+    7: {"Creature":[GiantSlime, SewerCroc]},          # Sewer creatures
+    8: {"Creature":[DiseasedScavenger, BloatedGuard]},  # Shantytown creatures
+    9: {"Creature":[MagmaGolem, FireElemental]},       # Magma Core creatures
+    10: {"Creature":[DarkElf, DarkDwarf]},              # Deep Cave creatures
+    11: {"Creature":[XotilWarrior, XotilAbomination, XotilHighPriest]},  # Ziggurat creatures
+    12: {"Creature":[AshGolem, ObsidianGolem]},         # Ember creatures
+    13: {"Creature":[AshGhoul, AshWight]},             # Columbarium creatures
+    14: {"Creature":[Skeleton, Necromancer]},  # Catacomb creatures
+    15: {"Creature":[FleshAmalgam, Polyp]},              # Carrion creatures
+    16: {"Creature":[Parasite, BloodCrawler]},         # Worldeater’s Gut creatures
+    17: {"Creature":[Lich, DeathKnight]},             # Necropolis creatures
+    18: {"Creature":[TricksterImp, DeceitArchdemon]}, # Underworld creatures
+    19: {"Creature":[AncientServant, Apparition]},       # Ancient City creatures
+    20: {"Creature":[Cultist, Shambler]},  # Temple of the Old One creatures
+    21: {"Creature":[VoidBeast]},                      # Cosmic Void creatures
+    22: {"Creature":[AbyssDragon]},                   # Heart of the World (Final Boss)
 }
 
 
@@ -135,7 +135,7 @@ def place_creatures(grid, num_creatures, depth):
     current_biome = int(depth.split(",")[0])
 
     if current_biome in biomes:
-        available_creatures = biomes[current_biome]
+        available_creatures = biomes[current_biome]['Creature']
         
         for _ in range(num_creatures):
             while True:
