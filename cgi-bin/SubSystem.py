@@ -4,7 +4,6 @@ import sys
 import cgi
 import math
 from abc import abstractmethod
-from GameObject import Weapon
 
 damageTypes = ["Piercing","PRC","Slashing","SLH","Blunt","BLT","Fire","FR","Lightning","LTG","Water","WTR","Cold","CL","Acid","AD","Light","LT","Dark","DK","Necrotic","NCT","Arcane","AC","Existence","EXS"]
 statusEffects = ["Bleed","Stun","Burning","Suffocation","Frozen","Blindness","Rot","Manadrain","Nonexistence","Poison","Fear","Confusion","Mindbreak","Bloodsiphon","Midas Curse","Death","Regeneration","Berserk","Flight","Luck","Ironskin","Agility"]
