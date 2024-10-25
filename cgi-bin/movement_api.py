@@ -9,7 +9,8 @@ from user_tracking import a_star
 from GameObject import Terrain
 from Creatures import Goblin, Player
 from MasterGenerator import generateMap
-from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace  
+from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace
+from Decor import Corpse
 print('Content-type: application/json\n')
 HTTP_FIELDS = cgi.FieldStorage()
 depth = 0
@@ -49,8 +50,6 @@ def process_Creature_movement(position, direction, game_map):
         new_x, new_y = x - 1, y
     elif direction == 90:  # Move down
         new_x, new_y = x, y + 1
-    elif direction == None: #initialization case
-        return position, "Map Retrieved"
     else:
         return position, "Invalid direction"
     # Validate the new position
@@ -61,6 +60,10 @@ def process_Creature_movement(position, direction, game_map):
     
     message = "Creature has moved"
     get_object_by_class(game_map[x][y],"Creature").move(game_map,[new_x, new_y])
+    get_object_by_class(game_map[new_x][new_y],"Terrain").on_step(game_map,get_object_by_class(game_map[new_x][new_y],"Creature"))
+    if (game_map,get_object_by_class(game_map[new_x][new_y],"Creature").hp <= 0):
+        pass
+        #game_map,get_object_by_class(game_map[new_x][new_y],"Creature").die(game_map,game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"))
     return (new_x, new_y), message
 
 # Function to update all Creature positions
@@ -72,7 +75,7 @@ def update_Creature_position(game_map, player_pos,player_pos_old):
         for y, tile in enumerate(row):
             Creature = get_object_by_class(game_map[x][y],"Creature")
             manhattan = abs(player_pos[0] - x) + abs(player_pos[1] - y)
-            check = 3
+            check = 10
             if Creature and Creature.name != "Player" and manhattan <= int((Creature.equipment[0]).range):
                 attack_message = process_attack(Creature,(get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Creature")))
                 if attack_message == "game over":
@@ -81,6 +84,7 @@ def update_Creature_position(game_map, player_pos,player_pos_old):
                 continue
             
             if Creature and manhattan <= check and Creature.name != "Player":  # if Creature exist and not player
+            
                 # Check if this Creature has already moved in this turn
                 if (x, y) in moved_Creatures:
                     continue
@@ -116,7 +120,10 @@ def get_direction_from_step(current_pos, next_pos):
 # Function to validate the movement
 def is_valid_move(x, y, game_map):
     if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]) or get_object_by_class(game_map[x][y],"Creature") or not get_object_by_class(game_map[x][y],"Terrain").passable:
-        return False
+        if ((get_object_by_class(game_map[x][y],"Decor") != None and get_object_by_class(game_map[x][y],"Decor").passable)):
+            return True
+        else:
+            return False
     return True
 #Function to create the subset of map
 def get_map_subset(player_pos, game_map, fov_radius):
@@ -138,6 +145,7 @@ def get_map_subset(player_pos, game_map, fov_radius):
                 internalGrid = {gameObject.__class__.__base__.__name__.capitalize(): gameObject.__dict__ for gameObject in game_map[i][j]}
                 if (internalGrid.get('Creature') is not None):
                     internalGrid['Creature']['equipment'] = [equipment.__dict__ for equipment in internalGrid['Creature']['equipment'] if equipment]
+                    internalGrid['Creature']['inventory'] = [inventory.__dict__ for inventory in internalGrid['Creature']['inventory'] if inventory]
                     internalGrid['Creature']['drop_table'] = list(internalGrid['Creature']['drop_table'])
                     for k in range(len(internalGrid['Creature']['drop_table'])):
                         if type(internalGrid['Creature']['drop_table'][k]) != type(0.7):
@@ -152,7 +160,7 @@ def get_map_subset(player_pos, game_map, fov_radius):
     
     
 #Function to get the target creature
-def get_target_creature(game_map, player_pos, tile, fov_radius):
+def get_target_tile(game_map, player_pos, tile, fov_radius):
     player_x, player_y = player_pos
     fov_x_start = player_x - fov_radius
     fov_y_start = player_y - fov_radius
@@ -160,7 +168,7 @@ def get_target_creature(game_map, player_pos, tile, fov_radius):
     target_y = fov_y_start + tile[1]
     if target_x < 0 or target_x >= len(game_map) or target_y < 0 or target_y >= len(game_map[0]):
         return None
-    return get_object_by_class(game_map[target_x][target_y],"Creature")
+    return [target_x,target_y]
 
 #funtion to process the acttack action
 def process_attack(attacker, target, attack_method = None):
@@ -169,25 +177,27 @@ def process_attack(attacker, target, attack_method = None):
         damage = 1
     # reduce target's hp
     target.hp -= damage
-
+    process_attack
     #check did the creature dead
-    if target.hp <= 0:
+    if target.hp <= 0 and target.name != "Player":
+        corpse = Corpse(target.pos,target.hp,target.damage_resistances)
+        target.die(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"),Corpse(target.pos,target.hp,target.damage_resistances))
         if target.name == "Player":
             return "game over"
         else:
-            game_map[target.pos[0]][target.pos[1]].remove(target)
             return "target killed"
-            #replace with actual death target
+            
     return "target hit"
     
-    
+field_of_view = 11
+fov_radius = field_of_view // 2 
+
 if (HTTP_FIELDS.getvalue('uuid')):
       uuid = HTTP_FIELDS.getvalue('uuid')
-      direction = int(HTTP_FIELDS.getvalue('direction')) if (HTTP_FIELDS.getvalue('direction')) else None
-      attack = HTTP_FIELDS.getvalue('attack').split(",") if HTTP_FIELDS.getvalue('attack') else None
+      direction = None
+      attack = [int(coordinate) for coordinate in HTTP_FIELDS.getvalue('attack').split(",")] if HTTP_FIELDS.getvalue('attack') else None
       difficulty = HTTP_FIELDS.getvalue('difficulty') if (HTTP_FIELDS.getvalue('difficulty')) else None
 
-    
     # Load the current map
       file_path = '../maps/'+uuid+'.pkl' 
       if (not os.path.exists(file_path)):
@@ -196,31 +206,39 @@ if (HTTP_FIELDS.getvalue('uuid')):
           game_map = load_map(file_path)
       
     # Process player's movement
-      
-      player_pos = find_player_position(game_map)
-      if (player_pos != None):
-          if (direction != None):
 
-              new_player_pos, message = process_Creature_movement(player_pos, direction, game_map)
-          elif (attack != None):
-              attack  = [int(coordinate) for coordinate in attack]
-              field_of_view = 11
-              fov_radius = field_of_view // 2
-              target_creature = get_target_creature(game_map, player_pos, attack, fov_radius)
+      player_pos = find_player_position(game_map)
+      if (attack != None):
+          target_coordinates = get_target_tile(game_map, player_pos, attack, fov_radius)
+          
+          if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None): #attack
+              target_coordinates = get_target_tile(game_map, player_pos, attack, fov_radius)
+              target_creature = get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature")
               if (target_creature):
                   message = process_attack(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"), target_creature)
-                  #delete_blank_object(game_map)
               else:
                   message = "no target at this position"
-          else:
-              message = "invalide action"
+          
+          elif (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") == None): #move
+              if (abs(player_pos[0] - target_coordinates[0]) + abs(player_pos[1] - target_coordinates[1]) == 1):
+                  direction = get_direction_from_step(player_pos, target_coordinates)
+                  new_player_pos, message = process_Creature_movement(player_pos, direction, game_map)
+                  
+                  if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Item")):
+                      get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").pickup_item(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Item"))
+          
+          if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor") != None and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Stairs" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Corpse"): #interact 
+              get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").on_interact(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"))
+              message = "Creature has moved" if (message) else "interacted with"
+          
+          
+          
+          
       else:
-          message = "player not found"
+          message = "map loaded"
     #update the Creature's position
-    
-      
       if (message == "Creature has moved"):
-          update_Creature_position(game_map, new_player_pos,player_pos)
+          update_Creature_position(game_map, new_player_pos, player_pos)
           if get_object_by_class(game_map[new_player_pos[0]][new_player_pos[1]],"Decor") and get_object_by_class(game_map[new_player_pos[0]][new_player_pos[1]],"Decor").name == "Stairs":
               stair = get_object_by_class(game_map[new_player_pos[0]][new_player_pos[1]],"Decor")
               player = get_object_by_class(game_map[new_player_pos[0]][new_player_pos[1]],"Creature")
@@ -234,14 +252,12 @@ if (HTTP_FIELDS.getvalue('uuid')):
           
               
           player_pos = new_player_pos
-
     # Save the updated map back to the file
       save_map(file_path, game_map)
       
           
     # Caete the subset of the map
-      field_of_view = 11
-      fov_radius = field_of_view // 2
+      
       map_subset = get_map_subset(player_pos, game_map, fov_radius)
 
     #send subset_map and message back to client
@@ -249,5 +265,4 @@ if (HTTP_FIELDS.getvalue('uuid')):
           "message": message,
           "map_subset": map_subset
       }
-
       sys.stdout.write(json.dumps(response))
