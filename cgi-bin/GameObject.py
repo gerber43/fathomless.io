@@ -152,31 +152,30 @@ class Creature(GameObject):
                 self.basic_attack_damage(grid, self.equipment[1], target, self.crit_check(grid))
 
     def pickup_item(self, grid, target):
-        to_append = True
+        grid[self.pos[0]][self.pos[1]].remove(target)
         for item in self.inventory:
-            if target == item and item.amount + target.amount <= target.max_stack:
+            if target.name == item.name and item.amount + target.amount <= target.max_stack:
                 item.amount += target.amount
-                to_append = False
-        if to_append:
-            self.inventory.append(target)
-        grid[target.pos[0]][target.pos[1]].remove(target)
-        target.pos = (-1, -1)
+                return
+        self.inventory.append(target)
+
 
     def drop_item(self, grid, target):
         target.pos = self.pos
         grid[target.pos[0]][target.pos[1]].append(target)
         self.inventory.remove(target)
 
-    def die(self, grid, player):
+    def die(self, grid, player,corpse):
         if self == player:
             return
-        grid[self.pos[0]][self.pos[1]].append(Corpse(self.pos, self.hp, self.damage_resistances))
-        for entry in self.drop_table:
-            roll = random.random
-            if entry[1] >= roll:
-                grid[self.pos[0]][self.pos[1]].append(entry[0])
+        grid[self.pos[0]][self.pos[1]].append(corpse)
+        for i in range(int(len(self.drop_table)/2)):
+            drop_item = self.drop_table[i]
+            probability = self.drop_table[i + 1]
+            roll = random.random()
+            if probability >= roll:
+                grid[self.pos[0]][self.pos[1]].append(drop_item)
         player.xp += self.xp
-        player.check_level(grid)
         grid[self.pos[0]][self.pos[1]].remove(self)
 
 class Player(Creature):
