@@ -70,37 +70,33 @@ def process_Creature_movement(position, direction, game_map):
 def update_Creature_position(game_map, player_pos):
     player_pos = (list(player_pos))
 
-    moved_Creatures = set()  # Track Creatures that have already moved
+    moved_Creatures = []  # Track Creatures that have already moved
     
     for x, row in enumerate(game_map):
         for y, tile in enumerate(row):
+            
             Creature = get_object_by_class(game_map[x][y],"Creature")
             manhattan = abs(player_pos[0] - x) + abs(player_pos[1] - y)
             check = 10
-            if Creature and Creature.name != "Player" and manhattan <= int((Creature.equipment[0]).range):
+            if Creature and Creature.name != "Player" and manhattan <= int((Creature.equipment[0]).range) and Creature not in moved_Creatures:
                 attack_message = process_attack(Creature,(get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Creature")))
                 if attack_message == "game over":
                     return "game over"
                     # Todo, end the game when the message is game over
-                continue
-            
-            if Creature and manhattan <= check and Creature.name != "Player":  # if Creature exist and not player
+                moved_Creatures.append(Creature)
+            elif Creature and manhattan <= check and Creature.name != "Player" and Creature not in moved_Creatures:  # if Creature exist and not player
             
                 # Check if this Creature has already moved in this turn
-                if (x, y) in moved_Creatures:
-                    continue
-                speed = 1
+                
                 path = a_star((x, y), player_pos, game_map)
                 if not path or len(path) < 2:
                     continue
                 current_pos = (x, y)
-                for move_num in range(min(speed, len(path) - 1)):
+                for move_num in range(min(Creature.speed, len(path) - 1)):
                     next_pos = path[move_num + 1]
                     direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
                     current_pos, message = process_Creature_movement(current_pos, direction, game_map)
-                    if message != "Creature has moved":
-                        break
-                moved_Creatures.add(current_pos)
+                moved_Creatures.append(Creature)
 
 # Helper function to get direction between two points
 def get_direction_from_step(current_pos, next_pos):
@@ -181,7 +177,7 @@ def process_attack(attacker, target, attack_method = None):
     target.hp -= damage
     process_attack
     #check did the creature dead
-    if target.hp <= 0 and target.name != "Player":
+    if target.hp <= 0:
         corpse = Corpse(target.pos,target.hp,target.damage_resistances)
         target.die(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"),Corpse(target.pos,target.hp,target.damage_resistances))
         if target.name == "Player":
@@ -218,9 +214,10 @@ if (HTTP_FIELDS.getvalue('uuid')):
               target_creature = get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature")
               if (target_creature):
                   message = process_attack(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"), target_creature)
+                  update_Creature_position(game_map, player_pos)
               else:
                   message = "no target at this position"
-          
+                
           elif (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") == None): #move
               if (abs(player_pos[0] - target_coordinates[0]) + abs(player_pos[1] - target_coordinates[1]) == 1):
                   direction = get_direction_from_step(player_pos, target_coordinates)
@@ -228,6 +225,9 @@ if (HTTP_FIELDS.getvalue('uuid')):
                   
                   if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Item")):
                       get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").pickup_item(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Item"))
+              
+              
+              
               else:
                   message = "Movement Out Of Range"
           if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor") != None and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Stairs" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Corpse"): #interact 
