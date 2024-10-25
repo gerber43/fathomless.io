@@ -82,7 +82,7 @@ class Creature(GameObject):
             #if isinstance(game_object, Terrain):
                 #game_object.on_step(grid, self)
 
-    def gain_status_effect(self, grid, status_type, stacks, infinite, negative, applicator):
+    def gain_status_effect(self, grid, status_type, stacks = None, infinite = None, negative = None, applicator = None):
         if negative:
             stacks = int(stacks*(1-self.status_resistances[lookup_status_resistance_id(status_type)]))
         if stacks == 0:
