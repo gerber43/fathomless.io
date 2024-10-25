@@ -67,8 +67,9 @@ def process_Creature_movement(position, direction, game_map):
     return (new_x, new_y), message
 
 # Function to update all Creature positions
-def update_Creature_position(game_map, player_pos,player_pos_old):
-    
+def update_Creature_position(game_map, player_pos):
+    player_pos = (list(player_pos))
+
     moved_Creatures = set()  # Track Creatures that have already moved
     
     for x, row in enumerate(game_map):
@@ -89,8 +90,7 @@ def update_Creature_position(game_map, player_pos,player_pos_old):
                 if (x, y) in moved_Creatures:
                     continue
                 speed = 1
-                goal = #find a tile that is in the traking range of a creture
-                path = a_star((x, y), goal, game_map)
+                path = a_star((x, y), player_pos, game_map)
                 if not path or len(path) < 2:
                     continue
                 current_pos = (x, y)
@@ -227,7 +227,8 @@ if (HTTP_FIELDS.getvalue('uuid')):
                   
                   if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Item")):
                       get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").pickup_item(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Item"))
-          
+              else:
+                  message = "Movement Out Of Range"
           if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor") != None and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Stairs" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Corpse"): #interact 
               get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").on_interact(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"))
               message = "Creature has moved" if (message) else "interacted with"
@@ -239,7 +240,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
           message = "map loaded"
     #update the Creature's position
       if (message == "Creature has moved"):
-          update_Creature_position(game_map, new_player_pos, player_pos)
+          update_Creature_position(game_map, new_player_pos)
           if get_object_by_class(game_map[new_player_pos[0]][new_player_pos[1]],"Decor") and get_object_by_class(game_map[new_player_pos[0]][new_player_pos[1]],"Decor").name == "Stairs":
               stair = get_object_by_class(game_map[new_player_pos[0]][new_player_pos[1]],"Decor")
               player = get_object_by_class(game_map[new_player_pos[0]][new_player_pos[1]],"Creature")
