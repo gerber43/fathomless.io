@@ -15,10 +15,9 @@ class Pit(Terrain):
     def on_creation(self, grid):
         pass
     def on_step(self, grid, creature):
-        flight_id = lookup_status_effect_id("Flight")
         not_flying = True
         for status in creature.status_effects:
-            if status.type_id == flight_id:
+            if status.type_id == "Flight":
                 not_flying = False
         if not_flying:
             creature.hp -= 200*(1.0-creature.damage_resistances[lookup_damage_type_id("BLT")])

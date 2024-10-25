@@ -6,7 +6,7 @@ from abc import abstractmethod
 import random
 from operator import truediv
 from SubSystem import *
-
+from StatusEffects import *
 
 
 class GameObject:
@@ -82,11 +82,25 @@ class Creature(GameObject):
             #if isinstance(game_object, Terrain):
                 #game_object.on_step(grid, self)
 
-    def gain_status_effect(self, grid, type_id, stacks, infinite):
+    def gain_status_effect(self, grid, status_type, stacks, infinite, negative, applicator):
+        if negative:
+            stacks = int(stacks*(1-self.status_resistances[lookup_status_resistance_id(status_type)]))
         if stacks == 0:
             return
         for status in self.status_effects:
-            if type_id == status.type_id:
+            if status_type == status.status_type:
+                if status_type == "Bloodsiphon" or status_type == "Manadrain" or status_type == "Death":
+                    if status.applicator == applicator:
+                        if status.infinite:
+                            return
+                        if infinite:
+                            status.infinite = True
+                            status.stacks = stacks
+                            return
+                        status.stacks += stacks
+                        return
+                    else:
+                        continue
                 if status.infinite:
                     return
                 if infinite:
@@ -95,7 +109,14 @@ class Creature(GameObject):
                     return
                 status.stacks += stacks
                 return
-        self.status_effects.append(StatusEffect(type_id, stacks, infinite))
+        if status_type == "Bloodsiphon" or status_type == "Manadrain" or status_type == "Death":
+            new_status = eval(status_type)(stacks, infinite, applicator)
+            self.status_effects.append(new_status)
+            new_status.on_apply(grid, self)
+            return
+        new_status = eval(status_type)(stacks, infinite)
+        self.status_effects.append(new_status)
+        new_status.on_apply(grid, self)
 
     def basic_attack_hit_check(self, grid, weapon, target):
         #TODO: Implement ammo checking and ammo decrement
@@ -139,9 +160,9 @@ class Creature(GameObject):
             total = int(total * (1.0-target.damage_resistances[damage[0]]))
             target.hp -= total
             if crit:
-                target.gain_status_effect(lookup_crit_status_effect(damage[0]), total / 10, False)
+                target.gain_status_effect(lookup_crit_status_effect(damage[0]), total / 10, False, True, self)
         for status in weapon.statuses:
-            target.gain_status_effect(status.type_id, status.stacks, status.infinite)
+            target.gain_status_effect(status.type_id, status.stacks, status.infinite, True, self)
     def basic_attack(self, grid, target):
         #TODO: apply dual wielding penalty if dual wielding
         if isinstance(self.equipment[0], Weapon):
@@ -165,7 +186,7 @@ class Creature(GameObject):
         grid[target.pos[0]][target.pos[1]].append(target)
         self.inventory.remove(target)
 
-    def die(self, grid, player,corpse):
+    def die(self, grid, player, corpse):
         if self == player:
             return
         grid[self.pos[0]][self.pos[1]].append(corpse)

@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+import sys
+import cgi
 import random
 
 from GameObject import Creature, CreatureSegment, Gold
@@ -5,8 +8,8 @@ from Items import IronDagger, WoodenClub
 
 #Piercing, Slashing, Blunt, Fire, Lightning, Water, Cold, Acid, Light, Dark, Necrotic, Arcane, Existence
 basicDamageResistances = (0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0)
-#Bleed, Stun, Burning, Suffocation, Frozen, Blindness, Rot, Manadrain, Nonexistence, Poison, Fear, Confusion, Mindbreak, Bloodsiphon, Midas Curse, Death
-basicStatusResistances = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+#Bleed, Stun, Burning, Suffocation, Frozen, Blindness, Rot, Manaburn, Nonexistence, Poison, Fear, Confusion, Mindbreak, Midas Curse, Bloodsiphon, Manadrain, Death
+basicStatusResistances = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
 class Player(Creature):
     def __init__(self, pos):

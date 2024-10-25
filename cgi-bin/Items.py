@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+import sys
+import cgi
 from GameObject import Item, Consumable, Equippable, Weapon, Unavailable, LightSourceItem
 from SubSystem import lookup_damage_type_id
 
