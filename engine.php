@@ -333,23 +333,6 @@
                         tile.dataset.manhattan = Math.abs(j - Math.floor(viewDiameter/2)) + Math.abs(i - Math.floor(viewDiameter/2));
                         objectTypes.forEach((object) => {tile.appendChild(Object.assign(document.createElement('div'),{classList:object}))});
                         document.getElementById('canvas').appendChild(tile);
-                        tile.addEventListener('touchstart', (event) => {
-                            
-                
-  this.touchStart = event.touches[0];
-
-  // Clear any existing timeout
-  clearTimeout(this.longPressTimeout);
-
-  // Set a timeout for long press detection
-  this.longPressTimeout = setTimeout(() => {
-    // Trigger the right-click behavior here
-    alert(j+","+i)
-    inspectTile(j+","+i)
-  }, 500); // Adjust the timeout duration as needed
-});
-                    
-                        
                     }
                 }
                 document.getElementById('dialogue').style.backgroundImage = 'url("'+tileObjects[12]['icon']+'")';
@@ -358,9 +341,9 @@
                 scaleTextures();
                 document.getElementById("canvas").querySelectorAll('.tile').forEach((Item) => {
                     Item.addEventListener("click", () => {clickTile(Item.id)});
+                    Item.addEventListener("touchstart", () => {this.touchStart = event.touches[0];clearTimeout(this.longPressTimeout);this.longPressTimeout = setTimeout(() => {inspectTile(Item.id)}, 1000);});
                     Item.addEventListener("contextmenu", function(ev){ev.preventDefault();inspectTile(Item.id)});
                 });
-                
             }
             function toggleInspect(tileId){
                 var tile = currentMap[tileId.split(",")[0]][tileId.split(",")[1]]
@@ -566,8 +549,6 @@
                 xmlhttp.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
                         receiveMap(this.responseText)
-                        inspectTile("5,5")
-                        
                     }
                 }
                 xmlhttp.open("GET", "https://fathomless.io/sessionValidate/"+uri, true);
