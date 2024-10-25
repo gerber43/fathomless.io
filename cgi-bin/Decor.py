@@ -23,12 +23,10 @@ class Door(Decor):
     def __init__(self, pos):
         super().__init__("Wooden Door", '24', pos, 40, (0.7, 0.7, 0.3, -1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
     def on_interact(self, grid, creature):
-        if not self.passable:
-            self.passable = True
-            self.block_sight = False
-        else:
-            self.passable = False
-            self.block_sight = True
+        self.block_sight = self.passable
+        self.passable = not self.passable
+        self.textureIndex = 35 if self.passable else 24
+        
 
 #ziggurat, columbarium, catacomb, necropolis, temple of the old ones
 class StoneDoor(Decor):
