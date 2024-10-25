@@ -55,7 +55,7 @@ def a_star(start, goal, game_map):
             # Calculate the neighbor position by adding direction deltas to the current position
             neighbor_position = (current_node.position[0] + dx, current_node.position[1] + dy)
             # Skip this neighbor if it's not a valid move (e.g., out of bounds, obstacle)
-            if not is_valid_move(neighbor_position[0], neighbor_position[1], game_map):
+            if (not is_valid_move(neighbor_position[0], neighbor_position[1], game_map) and neighbor_position[0] != goal[0] and neighbor_position[1] != goal[1]):
                 continue
             
             # The cost to move to this neighbor is current cost (`g_score[current]`) + 1 (assuming each move has a cost of 1)
