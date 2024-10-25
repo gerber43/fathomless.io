@@ -89,7 +89,8 @@ def update_Creature_position(game_map, player_pos,player_pos_old):
                 if (x, y) in moved_Creatures:
                     continue
                 speed = 1
-                path = a_star((x, y), player_pos_old, game_map)
+                goal = #find a tile that is in the traking range of a creture
+                path = a_star((x, y), goal, game_map)
                 if not path or len(path) < 2:
                     continue
                 current_pos = (x, y)
