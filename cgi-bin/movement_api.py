@@ -145,6 +145,7 @@ def get_map_subset(player_pos, game_map, fov_radius):
             else:
                 internalGrid = {gameObject.__class__.__base__.__name__.capitalize(): gameObject.__dict__ for gameObject in game_map[i][j]}
                 if (internalGrid.get('Creature') is not None):
+                    internalGrid['Creature']['status_effects'] = [status_effects.__dict__ for status_effects in internalGrid['Creature']['status_effects'] if status_effects]
                     internalGrid['Creature']['equipment'] = [equipment.__dict__ for equipment in internalGrid['Creature']['equipment'] if equipment]
                     internalGrid['Creature']['inventory'] = [inventory.__dict__ for inventory in internalGrid['Creature']['inventory'] if inventory]
                     internalGrid['Creature']['drop_table'] = list(internalGrid['Creature']['drop_table'])
