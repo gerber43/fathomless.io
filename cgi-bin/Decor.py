@@ -9,17 +9,14 @@ from Creatures import Ghost
 
 class Corpse(Decor):
     def __init__(self, pos, hp, resistances):
-        super().__init__("Corpse", "70", pos, hp, resistances, True, False, "NO", "")
+        super().__init__("Corpse", "34", pos, hp, resistances, True, False, "NO", "")
 
 
 class Stairs(Decor):
     def __init__(self, pos):
         super().__init__("Stairs", "23", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "Yes", "Go Down?")
     def on_interact(self, current_level, creature):
-        if current_level.depth < 22:
-            new_level = Level(current_level.depth+1, TempBiome())
-            current_level.grid = new_level.grid
-            current_level.depth = new_level.depth
+        pass
 
 #mine, corruptite mine, shantytown, undercity
 class Door(Decor):
