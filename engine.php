@@ -20,6 +20,7 @@
             -o-user-select: none;
             user-select: none;
             overflow-x:none;
+            background:#333;
             }
             #page {
             width:100vw;
@@ -184,7 +185,7 @@
             transform:scale(.9);
             }
 
-            .tile[data-manhattan="1"]:hover .Light, .manhattan{
+            .manhattan:hover{
             background: purple;
             opacity:.3;
             cursor:pointer;
@@ -213,7 +214,6 @@
                 align-items:center;
                 justify-content:start;
                 flex-direction:column;
-
             }
             #inspection::-webkit-scrollbar {
                 display: none;
@@ -237,18 +237,16 @@
                 width:75px;
                 max-height:75px;
                 float:right;
-                margin:20px;
 
             }
             #inspection > div > div {
                 width:90%;
             }
             #inspection div {
-                padding:10px;
                 border-radius:20px;
                 border:solid rgb(212,175,55) 5px;
-                margin:10px;
                 width:90%;
+                padding:5px;
                 
 
             }
@@ -306,12 +304,11 @@
             </span>
         </div>
         <div id = "inspection" draggable="true"></div>
-        
         <script>
             const username = '<?=$_SESSION['username']?>';
             const tileObjects = JSON.parse('<?=file_get_contents("https://fathomless.io/json/objects.json")?>');
             const defaults = {"default":{"textureIndex":8,"intensity":0}};
-            var attacking = keyBindOpened = inspecting = music = playMusic = sfx = isLowResolution = start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter  = inventoryOpened = asciiMode= 0;
+            var keyBindOpened = inspecting = music = playMusic = sfx = isLowResolution = start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter  = inventoryOpened = asciiMode= 0;
             var objectTypes = ["Terrain","Item","Decor","Creature","Light"];
             var keyBinds = (!localStorage.getItem("keyBinds"))?{"Inventory":"KeyE","Settings":"Escape","Attack":"Space","Movement":["ArrowRight","ArrowDown","ArrowLeft","ArrowUp","KeyD","KeyS","KeyA","KeyW"]}:(JSON.parse(localStorage.getItem("keyBinds")));
             sendRequest("?sendDirection");
@@ -340,10 +337,28 @@
                 document.getElementById('page').style.backgroundImage = 'url("'+tileObjects[13]['icon']+'")';
                 scaleTextures();
                 document.getElementById("canvas").querySelectorAll('.tile').forEach((Item) => {
-                    Item.addEventListener("click", () => {clickTile(Item.id)});
+                    Item.addEventListener("click", () => {clickTile(Item.id);this.blur();});
                     Item.addEventListener("touchstart", () => {this.touchStart = event.touches[0];clearTimeout(this.longPressTimeout);this.longPressTimeout = setTimeout(() => {inspectTile(Item.id)}, 1000);});
+                    Item.addEventListener("touchend", () => {clearTimeout(this.longPressTimeout)});
                     Item.addEventListener("contextmenu", function(ev){ev.preventDefault();inspectTile(Item.id)});
                 });
+            }
+            function isValidMove(coordinates) {
+                var target = currentMap[coordinates[0]][coordinates[1]];
+                var confirmation = true;
+                if (target["Terrain"]["warn"] == "Yes") {
+                    confirmation = confirm(target["Terrain"]["warning"])
+                }
+                if (target["Decor"] && target["Decor"]["warn"] == "Yes") {
+                    confirmation = confirm(target["Decor"]["warning"])
+                }
+                var range = (currentMap[Math.floor(viewDiameter/2)][Math.floor(viewDiameter/2)]["Creature"]["equipment"][0]['range'])
+                if ((target["Terrain"]["textureIndex"] != 8) && confirmation && document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= range) {
+                    if (target["Terrain"]["passable"] || (!target["Terrain"]["passable"] && target["Decor"])) {
+                        return true
+                    }
+                }
+                return false
             }
             function toggleInspect(tileId){
                 var tile = currentMap[tileId.split(",")[0]][tileId.split(",")[1]]
@@ -400,7 +415,6 @@
                 });
             }
             function clickTile(tileId) {
-   
                 var coordinates = tileId.split(",");
                 if (inspecting) {
                     toggleInspect(inspecting);
@@ -483,7 +497,6 @@
                     toggleSettings();
                     document.getElementById('keyBind').innerHTML = "<button onclick = 'toggleKeyBind()'>X</button>";
                     Object.keys(keyBinds).forEach((keyFunction) => {
-                        
                         if (keyFunction != "Movement") {
                         document.getElementById('keyBind').innerHTML += "<p>"+keyFunction+"</p><button id = '"+keyFunction+"Button' onclick = 'keyFunction = `"+keyFunction+"`'>"+keyBinds[keyFunction]+"</button>";
                         
@@ -492,10 +505,7 @@
                              for (var i = 0; i < keyBinds[keyFunction].length; i++) {
                                  document.getElementById('keyBind').innerHTML += "<button id = '"+keyFunction+"Button"+i+"' onclick = 'keyFunction = `"+keyFunction+","+i+"`'>"+keyBinds[keyFunction][i]+"</button>";
                             }
-                           
-
                         }
-                        
                     });
                     document.getElementById('keyBind').innerHTML += "<button onclick = 'resetKeyBinds();keyBindOpened=false;toggleKeyBind();'>Reset</button>";
                 } else {
@@ -516,7 +526,6 @@
                     sfx[index].play();
                 }
             }
-   
             function receiveMap(response) {
                 response = JSON.parse(response);
                 if (response['map_subset'].length != viewDiameter) {
@@ -542,6 +551,8 @@
                 if (document.getElementById("cover")){
                     document.getElementById("cover").remove()
                 }
+                var player = currentMap[Math.floor(viewDiameter/2)][Math.floor(viewDiameter/2)]["Creature"];
+                displayManhattan(player.equipment[0].range)
             }
             function sendRequest(uri) {
                 start = performance.now();
@@ -561,56 +572,44 @@
                 gameObject.style.transform = (x != 0 || y != 0)?"translate("+(offset*x)+"px, "+(offset*y)+"px)":"";
             }
             function directionHandler(tileCoordinates) {
-                if (!disableMovement) {
-                    sendRequest("?sendAttack="+encodeURIComponent(tileCoordinates));
-                    disableMovement = true;
-                    var player = document.getElementById(Math.floor(viewDiameter/2)+","+Math.floor(viewDiameter/2)).querySelector(".Creature");
-                    var direction  = [(tileCoordinates[0]-Math.floor(viewDiameter/2)),(tileCoordinates[1]-Math.floor(viewDiameter/2))];
-                    moveObject(player,direction[0],direction[1]);
-                    player.style.zIndex = 1
-                    moveObject(document.getElementById('canvas'),-direction[0],-direction[1]);
-                    document.body.appendChild(Object.assign(document.createElement('div'),{id:("cover")}));
-                } 
-            }
-            function toggleAttack(){
-                attacking = !attacking;
-                var player = currentMap[Math.floor(viewDiameter/2)][Math.floor(viewDiameter/2)]["Creature"];
-                if (attacking) {
-                    displayManhattan(player.equipment[0].range)
-                } else {
-                    displayManhattan(0)
+                if (isValidMove(tileCoordinates)){
+                    if (!disableMovement) {
+                        sendRequest("?sendAttack="+encodeURIComponent(tileCoordinates));
+                        disableMovement = true;
+                        var player = document.getElementById(Math.floor(viewDiameter/2)+","+Math.floor(viewDiameter/2)).querySelector(".Creature");
+                        var direction  = [(tileCoordinates[0]-Math.floor(viewDiameter/2)),(tileCoordinates[1]-Math.floor(viewDiameter/2))];
+                        moveObject(player,direction[0],direction[1]);
+                        player.style.zIndex = 1
+                        moveObject(document.getElementById('canvas'),-direction[0],-direction[1]);
+                        document.body.appendChild(Object.assign(document.createElement('div'),{id:("cover")}));
+                    } 
                 }
             }
             document.addEventListener('keyup', (e) => {
                 if (keyFunction) {
                     changeKeyBind(e.code);
                 } else {
-                if (keyBinds["Movement"].indexOf(e.code) > -1) {
-                    var deg = (keyBinds["Movement"].indexOf(e.code)%4)*Math.PI/2;
-                    target = [Math.floor(viewDiameter/2)+Math.round(Math.cos(deg)),Math.floor(viewDiameter/2)+Math.round(Math.sin(deg))]
-                    directionHandler(target);
+                    if (keyBinds["Movement"].indexOf(e.code) > -1) {
+                        var deg = (keyBinds["Movement"].indexOf(e.code)%4)*Math.PI/2;
+                        target = [Math.floor(viewDiameter/2)+Math.round(Math.cos(deg)),Math.floor(viewDiameter/2)+Math.round(Math.sin(deg))]
+                        directionHandler(target);
+                    }
+                    if (e.code === keyBinds['Inventory'])  {
+                        toggleInventory();
+                    }
+                    if (e.code === keyBinds['Settings'] && !inspecting && !keyBindOpened)  {
+                        toggleSettings();
+                    }
+                    if (e.code === keyBinds['Settings'] && keyBindOpened)  {
+                        toggleKeyBind();
+                    }
+                    if (e.code === keyBinds['Settings'] && inspecting)  {
+                        document.getElementById('inspection').style.width = "0px";
+                        document.getElementById('inspection').innerHTML = "";
+                        document.getElementById(inspecting).classList.remove("inspecting");
+                        inspecting = ""
+                    }
                 }
-                if (e.code === keyBinds['Inventory'])  {
-                    toggleInventory();
-                }
-                if (e.code === keyBinds['Attack'])  {
-                    toggleAttack();
-                }
-                if (e.code === keyBinds['Settings'] && !inspecting && !keyBindOpened)  {
-                    toggleSettings();
-                }
-                if (e.code === keyBinds['Settings'] && keyBindOpened)  {
-                    toggleKeyBind();
-                }
-                if (e.code === keyBinds['Settings'] && inspecting)  {
-                    document.getElementById('inspection').style.width = "0px";
-                    document.getElementById('inspection').innerHTML = "";
-                    document.getElementById(inspecting).classList.remove("inspecting");
-                    inspecting = ""
-                }
-                
-                
-            }
             });
             document.getElementById('settings').addEventListener('mouseenter', (e) => {clearTimeout(closeSetting);});
             document.getElementById('settings').addEventListener('mouseleave', (e) => {
@@ -660,7 +659,6 @@
                 });
             });
             document.body.onresize = function(){scaleTextures()};
-
         </script>
     </body>
 </html>
