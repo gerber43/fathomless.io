@@ -82,7 +82,7 @@
             padding:20px 0 20px 0;
             pointer-events: none;
             top:0;
-            right:0;
+            left:20;
             font-size:40px;
             justify-content:end;
             gap:20px;
@@ -141,7 +141,6 @@
             display:flex;
             align-items:center;
             justify-content:center;
-            
             }
             .gearRotate {
             -webkit-animation-name: gearRotation;
@@ -184,7 +183,6 @@
             transition:.75s;
             transform:scale(.9);
             }
-
             .manhattan:hover{
             background: purple;
             opacity:.3;
@@ -199,66 +197,62 @@
             cursor:wait;
             }
             #inspection {
-                position:absolute;
-                top:0;
-                left:0;
-                width:0;
-                height:100svh;
-                background:saddlebrown;
-                overflow:scroll;
-                color:rgb(212,175,55);
-                -ms-overflow-style: none;
-                scrollbar-width: none; 
-                resize:both;
-                display:flex;
-                align-items:center;
-                justify-content:start;
-                flex-direction:column;
+            position:absolute;
+            top:0;
+            left:0;
+            width:0;
+            height:100svh;
+            background:saddlebrown;
+            overflow:scroll;
+            color:rgb(212,175,55);
+            -ms-overflow-style: none;
+            scrollbar-width: none; 
+            resize:both;
+            display:flex;
+            align-items:center;
+            justify-content:start;
+            flex-direction:column;
             }
             #inspection::-webkit-scrollbar {
-                display: none;
+            display: none;
             }
             #inspection button {
-                position:absolute;
-                top:0;
-                right:0;
-                width:30px;
-                height:30px;
-                 background: none;
+            position:absolute;
+            top:0;
+            right:0;
+            width:30px;
+            height:30px;
+            background: none;
             color: inherit;
             border: none;
             padding: 0;
             font: inherit;
             cursor: pointer;
             outline: inherit;
-                
             }
             #inspection img {
-                width:75px;
-                max-height:75px;
-                float:right;
-
+            width:75px;
+            max-height:75px;
+            float:right;
             }
             #inspection > div > div {
-                width:90%;
+            width:90%;
             }
             #inspection div {
-                border-radius:20px;
-                border:solid rgb(212,175,55) 5px;
-                width:90%;
-                padding:5px;
-                
-
+            border-radius:20px;
+            border:solid rgb(212,175,55) 5px;
+            width:90%;
+            padding:5px;
             }
             #inspection div p {
-                word-wrap: break-word;
+            word-wrap: break-word;
             }
             #inspection > p {
-                text-align:center;
+            text-align:center;
             }
             .inspecting {
-                transition:.75s;
-                border:#eee dotted 2px;
+            transition:.75s;
+            border:#eee dotted 2px;
             }
             hr {
             width:90%;
@@ -267,11 +261,10 @@
             border:none;
             }
             #keyBind {
-                background:saddlebrown;
+            background:saddlebrown;
             }
             #keyBind button {
-
-                 background: none;
+            background: none;
             color: inherit;
             border: none;
             padding: 0;
@@ -279,6 +272,14 @@
             cursor: pointer;
             outline: inherit;
             color:rgb(212,175,55);
+            }
+            @keyframes inspectionLoad {
+            from {opacity:1;}
+            to {opacity:0;}
+            }
+            .inspectionLoad {
+            animation-name: inspectionLoad;
+            animation-duration: 1s;
             }
         </style>
     </head>
@@ -292,7 +293,7 @@
         <div id = "keyBind"></div>
         <div id = "settings">
             <button data-setting = "settings_menu">
-                <img id = "gear" src = "https://icons.veryicon.com/png/o/miscellaneous/xdh-font-graphics-library/gear-setting-1.png">
+            <img id = "gear" src = "https://icons.veryicon.com/png/o/miscellaneous/xdh-font-graphics-library/gear-setting-1.png">
             </button>
             <span id = "settings_span">
             <button data-setting = "toggleAudio">Play SFX</button>
@@ -308,7 +309,7 @@
             const username = '<?=$_SESSION['username']?>';
             const tileObjects = JSON.parse('<?=file_get_contents("https://fathomless.io/json/objects.json")?>');
             const defaults = {"default":{"textureIndex":8,"intensity":0}};
-            var keyBindOpened = inspecting = music = playMusic = sfx = isLowResolution = start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter  = inventoryOpened = asciiMode= 0;
+            var viewRadius = keyBindOpened = inspecting = music = playMusic = sfx = isLowResolution = start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter  = inventoryOpened = asciiMode= 0;
             var objectTypes = ["Terrain","Item","Decor","Creature","Light"];
             var keyBinds = (!localStorage.getItem("keyBinds"))?{"Inventory":"KeyE","Settings":"Escape","Attack":"Space","Movement":["ArrowRight","ArrowDown","ArrowLeft","ArrowUp","KeyD","KeyS","KeyA","KeyW"]}:(JSON.parse(localStorage.getItem("keyBinds")));
             sendRequest("?sendDirection");
@@ -327,7 +328,7 @@
                 for (var i = 0; i < viewDiameter; i++) {
                     for (var j = 0; j < viewDiameter; j++) {
                         var tile = Object.assign(document.createElement('div'),{id:(j+","+i),classList:"tile"});
-                        tile.dataset.manhattan = Math.abs(j - Math.floor(viewDiameter/2)) + Math.abs(i - Math.floor(viewDiameter/2));
+                        tile.dataset.manhattan = Math.abs(j - viewRadius) + Math.abs(i - viewRadius);
                         objectTypes.forEach((object) => {tile.appendChild(Object.assign(document.createElement('div'),{classList:object}))});
                         document.getElementById('canvas').appendChild(tile);
                     }
@@ -338,8 +339,8 @@
                 scaleTextures();
                 document.getElementById("canvas").querySelectorAll('.tile').forEach((Item) => {
                     Item.addEventListener("click", () => {clickTile(Item.id);this.blur();});
-                    Item.addEventListener("touchstart", () => {this.touchStart = event.touches[0];clearTimeout(this.longPressTimeout);this.longPressTimeout = setTimeout(() => {inspectTile(Item.id)}, 1000);});
-                    Item.addEventListener("touchend", () => {clearTimeout(this.longPressTimeout)});
+                    Item.addEventListener("touchstart", () => {document.getElementById(Item.id).classList.add("inspectionLoad");this.touchStart = event.touches[0];clearTimeout(this.longPressTimeout);this.longPressTimeout = setTimeout(() => {inspectTile(Item.id);document.getElementById(Item.id).classList.remove("inspectionLoad");}, 1000);});
+                    Item.addEventListener("touchend", () => {document.getElementById(Item.id).classList.remove("inspectionLoad");clearTimeout(this.longPressTimeout)});
                     Item.addEventListener("contextmenu", function(ev){ev.preventDefault();inspectTile(Item.id)});
                 });
             }
@@ -352,7 +353,7 @@
                 if (target["Decor"] && target["Decor"]["warn"] == "Yes") {
                     confirmation = confirm(target["Decor"]["warning"])
                 }
-                var range = (currentMap[Math.floor(viewDiameter/2)][Math.floor(viewDiameter/2)]["Creature"]["equipment"][0]['range'])
+                var range = (currentMap[viewRadius][viewRadius]["Creature"]["equipment"][0]['range'])
                 if ((target["Terrain"]["textureIndex"] != 8) && confirmation && document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= range) {
                     if (target["Terrain"]["passable"] || (!target["Terrain"]["passable"] && target["Decor"])) {
                         return true
@@ -383,7 +384,7 @@
                     if (tile[object]['name']) {
                         attributes = "";
                         Object.keys(tile[object]).forEach((attribute) => {
-                            specialFormats = ["equipment","drop_table","inventory"];
+                            specialFormats = ["equipment","drop_table","inventory","status_effects"];
                             if (!specialFormats.includes(attribute)) {
                                 if (attribute == "textureIndex") {
                                     attributes+="<img src = '"+tileObjects[tile[object][attribute]]['icon']+"'>"
@@ -480,7 +481,6 @@
                 if (!keyFunction.includes("Movement")) {
                 keyBinds[keyFunction] = key;
                 document.getElementById(keyFunction+"Button").innerHTML = key;
-                
                 } else {
                     var movementIndex = parseInt(keyFunction.split(",")[1])
                     keyBinds[keyFunction.split(",")[0]][parseInt(keyFunction.split(",")[1])] = key;
@@ -530,15 +530,49 @@
                 response = JSON.parse(response);
                 if (response['map_subset'].length != viewDiameter) {
                     viewDiameter = response['map_subset'].length;
+                    viewRadius = Math.floor(viewDiameter/2)
                     initializeMap();
                 }
                 currentMap = response["map_subset"];
-                updateMap();
+                var moved = false;
+                response["turn_log"].forEach((update) => { 
+                    if (update['type'] == "movement" && update['before'] && currentMap[update['before'][0]] && currentMap[update['before'][0]][update['before'][1]] && !(update['before'][0] == viewRadius && update['before'][1] == viewRadius)) {
+                                        moved = true;
+                                        
+ 
+                        var direction = [update['after'][0] - update['before'][0],update['after'][1] - update['before'][1]];                    
+                        var creature = document.getElementById(update['before'][0]+","+update['before'][1]).querySelector(".Creature");
+                        creature.style.zIndex = "1";
+                        moveObject(creature,direction[0],direction[1])
+                    }
+                    
+                });
+                
+                setTimeout(function(){ 
+                    
+                       response["turn_log"].forEach((update) => { 
+                    if (update['type'] == "movement" && update['before'] && currentMap[update['before'][0]] && currentMap[update['before'][0]][update['before'][1]] ) {
+                        
+                            var creature = document.getElementById(update['before'][0]+","+update['before'][1]).querySelector(".Creature");
+
+                        moveObject(creature,0,0)
+                        creature.style.zIndex = "";
+                    }
+                    
+                });
+var player = document.getElementById(viewRadius+","+viewRadius).querySelector(".Creature");
+
+                        moveObject(player,0,0)
+                        player.style.zIndex = "";
+                    
+                    moveObject(document.getElementById('canvas'),0,0);
+
+                    updateMap();
                 disableMovement = false;
-                var player = document.getElementById(Math.floor(viewDiameter/2)+","+Math.floor(viewDiameter/2)).querySelector(".Creature");
-                moveObject(document.getElementById('canvas'),0,0);
-                moveObject(player,0,0);
-                player.style.zIndex = ""
+                }, (moved)?100:0);
+
+                
+                
                 createMessage("dialogue",response["message"],1);
                 if (response['message'] == "target hit") {
                     playSound(7);
@@ -551,15 +585,29 @@
                 if (document.getElementById("cover")){
                     document.getElementById("cover").remove()
                 }
-                var player = currentMap[Math.floor(viewDiameter/2)][Math.floor(viewDiameter/2)]["Creature"];
+                player = currentMap[viewRadius][viewRadius]["Creature"];
                 displayManhattan(player.equipment[0].range)
+                if (inspecting) {
+                    toggleInspect(inspecting)
+                }
+                
+                
+                
+            }
+            function playerUpdates(oldPlayer, newPlayer) {
+                var healthChange = newPlayer.hp - oldPlayer.hp;
+                if (healthChange){
+                    createMessage("alert",(healthChange)+"<img src = '"+tileObjects[16]['icon']+"'>",1);
+                }
             }
             function sendRequest(uri) {
                 start = performance.now();
                 var xmlhttp = new XMLHttpRequest();
                 xmlhttp.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
-                        receiveMap(this.responseText)
+                        var oldPlayerObject = (currentMap)?currentMap[viewRadius][viewRadius]["Creature"]:false;
+                        receiveMap(this.responseText);
+                        (oldPlayerObject)?playerUpdates(oldPlayerObject, currentMap[viewRadius][viewRadius]["Creature"]):false;
                     }
                 }
                 xmlhttp.open("GET", "https://fathomless.io/sessionValidate/"+uri, true);
@@ -567,7 +615,7 @@
             }
             function moveObject(gameObject,x,y) {
                 var offset = document.getElementById("0,0").getBoundingClientRect().width;
-                gameObject.style.transition = (x != 0 || y != 0)?".2s":"0s";
+                gameObject.style.transition = (x != 0 || y != 0)?((gameObject.parentElement.id == viewRadius+","+viewRadius || gameObject.id == "canvas")?".2s":".1s"):"0s";
                 gameObject.style.transitionTimingFunction = (x != 0 || y != 0)?"ease-in-out":"";
                 gameObject.style.transform = (x != 0 || y != 0)?"translate("+(offset*x)+"px, "+(offset*y)+"px)":"";
             }
@@ -576,11 +624,14 @@
                     if (!disableMovement) {
                         sendRequest("?sendAttack="+encodeURIComponent(tileCoordinates));
                         disableMovement = true;
-                        var player = document.getElementById(Math.floor(viewDiameter/2)+","+Math.floor(viewDiameter/2)).querySelector(".Creature");
-                        var direction  = [(tileCoordinates[0]-Math.floor(viewDiameter/2)),(tileCoordinates[1]-Math.floor(viewDiameter/2))];
+                        var player = document.getElementById(viewRadius+","+viewRadius).querySelector(".Creature");
+                        var direction  = [(tileCoordinates[0]-viewRadius),(tileCoordinates[1]-viewRadius)];
+                        if (!currentMap[tileCoordinates[0]][tileCoordinates[1]]["Creature"]) {
                         moveObject(player,direction[0],direction[1]);
                         player.style.zIndex = 1
+                        
                         moveObject(document.getElementById('canvas'),-direction[0],-direction[1]);
+                        }
                         document.body.appendChild(Object.assign(document.createElement('div'),{id:("cover")}));
                     } 
                 }
@@ -591,7 +642,7 @@
                 } else {
                     if (keyBinds["Movement"].indexOf(e.code) > -1) {
                         var deg = (keyBinds["Movement"].indexOf(e.code)%4)*Math.PI/2;
-                        target = [Math.floor(viewDiameter/2)+Math.round(Math.cos(deg)),Math.floor(viewDiameter/2)+Math.round(Math.sin(deg))]
+                        target = [viewRadius+Math.round(Math.cos(deg)),viewRadius+Math.round(Math.sin(deg))]
                         directionHandler(target);
                     }
                     if (e.code === keyBinds['Inventory'])  {
