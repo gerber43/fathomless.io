@@ -234,7 +234,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
       if (attack != None):
           target_coordinates = get_target_tile(attack)
           
-          if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None): #attack
+          if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None and game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != "Player"): #attack when the target is a creature but not player
               target_coordinates = get_target_tile(attack)
               target_creature = get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature")
               if (target_creature):
