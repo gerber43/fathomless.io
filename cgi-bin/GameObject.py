@@ -173,7 +173,8 @@ class Creature(GameObject):
                 self.basic_attack_damage(grid, self.equipment[1], target, self.crit_check(grid))
 
     def pickup_item(self, grid, target):
-        grid[self.pos[0]][self.pos[1]].remove(target)
+        grid[target.pos[0]][target.pos[1]].remove(target)
+        
         for item in self.inventory:
             if target.name == item.name and item.amount + target.amount <= target.max_stack:
                 item.amount += target.amount
@@ -189,9 +190,11 @@ class Creature(GameObject):
     def die(self, grid, player, corpse):
         if self == player:
             return
-        grid[self.pos[0]][self.pos[1]].append(corpse)
+        if (len([gameObject for gameObject in grid[self.pos[0]][self.pos[1]] if gameObject.__class__.__base__.__name__ == "Decor"]) == 0):
+            grid[self.pos[0]][self.pos[1]].append(corpse)
         for i in range(int(len(self.drop_table)/2)):
             drop_item = self.drop_table[i]
+            drop_item.pos = corpse.pos
             probability = self.drop_table[i + 1]
             roll = random.random()
             if probability >= roll:
