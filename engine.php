@@ -309,7 +309,7 @@
             const username = '<?=$_SESSION['username']?>';
             const tileObjects = JSON.parse('<?=file_get_contents("https://fathomless.io/json/objects.json")?>');
             const defaults = {"default":{"textureIndex":8,"intensity":0}};
-            var viewRadius = keyBindOpened = inspecting = music = playMusic = sfx = isLowResolution = start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter  = inventoryOpened = asciiMode= 0;
+            var playerDirection = viewRadius = keyBindOpened = inspecting = music = playMusic = sfx = isLowResolution = start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter  = inventoryOpened = asciiMode= 0;
             var objectTypes = ["Terrain","Item","Decor","Creature","Light"];
             var keyBinds = (!localStorage.getItem("keyBinds"))?{"Inventory":"KeyE","Settings":"Escape","Attack":"Space","Movement":["ArrowRight","ArrowDown","ArrowLeft","ArrowUp","KeyD","KeyS","KeyA","KeyW"]}:(JSON.parse(localStorage.getItem("keyBinds")));
             sendRequest("?sendDirection");
@@ -430,6 +430,7 @@
                 }
             }
             function updateMap() {
+                moveObject(document.getElementById('canvas'),0,0);
                 for (var i = 0; i < viewDiameter; i++) {
                     for (var j = 0; j < viewDiameter; j++) {
                         objectTypes.forEach((object) => {applyTexture(object,j+","+i,(currentMap[j][i] && object in currentMap[j][i])?currentMap[j][i][object]:defaults["default"]);});
@@ -447,6 +448,7 @@
             }
             function applyTexture(type,tileId, object) {
                 var selectedElement = document.getElementById(tileId).querySelector('.'+type);
+                moveObject(selectedElement,0,0);
                 if (!isLowResolution) {
                     selectedElement.style.background = "";
                     selectedElement.style.borderRadius = "";
@@ -527,57 +529,41 @@
                 }
             }
             function receiveMap(response) {
+                console.log(`Time taken: `+(performance.now() - start)+` milliseconds`);
                 response = JSON.parse(response);
+                
                 if (response['map_subset'].length != viewDiameter) {
                     viewDiameter = response['map_subset'].length;
                     viewRadius = Math.floor(viewDiameter/2)
                     initializeMap();
                 }
                 currentMap = response["map_subset"];
-                var moved = false;
+                var moved = [];
                 response["turn_log"].forEach((update) => { 
-                    if (update['type'] == "movement" && update['before'] && currentMap[update['before'][0]] && currentMap[update['before'][0]][update['before'][1]] && !(update['before'][0] == viewRadius && update['before'][1] == viewRadius)) {
-                                        moved = true;
-                                        
- 
+                    if (update['type'] == "game_over") {
+                        alert("Temp Game Over Screen. Your Score "+currentMap[viewRadius][viewRadius]['Creature']['xp']);
+                    }
+                    
+                    if (update['type'] == "movement" && update['before'] && update['after']) {
+                        var tileId = (update['before'][0]+playerDirection[0])+","+(update['before'][1]+playerDirection[1]);
+                        if (document.getElementById(tileId)) {
                         var direction = [update['after'][0] - update['before'][0],update['after'][1] - update['before'][1]];                    
-                        var creature = document.getElementById(update['before'][0]+","+update['before'][1]).querySelector(".Creature");
-                        creature.style.zIndex = "1";
-                        moveObject(creature,direction[0],direction[1])
-                    }
-                    
-                });
-                
-                setTimeout(function(){ 
-                    
-                       response["turn_log"].forEach((update) => { 
-                    if (update['type'] == "movement" && update['before'] && currentMap[update['before'][0]] && currentMap[update['before'][0]][update['before'][1]] ) {
+                        var creature = document.getElementById(tileId).querySelector(".Creature");
                         
-                            var creature = document.getElementById(update['before'][0]+","+update['before'][1]).querySelector(".Creature");
-
-                        moveObject(creature,0,0)
-                        creature.style.zIndex = "";
+                        moveObject(creature,direction[0],direction[1])
+                        moved.push(creature);
                     }
-                    
+                    }
                 });
-var player = document.getElementById(viewRadius+","+viewRadius).querySelector(".Creature");
-
-                        moveObject(player,0,0)
-                        player.style.zIndex = "";
-                    
-                    moveObject(document.getElementById('canvas'),0,0);
-
+                setTimeout(function(){ 
                     updateMap();
-                disableMovement = false;
+                    disableMovement = false;
                 }, (moved)?100:0);
-
-                
-                
                 createMessage("dialogue",response["message"],1);
                 if (response['message'] == "target hit") {
                     playSound(7);
                 }
-                console.log(`Time taken: `+(performance.now() - start)+` milliseconds`);
+                
                 displayManhattan(0);
                 if (response["message"] == "Creature has moved"){playSound(0);}
                 if (response["message"].includes("New Map")){playSound(4);}
@@ -590,9 +576,6 @@ var player = document.getElementById(viewRadius+","+viewRadius).querySelector(".
                 if (inspecting) {
                     toggleInspect(inspecting)
                 }
-                
-                
-                
             }
             function playerUpdates(oldPlayer, newPlayer) {
                 var healthChange = newPlayer.hp - oldPlayer.hp;
@@ -615,6 +598,7 @@ var player = document.getElementById(viewRadius+","+viewRadius).querySelector(".
             }
             function moveObject(gameObject,x,y) {
                 var offset = document.getElementById("0,0").getBoundingClientRect().width;
+                gameObject.style.zIndex = (x != 0 || y != 0)?1:"";
                 gameObject.style.transition = (x != 0 || y != 0)?((gameObject.parentElement.id == viewRadius+","+viewRadius || gameObject.id == "canvas")?".2s":".1s"):"0s";
                 gameObject.style.transitionTimingFunction = (x != 0 || y != 0)?"ease-in-out":"";
                 gameObject.style.transform = (x != 0 || y != 0)?"translate("+(offset*x)+"px, "+(offset*y)+"px)":"";
@@ -626,11 +610,11 @@ var player = document.getElementById(viewRadius+","+viewRadius).querySelector(".
                         disableMovement = true;
                         var player = document.getElementById(viewRadius+","+viewRadius).querySelector(".Creature");
                         var direction  = [(tileCoordinates[0]-viewRadius),(tileCoordinates[1]-viewRadius)];
+                        playerDirection = [0,0]
                         if (!currentMap[tileCoordinates[0]][tileCoordinates[1]]["Creature"]) {
-                        moveObject(player,direction[0],direction[1]);
-                        player.style.zIndex = 1
-                        
-                        moveObject(document.getElementById('canvas'),-direction[0],-direction[1]);
+                            playerDirection = direction;
+                            moveObject(player,direction[0],direction[1]);
+                            moveObject(document.getElementById('canvas'),-direction[0],-direction[1]);
                         }
                         document.body.appendChild(Object.assign(document.createElement('div'),{id:("cover")}));
                     } 
