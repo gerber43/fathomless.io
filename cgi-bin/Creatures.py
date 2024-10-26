@@ -3,7 +3,7 @@ import sys
 import cgi
 import random
 
-from GameObject import Creature, CreatureSegment, Gold
+from GameObject import Creature, CreatureSegment, Boss, Gold
 from Items import IronDagger, WoodenClub
 
 #Piercing, Slashing, Blunt, Fire, Lightning, Water, Cold, Acid, Light, Dark, Necrotic, Arcane, Existence
@@ -19,18 +19,6 @@ class Player(Creature):
         else:
             weapon = WoodenClub((-1, -1), 1)
         super().__init__("Player", "0", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
-                         (weapon, None, None, None, None, None, None, None, None, None),
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
-                         basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
-
-class Boss(Creature):
-    def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), 1)
-        else:
-            weapon = WoodenClub((-1, -1), 1)
-        super().__init__("Boss", "11", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
@@ -194,7 +182,7 @@ class DrownedPirate(Creature):
 
 
 # boss in cove 2
-class DrownedCaptain(Creature):
+class DrownedCaptain(Boss):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
@@ -286,7 +274,7 @@ class CorruptTroll(Creature):
 
 
 # boss in Corruptite Mine 2
-class CorruptBehemoth(Creature):
+class CorruptBehemoth(Boss):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
@@ -431,7 +419,7 @@ class Stinkfly(Creature):
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Shantytown 2 boss
-class Rotmother(Creature):
+class Rotmother(Boss):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
@@ -619,7 +607,7 @@ class DarkSerpent(Creature):
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Boss of Ziggurat 3
-class XotilHighPriest(Creature):
+class XotilHighPriest(Boss):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
@@ -657,8 +645,8 @@ class Drider(Creature):
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
-# Undercity
-class DarkElfQueen(Creature):
+# Boss of Undercity
+class DarkElfQueen(Boss):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
@@ -698,7 +686,7 @@ class ObsidianGolem(Creature):
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Boss of Embers
-class AshColossus(Creature):
+class AshColossus(Boss):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
@@ -954,7 +942,7 @@ class Devourer(Creature):
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Boss of Worldeater’s Gut 2
-class WorldeaterHeart(Creature):
+class WorldeaterHeart(Boss):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
@@ -1001,6 +989,19 @@ class WraithLord(Creature):
         else:
             weapon = WoodenClub((-1, -1), 1)
         super().__init__("Wraith Lord", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+
+# Boss of Necropolis
+class DeadKing(Boss):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("King of the Dead", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None, None),
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
@@ -1099,7 +1100,7 @@ class DeceitDemon(Creature):
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Boss of Underworld 1
-class DeceitArchdemon(Creature):
+class DeceitArchdemon(Boss):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
@@ -1138,7 +1139,7 @@ class RageDemon(Creature):
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Boss of Underworld 2
-class RageArchdemon(Creature):
+class RageArchdemon(Boss):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
@@ -1190,7 +1191,7 @@ class GreedDemon(Creature):
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Boss of Underworld 3
-class GreedArchdemon(Creature):
+class GreedArchdemon(Boss):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
@@ -1242,7 +1243,7 @@ class DepressedDemon(Creature):
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Boss of Underworld 4
-class HopelessArchdemon(Creature):
+class HopelessArchdemon(Boss):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
@@ -1295,7 +1296,7 @@ class FinalDemon(Creature):
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Boss of Underworld 5
-class DoomArchdemon(Creature):
+class DoomArchdemon(Boss):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:

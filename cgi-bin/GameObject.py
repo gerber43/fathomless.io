@@ -225,6 +225,23 @@ class CreatureSegment(GameObject):
         self.type = type
         self.creature = creature
 
+class Boss(Creature):
+    def __init__(self, name, textureIndex, pos, segments, hp, mp, speed, status_effects, fitness, cunning, magic, dodge,
+                 crit_chance, equipment, skills, abilities, damage_resistances, status_resistances, inventory,
+                 inventory_size, drop_table, xp, level):
+        super().__init__(name, textureIndex, pos, segments, hp, mp, speed, status_effects, fitness, cunning, magic,
+                         dodge, crit_chance, equipment, skills, abilities, damage_resistances, status_resistances,
+                         inventory, inventory_size, drop_table, xp, level)
+    def die(self, grid, player, corpse):
+        if self == player:
+            return
+        if (len([gameObject for gameObject in grid[self.pos[0]][self.pos[1]] if gameObject.__class__.__base__.__name__ == "Decor"]) == 0):
+            grid[self.pos[0]][self.pos[1]].append(corpse)
+        drop_index = random.randint(0, len(self.drop_table) - 1)
+        grid[self.pos[0]][self.pos[1]].append(self.drop_table[drop_index])
+        player.xp += self.xp
+        grid[self.pos[0]][self.pos[1]].remove(self)
+
 
 class Consumable(Item):
     def __init__(self, name, textureIndex, pos, amount, max_stack, level, price):
@@ -327,7 +344,7 @@ class Unavailable(Equippable):
         return super().on_unequip(grid, equipped_creature)
 
 class Terrain(GameObject):
-    def __init__(self, name, textureIndex, pos, hp, resistances, passable, block_sight, warn, warning):
+    def __init__(self, name, textureIndex, pos, hp, resistances, passable, block_sight, warn_flying, warning):
         super().__init__(name, textureIndex, pos)
         self.hp = hp
         self.resistances = resistances
@@ -335,7 +352,7 @@ class Terrain(GameObject):
         self.passable = passable
         self.block_sight = block_sight
         #warn can be NO, YES, or WALK
-        self.warn = warn
+        self.warn_flying = warn_flying
         #message displayed when warn is triggered
         self.warning = warning
     def on_creation(self, grid):
@@ -446,8 +463,8 @@ class LightDecor(Decor):
         pass
 
 class LightTerrain(Terrain):
-    def __init__(self, grid, name, textureIndex, pos, hp, resistances, passable, warn, warning, intensity, lit):
-        super().__init__(name, textureIndex, pos, hp, resistances, passable, False, warn, warning)
+    def __init__(self, grid, name, textureIndex, pos, hp, resistances, passable, warn_flying, warning, intensity, lit):
+        super().__init__(name, textureIndex, pos, hp, resistances, passable, False, warn_flying, warning)
         self.intensity = intensity
         self.lit = lit
         if lit:
