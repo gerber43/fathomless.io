@@ -84,6 +84,7 @@ def update_Creature_position(game_map, player_pos):
             Creature = get_object_by_class(game_map[x][y],"Creature")
             manhattan = abs(player_pos[0] - x) + abs(player_pos[1] - y)
             check = 10
+            
             if Creature and Creature.name != "Player" and manhattan <= int((Creature.equipment[0]).range) and Creature not in moved_Creatures:
                 process_attack(Creature,(get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Creature")))
                 moved_Creatures.append(Creature)
@@ -201,7 +202,7 @@ def process_attack(attacker, target,  attack_method = None):
     #game_log += attacker.name +"@"+str((get_relative_tile(attacker.pos)))+"-"+str(damage)+"->"+target.name +"@"+str(get_relative_tile(target.pos))+"  "
 
     #check did the creature dead
-    if target.hp <= 0 and target.name != "Player":
+    if target.hp <= 0:
         corpse = Corpse(target.pos,target.hp,target.damage_resistances)
         target.die(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"),Corpse(target.pos,target.hp,target.damage_resistances))
         if target.name == "Player":
@@ -231,7 +232,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
       if (attack != None):
           target_coordinates = get_target_tile(attack)
           
-          if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None and game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name != "Player"): #attack when the target is a creature but not player
+          if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name != "Player"): #attack when the target is a creature but not player
               target_coordinates = get_target_tile(attack)
               target_creature = get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature")
               if (target_creature):
