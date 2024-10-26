@@ -85,10 +85,7 @@ def update_Creature_position(game_map, player_pos):
             manhattan = abs(player_pos[0] - x) + abs(player_pos[1] - y)
             check = 10
             if Creature and Creature.name != "Player" and manhattan <= int((Creature.equipment[0]).range) and Creature not in moved_Creatures:
-                attack_message = process_attack(Creature,(get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Creature")))
-                if attack_message == "game over":
-                    return "game over"
-                    # Todo, end the game when the message is game over
+                process_attack(Creature,(get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Creature")))
                 moved_Creatures.append(Creature)
             elif Creature and manhattan <= check and Creature.name != "Player" and Creature not in moved_Creatures:  # if Creature exist and not player
             
@@ -208,7 +205,7 @@ def process_attack(attacker, target,  attack_method = None):
         corpse = Corpse(target.pos,target.hp,target.damage_resistances)
         target.die(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"),Corpse(target.pos,target.hp,target.damage_resistances))
         if target.name == "Player":
-            return "game over"
+            turn_log.append({"type":"game_over"}) #end the game if the turn_log contain game_over
         else:
             return "target killed"
             
@@ -234,7 +231,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
       if (attack != None):
           target_coordinates = get_target_tile(attack)
           
-          if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None and game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != "Player"): #attack when the target is a creature but not player
+          if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None and game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name != "Player"): #attack when the target is a creature but not player
               target_coordinates = get_target_tile(attack)
               target_creature = get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature")
               if (target_creature):
