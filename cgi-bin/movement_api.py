@@ -177,7 +177,7 @@ def process_attack(attacker, target, attack_method = None):
     target.hp -= damage
     process_attack
     #check did the creature dead
-    if target.hp <= 0:
+    if target.hp <= 0 and target.name != "Player":
         corpse = Corpse(target.pos,target.hp,target.damage_resistances)
         target.die(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"),Corpse(target.pos,target.hp,target.damage_resistances))
         if target.name == "Player":
