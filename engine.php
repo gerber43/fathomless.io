@@ -284,6 +284,15 @@
             animation-name: inspectionLoad;
             animation-duration: 1s;
             }
+            .Creature {
+                text-align:center;
+                font-size:15px;
+                color:white;
+                -webkit-text-fill-color: white;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
+                
+            }
         </style>
     </head>
     <body>
@@ -452,6 +461,7 @@
             }
             function applyTexture(type,tileId, object) {
                 var selectedElement = document.getElementById(tileId).querySelector('.'+type);
+                selectedElement.innerHTML = "";
                 moveObject(selectedElement,0,0);
                 if (!isLowResolution) {
                     selectedElement.style.background = "";
@@ -462,6 +472,9 @@
                     if (type == "Creature") {
                         selectedElement.style.borderRadius = "50%";
                     }
+                } 
+                if (type == "Creature" && object['textureIndex'] != "8") {
+                    selectedElement.innerHTML = currentMap[tileId.split(",")[0]][tileId.split(",")[1]]['Creature']['hp']+"/"+currentMap[tileId.split(",")[0]][tileId.split(",")[1]]['Creature']['max_hp'];
                 }
             }
             function scaleTextures() {
@@ -532,6 +545,11 @@
                     sfx[index].play();
                 }
             }
+            function applyEffects(target, type, duration) {
+                if (type == "damaged") {
+                    target.style.backgroundImage = "url('https://8bitdogsol.dog/images/f121eab4be5ed47f5a67b9ee8ba2c7ca.gif')";
+                }
+            }
             function receiveMap(response) {
                 console.log(`Time taken: `+(performance.now() - start)+` milliseconds`);
                 response = JSON.parse(response);
@@ -543,10 +561,18 @@
                 }
                 currentMap = response["map_subset"];
                 var moved = [];
-                response["turn_log"].forEach((update) => { 
-                    if (update['type'] == "game_over") {
-                        alert("Temp Game Over Screen. Your Score "+currentMap[viewRadius][viewRadius]['Creature']['xp']);
+                var playerDamage = 0;
+                var gameOver = 0
+                response["turn_log"].forEach((update) => {
+                    if (update['type'] == "attack") {
+                        applyEffects(document.getElementById((update['after'][0]+playerDirection[0])+","+(update['after'][1]+playerDirection[1])).querySelector(".Light"),"damaged",.2)
+                        if (update['after'][0] == viewRadius && update['after'][1] == viewRadius) {
+                            playerDamage -= update['amount'];
+                        }
                     }
+                    if (update['type'] == "game_over") {
+                        gameOver = true;
+                     }
                     
                     if (update['type'] == "movement" && update['before'] && update['after']) {
                         var tileId = (update['before'][0]+playerDirection[0])+","+(update['before'][1]+playerDirection[1]);
@@ -559,9 +585,15 @@
                     }
                     }
                 });
+                if (playerDamage) {
+                    createMessage("alert",(playerDamage)+"<img src = '"+tileObjects[16]['icon']+"'>",1);
+                }
                 setTimeout(function(){ 
                     updateMap();
                     disableMovement = false;
+                    if (gameOver) {
+                        alert("Temp Game Over Screen. Your Score "+currentMap[viewRadius][viewRadius]['Creature']['xp']);
+                    }
                 }, (moved)?100:0);
                 createMessage("dialogue",response["message"],1);
                 if (response['message'] == "target hit") {
@@ -592,9 +624,7 @@
                 var xmlhttp = new XMLHttpRequest();
                 xmlhttp.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
-                        var oldPlayerObject = (currentMap)?currentMap[viewRadius][viewRadius]["Creature"]:false;
                         receiveMap(this.responseText);
-                        (oldPlayerObject)?playerUpdates(oldPlayerObject, currentMap[viewRadius][viewRadius]["Creature"]):false;
                     }
                 }
                 xmlhttp.open("GET", "https://fathomless.io/sessionValidate/"+uri, true);
@@ -614,8 +644,17 @@
                         disableMovement = true;
                         var player = document.getElementById(viewRadius+","+viewRadius).querySelector(".Creature");
                         var direction  = [(tileCoordinates[0]-viewRadius),(tileCoordinates[1]-viewRadius)];
+                        if (direction[0] == 0 && direction[1] == -1) {
+                                player.style.backgroundImage = 'url("'+tileObjects[36]['icon']+'")';
+                            } else if (direction[0] == 1 && direction[1] == 0) {
+                                player.style.backgroundImage = 'url("'+tileObjects[37]['icon']+'")';
+                            } else if (direction[0] == 0 && direction[1] == 1) {
+                                player.style.backgroundImage = 'url("'+tileObjects[38]['icon']+'")';
+                            } else if (direction[0] == -1 && direction[1] == 0) {
+                                player.style.backgroundImage = 'url("'+tileObjects[39]['icon']+'")';
+                            }
                         playerDirection = [0,0]
-                        if (!currentMap[tileCoordinates[0]][tileCoordinates[1]]["Creature"]) {
+                        if (!currentMap[tileCoordinates[0]][tileCoordinates[1]]["Creature"] && ((currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"] && currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"]["passable"]) || !currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"])) {
                             playerDirection = direction;
                             moveObject(player,direction[0],direction[1]);
                             moveObject(document.getElementById('canvas'),-direction[0],-direction[1]);
@@ -638,7 +677,7 @@
                 
 
             }
-            document.addEventListener('keyup', (e) => {
+            document.addEventListener('keydown', (e) => {
                 if (keyFunction) {
                     changeKeyBind(e.code);
                 } else {
