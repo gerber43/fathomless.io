@@ -75,7 +75,7 @@ class Spider(Creature):
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
-# cave
+# cave and deep cavern
 class Bat(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
@@ -540,6 +540,19 @@ class CaveToad(Creature):
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Deep Cave
+class GiantSpider(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), 1)
+        else:
+            weapon = WoodenClub((-1, -1), 1)
+        super().__init__("Giant Spider", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None, None),
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+
+# Deep Cave
 class CaveGiant(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
@@ -738,7 +751,7 @@ class Ghost(Creature):
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
-#Columbarium and Catacomb
+#Columbarium and Catacomb and Necropolis
 class Wraith(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
