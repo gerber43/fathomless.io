@@ -322,7 +322,7 @@
             const username = '<?=$_SESSION['username']?>';
             const tileObjects = JSON.parse('<?=file_get_contents("https://fathomless.io/json/objects.json")?>');
             const defaults = {"default":{"textureIndex":8,"intensity":0}};
-            var playerDirection = viewRadius = keyBindOpened = inspecting = music = playMusic = sfx = isLowResolution = start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter  = inventoryOpened = asciiMode= 0;
+            var currentLevel = playerDirection = viewRadius = keyBindOpened = inspecting = music = playMusic = sfx = isLowResolution = start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter  = inventoryOpened = asciiMode= 0;
             var objectTypes = ["Terrain","Item","Decor","Creature","Light"];
             var keyBinds = (!localStorage.getItem("keyBinds"))?{"Inventory":"KeyE","Select":"Enter","Settings":"Escape","Attack":"Space","Movement":["ArrowRight","ArrowDown","ArrowLeft","ArrowUp","KeyD","KeyS","KeyA","KeyW"]}:(JSON.parse(localStorage.getItem("keyBinds")));
             sendRequest("?sendDirection");
@@ -602,7 +602,24 @@
                 
                 displayManhattan(0);
                 if (response["message"] == "Creature has moved"){playSound(0);}
-                if (response["message"].includes("New Map")){playSound(4);}
+                if (response["message"].includes("New Map")){playSound(4);
+                    var correctTrack = (currentLevel%2)?0:1;
+
+                 if (playMusic) {
+                        music[correctTrack].pause();
+                            music[correctTrack].currentTime = 0;
+                 }
+                    currentLevel = response["message"].replace("New Map: Level ","").split(",");
+                    currentLevel = parseInt(currentLevel[0].split(".")[0]);
+                    
+                     if (playMusic) {
+                       
+                   correctTrack = (currentLevel%2)?0:1;
+                            music[correctTrack].loop = true;
+                            music[correctTrack].play();
+                    }
+                    
+                }
                 if (response["message"].includes("Current HP")){playSound(8);}
                 if (document.getElementById("cover")){
                     document.getElementById("cover").remove()
@@ -741,14 +758,15 @@
                         Item.innerHTML = (!playMusic)?"Mute Music":"Play Music"
                         playMusic = !playMusic;
                          if (music == 0 && playMusic) {
-                            music = [new Audio('https://fathomless.io/assets/audio/track1.mp3')];
+                            music = [new Audio('https://fathomless.io/assets/audio/track1.mp3'),new Audio('https://fathomless.io/assets/audio/track22.mp3')];
                         }
+                        var correctTrack = (currentLevel%2)?0:1;
                         if (playMusic) {
-                            music[0].loop = true;
-                            music[0].play();
+                            music[correctTrack].loop = true;
+                            music[correctTrack].play();
                         } else {
-                            music[0].pause();
-                            music[0].currentTime = 0;
+                            music[correctTrack].pause();
+                            music[correctTrack].currentTime = 0;
                         }
                     }
                     if (Item.dataset.setting && Item.dataset.setting == "toggleAscii") {
