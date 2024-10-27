@@ -17,6 +17,7 @@ depth = 0
 field_of_view = 11
 fov_radius = field_of_view // 2 
 turn_log = []
+game_log = ""
 
 #Funciton to save the updated map
 def save_map(map_file_path, map_data):
@@ -63,8 +64,9 @@ def process_Creature_movement(position, direction, game_map):
     
     message = "Creature has moved"
     global turn_log
+    global game_log
     turn_log.append({"type":"movement","before":get_relative_tile(get_object_by_class(game_map[x][y],"Creature").pos),"after":get_relative_tile([new_x,new_y])})
-    #game_log += get_object_by_class(game_map[x][y],"Creature").name +"@"+str((get_relative_tile(get_object_by_class(game_map[x][y],"Creature").pos)))+"->"+str(get_relative_tile([new_x,new_y]))+" "
+    game_log += get_object_by_class(game_map[x][y],"Creature").name +" @ "+str(((get_object_by_class(game_map[x][y],"Creature").pos)))+" Moved To "+str(([new_x,new_y]))+"\n"
     get_object_by_class(game_map[x][y],"Creature").move(game_map,[new_x, new_y])
     get_object_by_class(game_map[new_x][new_y],"Terrain").on_step(game_map,get_object_by_class(game_map[new_x][new_y],"Creature"))
     if (game_map,get_object_by_class(game_map[new_x][new_y],"Creature").hp <= 0):
@@ -198,8 +200,9 @@ def process_attack(attacker, target,  attack_method = None):
     # reduce target's hp
     target.hp -= damage
     global turn_log 
+    global game_log 
     turn_log.append({"type":"attack","before":get_relative_tile(attacker.pos),"after":get_relative_tile(target.pos),"amount":damage})
-    #game_log += attacker.name +"@"+str((get_relative_tile(attacker.pos)))+"-"+str(damage)+"->"+target.name +"@"+str(get_relative_tile(target.pos))+"  "
+    game_log += attacker.name +" @ "+str(((attacker.pos)))+" Attacked "+target.name +" @ "+str((target.pos))+" For -"+str(damage)+"\n"
 
     #check did the creature dead
     if target.hp <= 0:
@@ -207,6 +210,7 @@ def process_attack(attacker, target,  attack_method = None):
         target.die(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"),Corpse(target.pos,target.hp,target.damage_resistances))
         if target.name == "Player":
             turn_log.append({"type":"game_over"}) #end the game if the turn_log contain game_over
+            game_log += "Game Over\n"
         else:
             return "target killed"
             
@@ -231,6 +235,16 @@ if (HTTP_FIELDS.getvalue('uuid')):
       player_pos = find_player_position(game_map)
       if (attack != None):
           target_coordinates = get_target_tile(attack)
+          player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature")
+          direction = get_direction_from_step(player_pos, target_coordinates)
+          if (direction == 270):
+             player.textureIndex = 36
+          elif (direction == 0):
+             player.textureIndex = 37
+          elif (direction == 90):
+             player.textureIndex = 38
+          elif (direction == 180):
+             player.textureIndex = 39
           
           if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name != "Player"): #attack when the target is a creature but not player
               target_coordinates = get_target_tile(attack)
@@ -245,8 +259,10 @@ if (HTTP_FIELDS.getvalue('uuid')):
              
               if (abs(player_pos[0] - target_coordinates[0]) + abs(player_pos[1] - target_coordinates[1]) == 1):
                   
-                  direction = get_direction_from_step(player_pos, target_coordinates)
+                  
                   player_pos, message = process_Creature_movement(player_pos, direction, game_map)
+                  
+                  
                   if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Item")):
                       get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").pickup_item(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Item"))
 
@@ -258,6 +274,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
               get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").on_interact(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"))
               
               message = "Creature has moved" if (message == "Creature has moved") else "interacted with"
+              game_log += get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").name +" @ "+str(((get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").pos)))+" Interacted With "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name +" @ "+str(((get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").pos)))+"\n"
 
           
           
@@ -270,13 +287,13 @@ if (HTTP_FIELDS.getvalue('uuid')):
           if get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor") and get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor").name == "Stairs":
               stair = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor")
               player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature")
-              
+              player.textureIndex = 38
               depth = str(int(stair.hp.split(",")[0]) + 1)+","+stair.hp.split(",")[1]
               game_map = generateMap(0, depth,player)
     
               message = "New Map: Level "+str(depth)
               player_pos = find_player_position(game_map)
-
+              game_log += "New Level Generated "+depth+"\n"
           
               
     # Save the updated map back to the file
@@ -294,3 +311,5 @@ if (HTTP_FIELDS.getvalue('uuid')):
           "turn_log": turn_log
       }
       sys.stdout.write(json.dumps(response))
+      with open("../logs/"+uuid+".txt", "a") as myfile:
+         myfile.write(game_log)
