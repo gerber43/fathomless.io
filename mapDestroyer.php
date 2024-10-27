@@ -14,6 +14,7 @@ foreach ($maps as $map) {
     if (str_contains($map,".pkl")) {
         if (!in_array(str_replace(".pkl","",$map),$uuids) && $currentTime - filemtime("maps/".$map) >= 3600) {
             unlink("maps/".$map);
+            unlink("logs/".str_replace(".pkl","",$map).".txt");
         }
     }
 }
