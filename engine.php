@@ -314,7 +314,7 @@
             <button data-setting = "toggleResolution">Toggle Resolution</button>
             <button data-setting = "keyBind">Key Binds</button>
             <button data-setting = "keyboardOnly">Keyboard Only</button>
-            <?=($_SESSION['username'] == "Guest")?'<button data-setting = "saveGuest">Save Progress</button>':'';?>
+            <?=($_SESSION['username'] == "Guest")?'<button data-setting = "saveGuest">Save Progress</button>':'<button data-setting = "logout">Logout</button>';?>
             </span>
         </div>
         <div id = "inspection" draggable="true"></div>
@@ -571,7 +571,7 @@
                         }
                     }
                     if (update['type'] == "game_over") {
-                        gameOver = true;
+                        gameOver = update['game_log'];
                      }
                     
                     if (update['type'] == "movement" && update['before'] && update['after']) {
@@ -592,7 +592,8 @@
                     updateMap();
                     disableMovement = false;
                     if (gameOver) {
-                        alert("Temp Game Over Screen. Your Score "+currentMap[viewRadius][viewRadius]['Creature']['xp']);
+                        alert("Temp Game Over Screen. Your Score "+currentMap[viewRadius][viewRadius]['Creature']['xp']+"\nGame Log:\n"+ gameOver);
+                        location.reload();
                     }
                 }, (moved)?100:0);
                 createMessage("dialogue",response["message"],1);
@@ -603,20 +604,17 @@
                 displayManhattan(0);
                 if (response["message"] == "Creature has moved"){playSound(0);}
                 if (response["message"].includes("New Map")){playSound(4);
-                    var correctTrack = (currentLevel%2)?0:1;
 
                  if (playMusic) {
-                        music[correctTrack].pause();
-                            music[correctTrack].currentTime = 0;
+                        music.pause();
                  }
                     currentLevel = response["message"].replace("New Map: Level ","").split(",");
                     currentLevel = parseInt(currentLevel[0].split(".")[0]);
                     
                      if (playMusic) {
-                       
-                   correctTrack = (currentLevel%2)?0:1;
-                            music[correctTrack].loop = true;
-                            music[correctTrack].play();
+                      music = new Audio('https://fathomless.io/assets/audio/track'+currentLevel+'.mp3');
+                    music.loop = true;
+                    music.play();
                     }
                     
                 }
@@ -758,15 +756,14 @@
                         Item.innerHTML = (!playMusic)?"Mute Music":"Play Music"
                         playMusic = !playMusic;
                          if (music == 0 && playMusic) {
-                            music = [new Audio('https://fathomless.io/assets/audio/track1.mp3'),new Audio('https://fathomless.io/assets/audio/track22.mp3')];
+                            music = new Audio('https://fathomless.io/assets/audio/track'+currentLevel+'.mp3');
                         }
-                        var correctTrack = (currentLevel%2)?0:1;
                         if (playMusic) {
-                            music[correctTrack].loop = true;
-                            music[correctTrack].play();
+                            music.loop = true;
+                            music.play();
                         } else {
-                            music[correctTrack].pause();
-                            music[correctTrack].currentTime = 0;
+                            music.pause();
+                            music.currentTime = 0;
                         }
                     }
                     if (Item.dataset.setting && Item.dataset.setting == "toggleAscii") {
@@ -784,7 +781,9 @@
                     }
                     if (Item.dataset.setting && Item.dataset.setting == "keyboardOnly") {
                         toggleKeyboardOnly();
-                        
+                    }
+                    if (Item.dataset.setting && Item.dataset.setting == "logout") {
+                        window.location.replace("https://fathomless.io/logout/");
                     }
                 });
             });
