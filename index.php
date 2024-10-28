@@ -102,7 +102,7 @@
             justify-content:center;
             flex-direction:column;
             }
-            input {
+            input, button {
             transition:.75s;
             background: none;
             color: inherit;
@@ -126,7 +126,7 @@
             background:saddlebrown;
             cursor:text;
             }
-            input[type=submit]:hover,label:hover {
+            input[type=submit]:hover,label:hover,button:hover {
             transition:.75s;
             transform:scale(.9);
             }
@@ -172,6 +172,28 @@
             margin:20px;
             cursor:pointer;
             }
+            .highlight {
+            background:url(https://img.freepik.com/premium-vector/seamless-pattern-old-wood-wall-background_117579-47.jpg);
+            }
+            table {
+            color:rgb(212,175,55);
+            background:saddlebrown;text-align:center;
+            }
+            td {
+            border:2px solid rgb(212,175,55);
+            padding:20px;
+            }th {
+            padding:20px;
+            }
+            h2, p {
+            color:rgb(212,175,55);
+            background:saddlebrown;text-align:center;
+            padding:20px;
+            border:2px solid rgb(212,175,55);
+            }
+            a {
+                color:rgb(212,175,55);
+            }
         </style>
     </head>
     <body>
@@ -190,8 +212,27 @@
                 <div>
                     <input type = "submit" name = "guest_session" value = "Guest">
                 </div>
-                </div>
             </span>
         </form>
+        <button onclick = "updateLeaderboard()">Reload</button>
+        <div id = "leaderboard"><?=file_get_contents("https://fathomless.io/leaderboard/?username=".((isset($_SESSION['username']))?$_SESSION['username']:""));?>
+            
+        </div>
+        
+        <script>
+        const username = '<?=((isset($_SESSION['username']))?$_SESSION['username']:"")?>';
+        setInterval(updateLeaderboard, 30000);
+
+            function updateLeaderboard() {
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        document.getElementById('leaderboard').innerHTML = this.responseText;
+                    }
+                }
+                xmlhttp.open("GET", "https://fathomless.io/leaderboard/?username="+encodeURIComponent(username), true);
+                xmlhttp.send();
+            }
+        </script>
     </body>
 </html>
