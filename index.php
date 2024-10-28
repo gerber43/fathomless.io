@@ -14,22 +14,24 @@
         }
         if (isset($_REQUEST['create_account'])) {
             if (strlen($_REQUEST['username']) >= 3) {
-                
-                
-            
                 $dbParams = json_decode(file_get_contents("dbPass.pem"),true);
                 $conn = new mysqli($dbParams[0],$dbParams[1],$dbParams[2],$dbParams[3]);
-                $result = $conn->query("SELECT * FROM `users` WHERE user = '".$_REQUEST['username']."'");
-                $conn->close();
+                $stmt = $conn->prepare("SELECT user, hash, uuid FROM users WHERE user = ?");
+                $stmt->bind_param("s", $_REQUEST['username']);
+                $stmt->execute(); 
+                $result = $stmt->get_result();
+                $stmt->close();
                 if (!($result ->fetch_assoc())) {
                     $_SESSION['uuid'] = guidv4();
-                    $dbParams = json_decode(file_get_contents("dbPass.pem"),true);
-                    $conn = new mysqli($dbParams[0],$dbParams[1],$dbParams[2],$dbParams[3]);
                     $username = $_REQUEST['username'];
                     $_SESSION['difficulty'] = $_REQUEST['difficulty'];
                     $hash = password_hash($_REQUEST['password'],PASSWORD_DEFAULT);
-                    $result = $conn->query("INSERT INTO `users`(`user`, `hash`, `uuid`) VALUES ('".$username."','".$hash."','".$_SESSION['uuid']."')");
-                    $conn->close();
+                    $stmt = $conn->prepare("INSERT INTO users(user, hash, uuid) VALUES (?, ?, ?)");
+                    $stmt->bind_param("sss", $_REQUEST['username'], $hash, $_SESSION['uuid']);
+                    $stmt->execute(); 
+                    $result = $stmt->get_result();
+                    $stmt->close();
+                    $conn ->close();
                     header("Location: https://fathomless.io/engine/");
                 } else {
                     $accountText = '<p>Username In Use</p>';
@@ -37,15 +39,17 @@
             } else {
                 $accountText = '<p>Username Too Short</p>';
             }
-            
-    
         }
         if (isset($_POST['login'])) {
             $dbParams = json_decode(file_get_contents("dbPass.pem"),true);
             $conn = new mysqli($dbParams[0],$dbParams[1],$dbParams[2],$dbParams[3]);
-            $result = $conn->query("SELECT user, hash, uuid FROM users");
-            $conn->close();
-            $row = $result->fetch_assoc();
+            $stmt = $conn->prepare("SELECT user, hash, uuid FROM users WHERE user = ?");
+            $stmt->bind_param("s", $_REQUEST['username']);
+            $stmt->execute(); 
+            $result = $stmt->get_result();
+            $row = ($result->fetch_assoc());
+            $stmt->close();
+            $conn ->close();
             $accountText = '<p>Invalid Credentials</p>';
             if (($row["user"] == $_REQUEST['username']) and password_verify($_POST['password'], $row["hash"])) {
                 $_SESSION['uuid'] = $row["uuid"];
