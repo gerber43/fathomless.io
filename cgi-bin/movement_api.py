@@ -5,13 +5,13 @@ import cgi
 import os
 import pickle
 from map_simplifier import delete_blank_object
-from user_tracking import a_star
-from user_tracking import find_escape_direction
+from user_tracking import a_star, find_escape_direction
 from GameObject import Terrain
 from Creatures import Goblin, Player
 from MasterGenerator import generateMap
 from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace
 from Decor import Corpse
+
 print('Content-type: application/json\n')
 HTTP_FIELDS = cgi.FieldStorage()
 depth = 0
@@ -19,6 +19,7 @@ field_of_view = 11
 fov_radius = field_of_view // 2 
 turn_log = []
 game_log = ""
+gameOver = False
 
 #Funciton to save the updated map
 def save_map(map_file_path, map_data):
@@ -68,11 +69,22 @@ def process_Creature_movement(position, direction, game_map):
     global game_log
     turn_log.append({"type":"movement","before":get_relative_tile(get_object_by_class(game_map[x][y],"Creature").pos),"after":get_relative_tile([new_x,new_y])})
     game_log += get_object_by_class(game_map[x][y],"Creature").name +" @ "+str(((get_object_by_class(game_map[x][y],"Creature").pos)))+" Moved To "+str(([new_x,new_y]))+"\n"
+    
     get_object_by_class(game_map[x][y],"Creature").move(game_map,[new_x, new_y])
     get_object_by_class(game_map[new_x][new_y],"Terrain").on_step(game_map,get_object_by_class(game_map[new_x][new_y],"Creature"))
-    if (game_map,get_object_by_class(game_map[new_x][new_y],"Creature").hp <= 0):
-        pass
-        #game_map,get_object_by_class(game_map[new_x][new_y],"Creature").die(game_map,game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"))
+    
+    target = get_object_by_class(game_map[new_x][new_y],"Creature")
+    if (target.hp <= 0):
+        if (target.name == "Player"):
+            global gameOver
+            gameOver = True
+            return (new_x, new_y), message
+        else:
+            global player_pos
+            #turn_log.append({"killed":"type"}) 
+            game_log += target.name +" @ "+str(((target.pos)))+" Died In "+get_object_by_class(game_map[new_x][new_y],"Terrain").name+"\n"
+
+            target.die(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"),Corpse(target.pos,target.hp,target.damage_resistances))
     return (new_x, new_y), message
 
 # Function to update all Creature positions
@@ -104,16 +116,16 @@ def update_Creature_position(game_map, player_pos):
                     moved_Creatures.append(Creature)
                 
                 #creature will move toward player if the player is in the tracking range
-                elif manhattan <= check
-                path = a_star((x, y), player_pos, game_map)
-                if not path or len(path) < 2:
-                    continue
-                current_pos = (x, y)
-                for move_num in range(min(Creature.speed, len(path) - 1)):
-                    next_pos = path[move_num + 1]
-                    direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
-                    current_pos, message = process_Creature_movement(current_pos, direction, game_map)
-                moved_Creatures.append(Creature)
+                elif manhattan <= check:
+                    path = a_star((x, y), player_pos, game_map)
+                    if not path or len(path) < 2:
+                        continue
+                    current_pos = (x, y)
+                    for move_num in range(min(Creature.speed, len(path) - 1)):
+                        next_pos = path[move_num + 1]
+                        direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
+                        current_pos, message = process_Creature_movement(current_pos, direction, game_map)
+                    moved_Creatures.append(Creature)
 
 # Helper function to get direction between two points
 def get_direction_from_step(current_pos, next_pos):
@@ -204,40 +216,44 @@ def get_relative_tile(tile):
     return [target_x,target_y]
 
 #funtion to process the acttack action
-def process_attack(attacker, target,  attack_method = None):
-    # calculate the damage based on attack_method, now just set to 1
-    if (attack_method == None):
-        damage = 1
+def process_attack(attacker, target):
+    
+    global game_map
+    beforeHp = target.hp
+    attacker.basic_attack(game_map, target)
+    damage = beforeHp - target.hp
     # reduce target's hp
-    target.hp -= damage
-    global turn_log 
-    global game_log 
-    turn_log.append({"type":"attack","before":get_relative_tile(attacker.pos),"after":get_relative_tile(target.pos),"amount":damage})
-    game_log += attacker.name +" @ "+str(((attacker.pos)))+" Attacked "+target.name +" @ "+str((target.pos))+" For -"+str(damage)+"\n"
-
-    #check did the creature dead
-    if target.hp <= 0:
-        corpse = Corpse(target.pos,target.hp,target.damage_resistances)
-        target.die(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"),Corpse(target.pos,target.hp,target.damage_resistances))
-        if target.name == "Player":
-            turn_log.append({"type":"game_over"}) #end the game if the turn_log contain game_over
-            game_log += "Game Over\n"
-        else:
-            return "target killed"
-            
-    return "target hit"
+    if (damage > 0):
+        global turn_log 
+        global game_log 
+        turn_log.append({"type":"attack","before":get_relative_tile(attacker.pos),"after":get_relative_tile(target.pos),"amount":damage})
+        game_log += attacker.name +" @ "+str(((attacker.pos)))+" Attacked "+target.name +" @ "+str((target.pos))+" For "+str(damage)+"\n"
+    
+        #check did the creature dead
+        if target.hp <= 0:
+            target.die(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"),Corpse(target.pos,target.hp,target.damage_resistances))
+            if target.name == "Player":
+                global gameOver
+                gameOver = True
+            else:
+                return "target killed"
+                
+        return "target hit"
+    else:
+        return "target missed"
     
 
 if (HTTP_FIELDS.getvalue('uuid')):
       uuid = HTTP_FIELDS.getvalue('uuid')
       direction = None
       attack = [int(coordinate) for coordinate in HTTP_FIELDS.getvalue('attack').split(",")] if HTTP_FIELDS.getvalue('attack') else None
-      difficulty = HTTP_FIELDS.getvalue('difficulty') if (HTTP_FIELDS.getvalue('difficulty')) else None
+      difficulty = HTTP_FIELDS.getvalue('difficulty') if (HTTP_FIELDS.getvalue('difficulty')) else "Easy"
 
     # Load the current map
       file_path = '../maps/'+uuid+'.pkl' 
       if (not os.path.exists(file_path)):
           game_map = generateMap(0, "0,"+difficulty)
+          game_log += "New Level Generated 0,"+difficulty+"\n"
       else:
           game_map = load_map(file_path)
       
@@ -295,6 +311,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
     #update the Creature's position
       if (message == "Creature has moved"):
           update_Creature_position(game_map, player_pos)
+          #print(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor").name)
           if get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor") and get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor").name == "Stairs":
               stair = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor")
               player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature")
@@ -316,11 +333,23 @@ if (HTTP_FIELDS.getvalue('uuid')):
       map_subset = get_map_subset(player_pos, game_map, fov_radius)
 
     #send subset_map and message back to client
+      
+      if (gameOver):
+         game_log += "Game Over. Final Score: "+str(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").xp)
+      
+      with open("../logs/"+uuid+".txt", "a") as myfile:
+         myfile.write(game_log)
+         
+      if (gameOver):
+         import urllib.request
+         import urllib.parse
+         full_game_log = urllib.request.urlopen('https://fathomless.io/gameOver/?uuid='+urllib.parse.quote_plus(uuid))
+         turn_log.append({"type":"game_over","game_log":(full_game_log.read().decode("utf-8"))}) #end the game if the turn_log contain game_over
+
       response = {
           "message": message,
           "map_subset": map_subset,
           "turn_log": turn_log
       }
       sys.stdout.write(json.dumps(response))
-      with open("../logs/"+uuid+".txt", "a") as myfile:
-         myfile.write(game_log)
+      
