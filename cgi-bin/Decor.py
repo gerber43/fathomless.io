@@ -18,6 +18,13 @@ class Stairs(Decor):
     def on_interact(self, current_level, creature):
         pass
 
+#used for the ziggurat>carrion level transition, as well as for the oldtemple>cosmicvoid and cosmicvoid>worldheart
+class Portal(Decor):
+    def __init__(self, pos):
+        super().__init__("Portal", "23", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "Yes", "Go Down?")
+    def on_interact(self, current_level, creature):
+        pass
+
 #mine, corruptite mine, shantytown, undercity
 class Door(Decor):
     def __init__(self, pos):

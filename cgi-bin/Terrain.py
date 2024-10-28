@@ -44,9 +44,8 @@ class DeepWater(Terrain):
     def on_step(self, grid, creature):
         creature.hp -= 5*(1.0-creature.damage_resistances[lookup_damage_type_id("WTR")])
         creature.gain_status_effect(grid,grid, lookup_status_resistance_id("Suffocation"), 5*(1-creature.damage_resistances[lookup_status_resistance_id("Suffocation")]), False)
+
 #magma core, underworld: common
-
-
 class Fire(Terrain):
     def __init__(self, pos):
         super().__init__("Fire", "20", pos, 10, (1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, True, False, "Step into the flames?")
@@ -63,7 +62,7 @@ class Lava(LightTerrain):
         creature.hp -= 100*(1.0-creature.damage_resistances[lookup_damage_type_id("Fire")])
         creature.gain_status_effect(grid,lookup_status_resistance_id("Burning"), 50*(1-creature.status_resistances[lookup_status_resistance_id("Burning")]))
 
-
+#temple of the old ones, uncommon
 class Spikes(Terrain):
     def __init__(self, pos):
         super().__init__("Spikes", "21", pos, 20, (0.9, 0.2, 0.5, 1.0, 0.3, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, True, False, "Step onto the spikes?")
@@ -89,7 +88,7 @@ class MysticMist(LightTerrain):
     def __init__(self, grid, pos):
         super().__init__(grid, "Mist", "20", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, False, "", 128, True)
 
-#only tile of cosmic void
+#only tile of cosmic void, everything in cosmic void must have an AbsoluteNothingness Terrain
 class AbsoluteNothingness(Terrain):
     def __init__(self, pos):
         super().__init__("Nothing", "20", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, False, "")
