@@ -121,6 +121,7 @@
             border-radius:20px;
             opacity:.25;
             font-size:0;
+            
             }
             #settings button {
             filter: brightness(0) invert(1);
@@ -137,11 +138,52 @@
             font: inherit;
             cursor: pointer;
             outline: inherit;
-            width:100px;
             display:flex;
             align-items:center;
             justify-content:center;
             }
+            #settings input[type="range"] {
+                margin:0;
+                padding:0;
+                height:20px;
+                display:none;
+                -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  width: 100%; /* Full-width */
+  height: 25px; /* Specified height */
+  background: saddlebrown; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+  border:2px solid rgb(212,175,55);
+  border-radius:20px;
+                
+            }
+            
+            /* Mouse-over effects */
+#settings input[type="range"]:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+#settings input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  border-radius:50%;
+  background: white; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+#settings input[type="range"]::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: white; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+  border-radius:50%;
+}
             .gearRotate {
             -webkit-animation-name: gearRotation;
             -webkit-animation-duration: 1s;
@@ -293,6 +335,7 @@
   -webkit-text-stroke-color: black;
                 
             }
+        
         </style>
     </head>
     <body>
@@ -308,13 +351,17 @@
             <img id = "gear" src = "https://icons.veryicon.com/png/o/miscellaneous/xdh-font-graphics-library/gear-setting-1.png">
             </button>
             <span id = "settings_span">
-            <button data-setting = "toggleAudio">Play SFX</button>
-            <button data-setting = "toggleMusic">Play Music</button>
-            <button data-setting = "toggleAscii">Enable Ascii</button>
-            <button data-setting = "toggleResolution">Toggle Resolution</button>
-            <button data-setting = "keyBind">Key Binds</button>
-            <button data-setting = "keyboardOnly">Keyboard Only</button>
-            <?=($_SESSION['username'] == "Guest")?'<button data-setting = "saveGuest">Save Progress</button>':'<button data-setting = "logout">Logout</button>';?>
+                
+                
+                <button id = "sfxVolume">SFX Volume: 0%</button>
+                <input class = "slider" data-setting = "sfxVolume" type = "range" min = "0" max = "100" value = "0">
+                <button id = "musicVolume">Music Volume: 0%</button>
+                <input class = "slider"  data-setting = "musicVolume" type = "range" min = "0" max = "100" value = "0">
+                <button data-setting = "toggleAscii">Enable Ascii</button>
+                <button data-setting = "toggleResolution">Toggle Resolution</button>
+                <button data-setting = "keyBind">Key Binds</button>
+                <button data-setting = "keyboardOnly">Keyboard Only</button>
+                <?=($_SESSION['username'] == "Guest")?'<button data-setting = "saveGuest">Save Progress</button>':'<button data-setting = "logout">Logout</button>';?>
             </span>
         </div>
         <div id = "inspection" draggable="true"></div>
@@ -329,9 +376,11 @@
             window.mobileCheck = function() {let check = false;(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);return check;};
             //if (mobileCheck()){toggleResolution()}
             function toggleSettings() {
+                
                 document.getElementById('settings').style.width=(isSettingsOpen?"0px":"100vw");
                 document.getElementById('settings').style.fontSize=(isSettingsOpen?"0px":"10px");
                 document.getElementById('settings').style.border=(isSettingsOpen?"":"solid rgb(212,175,55) 5px");
+                document.getElementById('settings_span').querySelectorAll('input').forEach((Item) => {Item.style.display=(!isSettingsOpen)?"flex":"none";Item.style.width=(!isSettingsOpen)?"80px":"0px";Item.style.height=(!isSettingsOpen)?"20px":"0px";});
                 document.getElementById('gear').classList.toggle('gearRotate');
                 isSettingsOpen = !isSettingsOpen;
             }
@@ -359,19 +408,21 @@
             }
             function isValidMove(coordinates) {
                 var target = currentMap[coordinates[0]][coordinates[1]];
-                var confirmation = true;
-                if (target["Terrain"]["warn"] == "Yes") {
-                    confirmation = confirm(target["Terrain"]["warning"])
-                }
-                if (target["Decor"] && target["Decor"]["warn"] == "Yes") {
-                    confirmation = confirm(target["Decor"]["warning"])
-                }
-                var range = (currentMap[viewRadius][viewRadius]["Creature"]["equipment"][0]['range'])
-                if ((target["Terrain"]["textureIndex"] != 8) && confirmation && document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= range) {
-                    if (target["Terrain"]["passable"] || (!target["Terrain"]["passable"] && target["Decor"])) {
-                        return true
+                if (coordinates[0] != viewRadius || coordinates[1] != viewRadius) {
+                    var confirmation = true;
+                    if (target["Terrain"]["warn"] == "Yes") {
+                        confirmation = confirm(target["Terrain"]["warning"])
                     }
-                }
+                    if (target["Decor"] && target["Decor"]["warn"] == "Yes") {
+                        confirmation = confirm(target["Decor"]["warning"])
+                    }
+                    var range = (currentMap[viewRadius][viewRadius]["Creature"]["equipment"][0]['range'])
+                    if ((target["Terrain"]["textureIndex"] != 8) && confirmation && document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= range) {
+                        if (target["Terrain"]["passable"] || (!target["Terrain"]["passable"] && target["Decor"])) {
+                            return true
+                        }
+                    }
+                } 
                 return false
             }
             function toggleInspect(tileId){
@@ -542,6 +593,7 @@
                         sfx[index].pause();
                         sfx[index].currentTime = 0;
                     }
+                    sfx[index].volume = sfxVolume/100;
                     sfx[index].play();
                 }
             }
@@ -569,6 +621,10 @@
                         if (update['after'][0] == viewRadius && update['after'][1] == viewRadius) {
                             playerDamage -= update['amount'];
                         }
+                    }
+                    if (update['level']) {
+                        currentLevel = update['level'].split(",");
+                    currentLevel = parseInt(currentLevel[0].split(".")[0]);
                     }
                     if (update['type'] == "game_over") {
                         gameOver = update['game_log'];
@@ -613,6 +669,7 @@
                     
                      if (playMusic) {
                       music = new Audio('https://fathomless.io/assets/audio/track'+currentLevel+'.mp3');
+                      music.volume = musicVolume/100;
                     music.loop = true;
                     music.play();
                     }
@@ -738,6 +795,56 @@
                     closeSetting = setTimeout(toggleSettings, 3000);
                 }
             });
+            var sfxVolume = musicVolume = 0;
+            document.querySelectorAll('input[type="range"]').forEach((Item) => {
+                
+                Item.addEventListener("input", () => {
+                    if (Item.dataset.setting && Item.dataset.setting == "sfxVolume") {
+                        sfxVolume = Item.value;
+                        document.getElementById('sfxVolume').innerHTML = "SFX Volume: "+(Item.value)+"%";
+                         playAudio = !playAudio;
+                         if (!sfx) {
+                            sfx = [new Audio('https://fathomless.io/assets/audio/walking.mp3'),new Audio('https://fathomless.io/assets/audio/coin.mp3'),new Audio('https://fathomless.io/assets/audio/crash.mp3'),new Audio('https://fathomless.io/assets/audio/walk2.mp3'), new Audio('https://fathomless.io/assets/audio/woosh.mp3'), new Audio('https://fathomless.io/assets/audio/dead.mp3'), new Audio('https://fathomless.io/assets/audio/attack.mp3'), new Audio('https://fathomless.io/assets/audio/shoot.mp3'), new Audio('https://fathomless.io/assets/audio/hit.mp3'), new Audio('https://fathomless.io/assets/audio/kill.mp3')];
+                            playAudio = true;
+                             
+                         }
+                         if (sfx && sfxVolume == "0") {
+                             playAudio = false;
+                         }
+                         if (sfx && sfxVolume != "0") {
+                             playAudio = true;
+                         }
+                        
+                    }
+                    if (Item.dataset.setting && Item.dataset.setting == "musicVolume") {
+                        musicVolume = Item.value;
+                        document.getElementById('musicVolume').innerHTML = "Music Volume: "+(Item.value)+"%"
+                        if (!music) {
+                            music = new Audio('https://fathomless.io/assets/audio/track'+currentLevel+'.mp3');
+                            music.loop = true;
+                            music.play();
+                            playMusic = true;
+                            
+
+                        }
+                        if (music && musicVolume == "0") {
+                            music.pause();
+                            playMusic = false;
+                        }
+                        if (music && musicVolume != "0") {
+                            music.play();
+                            playMusic = true;
+                        }
+                        
+                        music.volume = musicVolume/100;
+                        
+                    }
+                    
+                })
+                
+                
+                
+            });
             document.querySelectorAll('button').forEach((Item) => {
                 
                 Item.addEventListener("click", () => {
@@ -755,8 +862,9 @@
                     if (Item.dataset.setting && Item.dataset.setting == "toggleMusic") {
                         Item.innerHTML = (!playMusic)?"Mute Music":"Play Music"
                         playMusic = !playMusic;
-                         if (music == 0 && playMusic) {
+                         if (!music && playMusic) {
                             music = new Audio('https://fathomless.io/assets/audio/track'+currentLevel+'.mp3');
+                            music.volume = musicVolume/100;
                         }
                         if (playMusic) {
                             music.loop = true;
