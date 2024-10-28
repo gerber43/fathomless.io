@@ -242,7 +242,13 @@ def process_attack(attacker, target):
     else:
         return "target missed"
     
-
+def find_current_level(game_map):
+    for x, row in enumerate(game_map):
+        for y, tile in enumerate(row):
+            for gameObject in (tile):
+                if gameObject.name == "Stairs":
+                    return gameObject.hp
+    return None  # If player is not found
 if (HTTP_FIELDS.getvalue('uuid')):
       uuid = HTTP_FIELDS.getvalue('uuid')
       direction = None
@@ -253,6 +259,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
       file_path = '../maps/'+uuid+'.pkl' 
       if (not os.path.exists(file_path)):
           game_map = generateMap(0, "0,"+difficulty)
+          turn_log.append({"level":"0,"+difficulty})
           game_log += "New Level Generated 0,"+difficulty+"\n"
       else:
           game_map = load_map(file_path)
@@ -307,6 +314,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
           
           
       else:
+          turn_log.append({"level":find_current_level(game_map)})
           message = "map loaded"
     #update the Creature's position
       if (message == "Creature has moved"):
@@ -318,7 +326,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
               player.textureIndex = 38
               depth = str(int(stair.hp.split(",")[0]) + 1)+","+stair.hp.split(",")[1]
               game_map = generateMap(0, depth,player)
-    
+              turn_log.append({"level":depth})
               message = "New Map: Level "+str(depth)
               player_pos = find_player_position(game_map)
               game_log += "New Level Generated "+depth+"\n"
@@ -347,7 +355,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
          turn_log.append({"type":"game_over","game_log":(full_game_log.read().decode("utf-8"))}) #end the game if the turn_log contain game_over
 
       response = {
-          "message": message,
+          "message": message if message else "",
           "map_subset": map_subset,
           "turn_log": turn_log
       }
