@@ -92,7 +92,7 @@ def reconstruct_path_from_node(current_node):
         current_node = current_node.parent  # Move to the parent node
     path.reverse()  # Reverse to get path from start to goal
     return path
-
+    
 #funtion to find the path to run away from player
 def find_escape_direction(creature_pos, player_pos, game_map):
     # Initial distance from the player
@@ -104,7 +104,7 @@ def find_escape_direction(creature_pos, player_pos, game_map):
     for direction, (dx, dy) in DIRECTIONS.items():
         new_x = creature_pos[0] + dx
         new_y = creature_pos[1] + dy
-    
+
         #check if the move is valid
         if is_valid_move(new_x, new_y, game_map):
             # Calculate the distance to the player from the new position
@@ -113,8 +113,5 @@ def find_escape_direction(creature_pos, player_pos, game_map):
             if new_distance > max_distance:
                 max_distance = new_direction
                 best_direction = direction
-            
-return best_direction
-    
 
-
+    return best_direction
