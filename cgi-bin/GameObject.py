@@ -120,29 +120,35 @@ class Creature(GameObject):
 
     def basic_attack_hit_check(self, grid, weapon, target):
         #TODO: Implement ammo checking and ammo decrement
+        
         if isinstance(target, CreatureSegment):
             target = target.creature
+        
         if not isinstance(target, Creature):
             return True
+        
         if isinstance(weapon, Weapon):
             hit_diff = self.skills[lookup_skill_id(weapon.type)] - target.dodge
         else:
             hit_diff = weapon - target.dodge
+        
         hit_chance = 1.0 / (1.0 + (math.e ** (float(-hit_diff) / 4.0)))
-        hit_roll = random.random
+        hit_roll = random.random()
+        
         if hit_roll > hit_chance:
             return False
         else:
             for item in self.equipment:
                 if item is not None:
-                    item.on_attack(self, target)
+                    item.on_attack(grid, self, target)
+                    
             for item in target.equipment:
                 if item is not None:
-                    item.on_attacked(target, self)
+                    item.on_attacked(grid, target, self)
             return True
 
     def crit_check(self, grid):
-        crit_roll = random.random
+        crit_roll = random.random()
         if crit_roll < self.crit_chance:
             return False
         else:
