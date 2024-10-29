@@ -71,37 +71,10 @@
             }
             html, body {
             padding:0;
-            border:0;
             margin:0;
             background:url(https://community.gamedev.tv/uploads/db2322/original/4X/b/3/b/b3bb7e4daf0a046bd4c49d762e5b15a1cf215cd9.png);
             }
-            body {
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            flex-direction:column;
-            gap:20px;
-            }
-            form {
-            width:100%;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            flex-wrap:wrap;
-            margin:0;
-            padding:0;
-            border:0;
-            flex-direction:column;
-            }
-            form div {
-            width:500px;
-            padding:20px;
-            border-radius:20px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            flex-direction:column;
-            }
+            
             input, button {
             transition:.75s;
             background: none;
@@ -130,7 +103,8 @@
             transition:.75s;
             transform:scale(.9);
             }
-            form div span {
+            form span {
+                width:100vw;
             display:flex;
             align-items:center;
             justify-content:center;
@@ -177,13 +151,26 @@
             }
             table {
             color:rgb(212,175,55);
-            background:saddlebrown;text-align:center;
+            background:saddlebrown;
+            text-align:center;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-direction:column;
+            width:clamp(fit-content,50vw,50vw);
             }
+
             td {
+                background:saddlebrown;
             border:2px solid rgb(212,175,55);
             padding:20px;
             }th {
+                background:saddlebrown;
             padding:20px;
+            }
+            td {
+                background:saddlebrown;
+                padding:10px;
             }
             h2, p {
             color:rgb(212,175,55);
@@ -191,36 +178,112 @@
             padding:20px;
             border:2px solid rgb(212,175,55);
             }
+            p {
+                width:50vw;
+            }
             a {
                 color:rgb(212,175,55);
             }
+            #page, form {
+                width:100vw;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                flex-direction:column;
+                padding:0;
+                margin:0;
+                border:0;
+                gap:20px;
+            }
+            form {
+                width:100vw;
+                height:100svh;
+                position:absolute;
+                top:0;
+                left:0;
+                display:none;top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background:url(https://community.gamedev.tv/uploads/db2322/original/4X/b/3/b/b3bb7e4daf0a046bd4c49d762e5b15a1cf215cd9.png);
+            }
+            header {
+                position:fixed;
+                top:0;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+            }
+            br {display:block;
+                line-height:100px;
+            }
+            #page > span {
+                display:flex;align-items:center;
+                justify-content:center;
+                flex-direction:column-reverse;
+                background:saddlebrown;text-align:center;
+            padding:20px;
+            border:2px solid rgb(212,175,55);
+            border-radius:20px;
+            width:clamp(20vw, 50vw, 50vw);
+            }
+            #page span img {
+                width:50%;
+            }
+            form input{
+                text-align:center;
+                padding:20px;
+            }
+            
         </style>
     </head>
     <body>
+        <div style = "height:80px"></div>
+        <form id = "login" method = "post" action = "">
+            <?=$accountText?>
+            <button onclick = "toggleLogin();" type = "button">Back</button>
+            <span><input type="radio" id  = "easy" name="difficulty" value="easy" checked><label for="easy">Easy</label><input type="radio" id  = "medium" name="difficulty" value="medium"><label for="medium">Medium</label><input type="radio" id  = "hard" name="difficulty" value="hard"><label for="hard">Hard</label></span>
+                    
+                    <input type = "text" placeholder = "Username" name = "username">
+                    <input type = "password" placeholder = "Password" name = "password">
+                    <input type = "submit" name = "login" value = "Login">
+                    <input type = "submit" name = "create_account" value = "Create Account">
+                
+                    <input type = "submit" name = "guest_session" value = "Guest">
+        </form>
+        <div id = "page">
+            <header><button onclick = "<?=(isset($_SESSION['uuid']))?"location.replace('https://fathomless.io/engine/');":"toggleLogin();"?>"><?=(isset($_SESSION['uuid']))?"Continue Game":"Play Game";?></button></header>
         <h1>Fathomless Caverns of Peril</h1>
         <hr>
-        <form method = "post" action = "">
-            <span><input type="radio" id  = "easy" name="difficulty" value="easy" checked><label for="easy">Easy</label><input type="radio" id  = "medium" name="difficulty" value="medium"><label for="medium">Medium</label><input type="radio" id  = "hard" name="difficulty" value="hard"><label for="hard">Hard</label></span>
-            <span>
-                <div>
-                    <?=$accountText?>
-                    <span><input type = "text" placeholder = "Username" name = "username">
-                    <input type = "password" placeholder = "Password" name = "password"></span>
-                    <span><input type = "submit" name = "login" value = "Login">
-                    <input type = "submit" name = "create_account" value = "Create Account"></span>
-                </div>
-                <div>
-                    <input type = "submit" name = "guest_session" value = "Guest">
-                </div>
-            </span>
-        </form>
+        <span><p>Interesting Creatures</p><img src = "https://fathomless.io/assets/images/slide1.png"></span>
+        <p>The world is dying, earthquakes ravage the land, creatures are being corrupted into twisted monstrosities, and it won't last much longer. The World Stone must be reclaimed from the clutches of evil. There is one known way down to the heart of the world, through a cave that none have ever returned from.</p>
+        <span><p>Unique Interactions</p><img src = "https://fathomless.io/assets/images/slide2.png"></span>
+        <span><p>Labyrinthine Terrain</p><img src = "https://fathomless.io/assets/images/slide3.png"></span>
+        
+        <h2>Leaderboards</h2>
         <button onclick = "updateLeaderboard()">Reload</button>
-        <div id = "leaderboard"><?=file_get_contents("https://fathomless.io/leaderboard/?username=".((isset($_SESSION['username']))?$_SESSION['username']:""));?>
+        <div id = "leaderboard"><?=file_get_contents("https://fathomless.io/leaderboard/?username=".((isset($_SESSION['username']) && $_SESSION['username'] != "Guest")?$_SESSION['username']:""));?>
             
         </div>
-        
+        </div>
         <script>
+        <?=($accountText)?"toggleLogin();":"";?>
         const username = '<?=((isset($_SESSION['username']))?$_SESSION['username']:"")?>';
+        
+        var isLoggingIn = false;
+        function toggleLogin() {
+            document.getElementById("login").style.display = (isLoggingIn)?"none":"flex";
+                        document.getElementById("page").style.display = (isLoggingIn)?"flex":"none";
+
+            document.body.style.overflow =  (isLoggingIn)?"scroll":"hidden";
+            if (!isLoggingIn) {
+                window.scrollTo({
+  top: 0,
+  left: 0,
+  behavior: 'smooth' // Optional for smooth scrolling
+});
+            }
+            isLoggingIn = !isLoggingIn;
+        }
         setInterval(updateLeaderboard, 30000);
 
             function updateLeaderboard() {
