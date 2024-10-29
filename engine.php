@@ -335,7 +335,82 @@
   -webkit-text-stroke-color: black;
                 
             }
-        
+        .modal {
+            position:absolute;
+            top:0;
+            left:0;
+            width:100vw;
+            height:100vh;
+            color:rgb(212,175,55);
+            
+        }
+        .modal div .close{
+            width:100%;
+            height:50px;
+            display:flex;
+            align-items:center;
+            justify-content:end;
+           
+            font-size:20px;
+            
+            
+        }
+        .modal div .close button{
+                padding:20px;
+                height:20px;
+                background:none;
+                border:none;
+                -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  outline: none; /* Remove outline */
+  color:rgb(212,175,55);
+        }
+        .modal div {
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:start;
+            width:50vw;
+            height:50svh;
+            background:saddlebrown;
+            border:rgb(212,175,55) 2px solid;
+            gap:20px;
+            
+        }
+        .modal div .log {
+            padding:20px;
+            height:200px;
+            overflow:scroll;
+            display:flex;
+            align-items:start;
+            justify-content:start;
+            flex-direction:column;
+            text-align:left;
+        }
+        .modal button {
+            transition:.75s;
+            background: none;
+            color: inherit;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            outline: inherit;
+            width:300px;
+            height:60px;
+            color:gold;
+            font-size:20px;
+            border:2px burlywood solid;
+            background:saddlebrown;
+            margin:20px;
+            background:url(https://img.freepik.com/premium-vector/seamless-pattern-old-wood-wall-background_117579-47.jpg);
+            
+        }
         </style>
     </head>
     <body>
@@ -375,6 +450,18 @@
             sendRequest("?sendDirection");
             window.mobileCheck = function() {let check = false;(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);return check;};
             //if (mobileCheck()){toggleResolution()}
+            function createModal(content) {
+                var modal = Object.assign(document.createElement('div'),{classList:"modal"});
+                //var innerDiv = "<span class= 'close' ><button onclick = 'this.parentElement.parentElement.remove();' >X</button></span>";
+                      var innerDiv = "";
+                       innerDiv +=  content;
+                       modal.innerHTML = "<div>"+innerDiv+"</div>";
+                        document.body.appendChild(modal);
+            }
+            
+            
+            
+            
             function toggleSettings() {
                 
                 document.getElementById('settings').style.width=(isSettingsOpen?"0px":"100vw");
@@ -412,9 +499,13 @@
                     var confirmation = true;
                     if (target["Terrain"]["warn"] == "Yes") {
                         confirmation = confirm(target["Terrain"]["warning"])
+                        //                         createModal("<p>"+target["Terrain"]["warning"]+"</p><button onclick = 'confirmation = false;this.parentElement.parentElement.remove();waiting = false;'>No</button><button onclick = 'confirmation = true;this.parentElement.parentElement.remove();'>Yes</button>");
+
                     }
                     if (target["Decor"] && target["Decor"]["warn"] == "Yes") {
                         confirmation = confirm(target["Decor"]["warning"])
+                        //                         createModal("<p>"+target["Decor"]["warning"]+"</p><button onclick = 'confirmation = false;this.parentElement.parentElement.remove();waiting = false;'>No</button><button onclick = 'confirmation = true;this.parentElement.parentElement.remove();'>Yes</button>");
+
                     }
                     var range = (currentMap[viewRadius][viewRadius]["Creature"]["equipment"][0]['range'])
                     if ((target["Terrain"]["textureIndex"] != 8) && confirmation && document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= range) {
@@ -602,6 +693,15 @@
                     target.style.backgroundImage = "url('https://8bitdogsol.dog/images/f121eab4be5ed47f5a67b9ee8ba2c7ca.gif')";
                 }
             }
+            function loadTrack() {
+                if (playMusic) {
+                 music.pause();
+                 music = new Audio('https://fathomless.io/assets/audio/track'+currentLevel+'.mp3');
+                 music.volume = musicVolume/100;
+                            music.loop = true;
+                            music.play();
+                }
+            }
             function receiveMap(response) {
                 console.log(`Time taken: `+(performance.now() - start)+` milliseconds`);
                 response = JSON.parse(response);
@@ -648,8 +748,8 @@
                     updateMap();
                     disableMovement = false;
                     if (gameOver) {
-                        alert("Temp Game Over Screen. Your Score "+currentMap[viewRadius][viewRadius]['Creature']['xp']+"\nGame Log:\n"+ gameOver);
-                        location.reload();
+                        createModal("<p>Game Over!</p><p>Score "+currentMap[viewRadius][viewRadius]['Creature']['xp']+"</p><button onclick = 'sendRequest(`?sendDirection`);this.parentElement.parentElement.remove();currentLevel=0;loadTrack();'>Play Again</button><span class = 'log'>Game Log: "+ gameOver+"</span>");
+                        //alert("Temp Game Over Screen. Your Score "+currentMap[viewRadius][viewRadius]['Creature']['xp']+"\nGame Log:\n"+ gameOver);
                     }
                 }, (moved)?100:0);
                 createMessage("dialogue",response["message"],1);
