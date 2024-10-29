@@ -193,6 +193,12 @@ class Creature(GameObject):
         grid[target.pos[0]][target.pos[1]].append(target)
         self.inventory.remove(target)
 
+    def heal(self, amount):
+        if self.hp + amount > self.max_hp:
+            self.hp = self.max_hp
+        else:
+            self.hp += amount
+
     def die(self, grid, player, corpse):
         if self == player:
             return
