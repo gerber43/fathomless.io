@@ -328,10 +328,10 @@
             }
             .Creature {
                 text-align:center;
-                font-size:15px;
+                font-size:10px;
                 color:white;
                 -webkit-text-fill-color: white;
-  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-width: .5px;
   -webkit-text-stroke-color: black;
                 
             }
@@ -376,11 +376,11 @@
             align-items:center;
             justify-content:start;
             width:50vw;
-            height:50svh;
+            height:clamp(fit-content,50svh,50svh);
             background:saddlebrown;
-            border:rgb(212,175,55) 2px solid;
             gap:20px;
-            
+            border:rgb(212,175,55) 2px solid;
+
         }
         .modal div .log {
             padding:20px;
@@ -401,13 +401,13 @@
             font: inherit;
             cursor: pointer;
             outline: inherit;
-            width:300px;
-            height:60px;
+            width:75%;
+            height:fit-content;
             color:gold;
             font-size:20px;
             border:2px burlywood solid;
             background:saddlebrown;
-            margin:20px;
+            padding:20px;
             background:url(https://img.freepik.com/premium-vector/seamless-pattern-old-wood-wall-background_117579-47.jpg);
             
         }
@@ -493,22 +493,32 @@
                     Item.addEventListener("contextmenu", function(ev){ev.preventDefault();inspectTile(Item.id)});
                 });
             }
+            var confirmationCoordinates = 0;
             function isValidMove(coordinates) {
                 var target = currentMap[coordinates[0]][coordinates[1]];
                 if (coordinates[0] != viewRadius || coordinates[1] != viewRadius) {
-                    var confirmation = true;
+                   
+                    var range = (currentMap[viewRadius][viewRadius]["Creature"]["equipment"][0]['range'])
+                    if ((target["Terrain"]["textureIndex"] != 8) && document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= range) {
                     if (target["Terrain"]["warn"] == "Yes") {
-                        confirmation = confirm(target["Terrain"]["warning"])
-                        //                         createModal("<p>"+target["Terrain"]["warning"]+"</p><button onclick = 'confirmation = false;this.parentElement.parentElement.remove();waiting = false;'>No</button><button onclick = 'confirmation = true;this.parentElement.parentElement.remove();'>Yes</button>");
-
+                        disableMovement = true;
+                         createModal("<p>"+target["Terrain"]["warning"]+"</p><button onclick = 'this.parentElement.parentElement.remove();disableMovement=false;sendRequest(`?sendAttack=`+encodeURIComponent(confirmationCoordinates));'>Yes</button><button onclick = 'this.parentElement.parentElement.remove();disableMovement=false;'>No</button>");
+confirmationCoordinates = coordinates;
+                        //confirmation = confirm(target["Terrain"]["warning"])
+                        return false
                     }
                     if (target["Decor"] && target["Decor"]["warn"] == "Yes") {
-                        confirmation = confirm(target["Decor"]["warning"])
-                        //                         createModal("<p>"+target["Decor"]["warning"]+"</p><button onclick = 'confirmation = false;this.parentElement.parentElement.remove();waiting = false;'>No</button><button onclick = 'confirmation = true;this.parentElement.parentElement.remove();'>Yes</button>");
-
+                        disableMovement = true;
+                         createModal("<p>"+target["Decor"]["warning"]+"</p><button onclick = 'this.parentElement.parentElement.remove();disableMovement=false;sendRequest(`?sendAttack=`+encodeURIComponent(confirmationCoordinates));'>Yes</button><button onclick = 'this.parentElement.parentElement.remove();disableMovement=false;'>No</button>");
+confirmationCoordinates = coordinates;
+                        //confirmation = confirm(target["Terrain"]["warning"])
+                    
+                        return false
+                        
                     }
-                    var range = (currentMap[viewRadius][viewRadius]["Creature"]["equipment"][0]['range'])
-                    if ((target["Terrain"]["textureIndex"] != 8) && confirmation && document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= range) {
+                        
+                        
+                        
                         if (target["Terrain"]["passable"] || (!target["Terrain"]["passable"] && target["Decor"])) {
                             return true
                         }
