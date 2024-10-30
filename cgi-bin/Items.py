@@ -2,8 +2,8 @@
 import sys
 import cgi
 from GameObject import Item, Consumable, Equippable, Weapon, Unavailable, LightSourceItem
-from SubSystem import lookup_damage_type_id, Spell, Technique, lookup_skill_id
-from ActiveAbilities import HealingTouch
+from SubSystem import lookup_damage_type_id, lookup_skill_id
+from ActiveAbilities import Spell, Technique, HealingTouch
 
 
 class Pebble(Consumable):
@@ -40,30 +40,33 @@ class Corruptite(Consumable):
 
 
 class IronDagger(Weapon):
-    def __init__(self, pos, level):
-        super().__init__("Iron Dagger", "17", pos, level, 5, 1, "One-Handed Blade", 1, 3,
-                         [(lookup_damage_type_id("Piercing"), 3, 1)], [], ("Right Hand", "Left Hand"))
+    def __init__(self, pos, enchantment):
+        super().__init__("Iron Dagger", "17", pos, 1, 5, 1, "One-Handed Blade", 1, 3,
+                         [(lookup_damage_type_id("Piercing"), 3, 1)], [], ("Right Hand", "Left Hand"), enchantment)
     def on_equip(self, grid, equipped_creature):
-        pass
+        super().on_equip(grid, equipped_creature)
     def on_unequip(self, grid, equipped_creature):
-        pass
+        super().on_unequip(grid, equipped_creature)
 
 class WoodenClub(Weapon):
-    def __init__(self, pos, level):
-        super().__init__("Wooden Club", "17", pos, level, 1, 1, "One-Handed Mace", 1, 1.5,
-                         [(lookup_damage_type_id("Blunt"), 5, 0)], [], ("Right Hand", "Left Hand"))
+    def __init__(self, pos, enchantment):
+        super().__init__("Wooden Club", "17", pos, 1, 1, 1, "One-Handed Mace", 1, 1.5,
+                         [(lookup_damage_type_id("Blunt"), 5, 0)], [], ("Right Hand", "Left Hand"), enchantment)
+
     def on_equip(self, grid, equipped_creature):
-        pass
+        super().on_equip(grid, equipped_creature)
     def on_unequip(self, grid, equipped_creature):
-        pass
+        super().on_unequip(grid, equipped_creature)
 
 class LeatherCuirass(Equippable):
     def __init__(self, pos, level):
         super().__init__("Leather Cuirass", "17", pos, level, 15, 10, "Torso")
     def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
         equipped_creature.resistances[lookup_damage_type_id("PRC")] += 0.025
         equipped_creature.resistances[lookup_damage_type_id("SLH")] += 0.05
     def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
         equipped_creature.resistances[lookup_damage_type_id("PRC")] -= 0.025
         equipped_creature.resistances[lookup_damage_type_id("PRC")] -= 0.05
 

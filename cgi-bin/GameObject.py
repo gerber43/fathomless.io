@@ -266,10 +266,11 @@ class Consumable(Item):
         pass
 
 class Equippable(Item):
-    def __init__(self, name, textureIndex, pos, level, price, weight, slots):
+    def __init__(self, name, textureIndex, pos, level, price, weight, slots, enchantment):
         super().__init__(name, textureIndex, pos, 1, 1, level, price)
         self.weight = weight
         self.slots = slots
+        self.enchantment = enchantment
         self.equipped = None
     def __eq__(self, other):
         if not super().__eq__(other):
@@ -284,6 +285,8 @@ class Equippable(Item):
                 self.equipped = slot
                 equipped_creature.equipment[lookup_equipment_slot(slot)] = self
                 equipped_creature.inventory.remove(self)
+                if self.enchantment is not None:
+                    self.enchantment.on_equip(self, grid, equipped_creature)
                 return True
         return False
     @abstractmethod
@@ -292,6 +295,8 @@ class Equippable(Item):
             return False
         equipped_creature.equipment[lookup_equipment_slot(self.equipped)] = None
         self.equipped = None
+        if self.enchantment is not None:
+            self.enchantment.on_unequip(self, grid, equipped_creature)
         if len(equipped_creature.inventory) >= equipped_creature.inventory_size:
             self.pos = equipped_creature.pos
             grid[self.pos[0]][self.pos[1]].append(self)
@@ -302,26 +307,34 @@ class Equippable(Item):
         if not self.equipped:
             return False
         else:
+            if self.enchantment is not None:
+                self.enchantment.on_move(self, grid, equipped_creature)
             return True
     def on_attack(self, grid, equipped_creature, target):
         if not self.equipped:
             return False
         else:
+            if self.enchantment is not None:
+                self.enchantment.on_move(self, grid, equipped_creature)
             return True
     def on_attacked(self, grid, equipped_creature, attacker):
         if not self.equipped:
             return False
         else:
+            if self.enchantment is not None:
+                self.enchantment.on_move(self, grid, equipped_creature)
             return True
     def on_ability(self, grid, equipped_creature, target):
         if not self.equipped:
             return False
         else:
+            if self.enchantment is not None:
+                self.enchantment.on_move(self, grid, equipped_creature)
             return True
 
 class Weapon(Equippable):
-    def __init__(self, name, textureIndex, pos, level, price, weight, type, range, crit_mult, damages, statuses, slots):
-        super().__init__(name, textureIndex, pos, level, price, weight, slots)
+    def __init__(self, name, textureIndex, pos, level, price, weight, type, range, crit_mult, damages, statuses, slots, enchantment):
+        super().__init__(name, textureIndex, pos, level, price, weight, slots, enchantment)
         self.type = type
         self.range = range
         self.crit_mult = crit_mult
@@ -349,7 +362,7 @@ class Weapon(Equippable):
 #When a two-handed weapon is equipped in a hand slot, this is placed in the other hand slot
 class Unavailable(Equippable):
     def __init__(self, pos):
-        super().__init__("", "", pos, 0, 0, 0, ("right_hand", "left_hand"))
+        super().__init__("", "", pos, 0, 0, 0, ("right_hand", "left_hand"), None)
     def on_equip(self, grid, equipped_creature):
         return super().on_equip(grid, equipped_creature)
     def on_unequip(self, grid, equipped_creature):
