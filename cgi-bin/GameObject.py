@@ -271,6 +271,9 @@ class Equippable(Item):
         self.weight = weight
         self.slots = slots
         self.enchantment = enchantment
+        if enchantment is not None:
+            self.name = self.name + " of " + enchantment.name
+            self.price += enchantment.price
         self.equipped = None
     def __eq__(self, other):
         if not super().__eq__(other):
@@ -340,6 +343,9 @@ class Weapon(Equippable):
         self.crit_mult = crit_mult
         self.damages = damages
         self.statuses = statuses
+        if self.enchantment is not None:
+            self.damages = self.damages + self.enchantment.damages
+            self.statuses = self.statuses + self.enchantment.statuses
     def __eq__(self, other):
         if not super().__eq__(other):
             return False
