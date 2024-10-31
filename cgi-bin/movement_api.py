@@ -6,11 +6,13 @@ import os
 import pickle
 from map_simplifier import delete_blank_object
 from user_tracking import a_star, find_escape_direction
-from GameObject import Terrain
+from GameObject import *
 from Creatures import Goblin, Player
 from MasterGenerator import generateMap
 from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace
 from Decor import Corpse
+import cgitb
+cgitb.enable()
 
 print('Content-type: application/json\n')
 HTTP_FIELDS = cgi.FieldStorage()
@@ -254,13 +256,18 @@ if (HTTP_FIELDS.getvalue('uuid')):
       direction = None
       attack = [int(coordinate) for coordinate in HTTP_FIELDS.getvalue('attack').split(",")] if HTTP_FIELDS.getvalue('attack') else None
       difficulty = HTTP_FIELDS.getvalue('difficulty') if (HTTP_FIELDS.getvalue('difficulty')) else "Easy"
-
+      selected = HTTP_FIELDS.getvalue('selected') if (HTTP_FIELDS.getvalue('selected')) else False
+      level = HTTP_FIELDS.getvalue('level') if (HTTP_FIELDS.getvalue('level') and uuid == "Test") else "0"
+      if (uuid == "Test"):
+          difficulty = "Test"
     # Load the current map
       file_path = '../maps/'+uuid+'.pkl' 
       if (not os.path.exists(file_path)):
-          game_map = generateMap(0, "0,"+difficulty)
-          turn_log.append({"level":"0,"+difficulty})
-          game_log += "New Level Generated 0,"+difficulty+"\n"
+          game_map = generateMap(0, level+","+difficulty)
+          turn_log.append({"level":level+","+difficulty})
+          game_log += "New Level Generated "+level+","+difficulty+"\n"
+          if (int(level) == 23):
+              gameOver = True
       else:
           game_map = load_map(file_path)
       
@@ -280,7 +287,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
           elif (direction == 180):
              player.textureIndex = 39
           
-          if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name != "Player"): #attack when the target is a creature but not player
+          if (not selected and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name != "Player"): #attack when the target is a creature but not player
               target_coordinates = get_target_tile(attack)
               target_creature = get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature")
               if (target_creature):
@@ -289,7 +296,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
               else:
                   message = "no target at this position"
                 
-          elif (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") == None): #move
+          elif (not selected and  get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") == None): #move
              
               if (abs(player_pos[0] - target_coordinates[0]) + abs(player_pos[1] - target_coordinates[1]) == 1):
                   
@@ -303,15 +310,20 @@ if (HTTP_FIELDS.getvalue('uuid')):
               else:
                   message = "Movement Out Of Range"
           
-          if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor") and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Stairs" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Corpse"): #interact 
+          if (not selected and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor") and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Stairs" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Corpse"): #interact 
               
               get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").on_interact(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"))
               
               message = "Creature has moved" if (message == "Creature has moved") else "interacted with"
               game_log += get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").name +" @ "+str(((get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").pos)))+" Interacted With "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name +" @ "+str(((get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").pos)))+"\n"
 
-          
-          
+          if (selected):
+              selected_method = selected.split(":")[0]
+              selected_index = selected.split(":")[1]
+              
+              if (selected_method == "Inventory" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature")):
+                  get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").inventory[0].use_effect(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature"))
+
           
       else:
           turn_log.append({"level":find_current_level(game_map)})
@@ -330,6 +342,8 @@ if (HTTP_FIELDS.getvalue('uuid')):
               message = "New Map: Level "+str(depth)
               player_pos = find_player_position(game_map)
               game_log += "New Level Generated "+depth+"\n"
+              if ((int(stair.hp.split(",")[0]) + 1) == 23):
+                 gameOver = True
           
               
     # Save the updated map back to the file
