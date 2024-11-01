@@ -20,7 +20,7 @@ class Pit(Terrain):
             if status.status_type == "Flight":
                 not_flying = False
         if not_flying:
-            creature.hp -= 200*(1.0-creature.damage_resistances[lookup_damage_type_id("BLT")])
+            creature.hp -= 0*(1.0-creature.damage_resistances[lookup_damage_type_id("BLT")])
             #load new level
 #cave, mine, corruptite mine, deep cavern: uncommonly
 #cove, sewer: very commonly
