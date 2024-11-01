@@ -12,18 +12,21 @@ items = [("Amulet", 0, "Equipment"), ("Ring", 1, "Equipment"), ("IronDagger", 1,
 
 #function to pick a random item
 def random_item(pos, depth):
+    global items
     end_index = -1
-    for i in range(items):
+    for i in range(len(items)):
         if items[i][1] > depth:
             end_index = i - 1
             break
     if end_index == -1:
         end_index = len(items)
-    item = items[random.randint(0, end_index)]
+    item = items[random.randint(0, end_index - 1)]
     if item[2] == "Consumable":
         return eval(item[0])(pos, depth//item[1])
     if item[2] == "Weapon":
-        return eval(item[0])(pos, random_enchantment(item[1], True, depth))
+        #return eval(item[0])(pos, random_enchantment(item[1], True, depth))
+        return eval(item[0])(pos, None)
+
     #TODO: Create at least 21 non-weapon enchantments and re-enable this code
     #return eval(item[0])(pos, random_enchantment(item[1], False, depth))
     return eval(item[0])(pos, None)
@@ -38,19 +41,19 @@ class Pebble(Consumable):
 
 class LesserHealth(Consumable):
     def __init__(self, pos, amount):
-        super().__init__("Lesser Health Potion", "17", pos, amount, 16, 2, 0)
+        super().__init__("Lesser Health Potion", "40", pos, amount, 16, 2, 0)
     def use_effect(self, grid, target):
         target.heal(int(target.max_hp*0.1))
 
 class MedHealth(Consumable):
     def __init__(self, pos, amount):
-        super().__init__("Health Potion", "17", pos, amount, 16, 7, 0)
+        super().__init__("Health Potion", "40", pos, amount, 16, 7, 0)
     def use_effect(self, grid, target):
         target.heal(int(target.max_hp*0.25))
 
 class GreaterHealth(Consumable):
     def __init__(self, pos, amount):
-        super().__init__("Greater Health Potion", "17", pos, amount, 16, 15, 0)
+        super().__init__("Greater Health Potion", "40", pos, amount, 16, 15, 0)
     def use_effect(self, grid, target):
         target.heal(int(target.max_hp*0.5))
 
@@ -73,7 +76,7 @@ class Ring(Equippable):
 
 class IronDagger(Weapon):
     def __init__(self, pos, enchantment):
-        super().__init__("Iron Dagger", "17", pos, 1, 5, 1, "One-Handed Blade", 1, 3,
+        super().__init__("Iron Dagger", "17", pos, 1, 5, 1, "One-Handed Blade", 3, 3,
                          [(lookup_damage_type_id("Piercing"), 3, 1)], [], ("Right Hand", "Left Hand"), enchantment)
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -101,20 +104,23 @@ class WoodenClub(Weapon):
 
 class LeatherCuirass(Equippable):
     def __init__(self, pos, enchantment):
-        super().__init__("Leather Cuirass", "17", pos, 2, 15, 10, "Torso", enchantment)
+        super().__init__("Leather Cuirass", "42", pos, 2, 15, 10, "Torso", enchantment)
     def on_equip(self, grid, equipped_creature):
+        
         super().on_equip(grid, equipped_creature)
-        equipped_creature.resistances[lookup_damage_type_id("PRC")] += 0.025
-        equipped_creature.resistances[lookup_damage_type_id("SLH")] += 0.05
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.025
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.05
     def on_unequip(self, grid, equipped_creature):
         super().on_unequip(grid, equipped_creature)
-        equipped_creature.resistances[lookup_damage_type_id("PRC")] -= 0.025
-        equipped_creature.resistances[lookup_damage_type_id("PRC")] -= 0.05
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.025
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.05
 
 class HealingTouchScroll(Consumable):
     def __init__(self, pos, amount):
-        super().__init__("Scroll of Healing Touch", "1", pos, amount, 1, 3, 300)
+        super().__init__("Scroll of Healing Touch", "41", pos, amount, 1, 3, 300)
     def use_effect(self, grid, target):
+        target.abilities.append(HealingTouch())
         total_spells_techniques = 0
         for active_ability in target.abilities:
             if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
