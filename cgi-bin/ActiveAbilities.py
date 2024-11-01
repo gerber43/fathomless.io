@@ -64,9 +64,10 @@ class Technique(ActiveAbility):
 #player-available spells
 class HealingTouch(Spell):
     def __init__(self):
-        super().__init__("Healing Touch", "1", 3, 20, "Enhancement")
+        super().__init__("Healing Touch", "45", 3, 20, "Enhancement")
     def use(self, grid, caster, target):
-        pass
+        target.hp = target.max_hp
+        caster.mp -= self.mp_cost
 
 #player-available techniques
 
