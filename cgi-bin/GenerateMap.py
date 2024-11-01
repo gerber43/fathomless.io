@@ -10,6 +10,7 @@ from GameObject import *
 from Terrain import *  
 from Decor import *
 from Creatures import *
+from Items import *
 
 
 biomes = {
@@ -130,6 +131,7 @@ def place_doors(grid, width, height, door_probability=0.6):
                         # Remove the wall and place a door
                         #grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, Wall)]  # Remove the wall
                         grid[y][x].append(Door((y, x)))
+                        grid[y][x].append(random_item([y,x],22))
                         
 def place_creatures(grid, num_creatures, depth):
     current_biome = int(depth.split(",")[0])
@@ -331,7 +333,7 @@ def generateMap(width, height, depth, num_creatures, player):
     'spikes': 0.1,
     'water': 0.08,
     'fire': 0.08,
-    'pits': 0.03,
+    'pits': 0.5,
     'empty_space': 0.5
     }
     terrain_grid = generate_terrain_with_probabilities(width, height, terrain_probabilities)
