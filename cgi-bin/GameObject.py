@@ -216,12 +216,12 @@ class Creature(GameObject):
 
 class Player(Creature):
     def __init__(self, name, textureIndex, pos, fitness, cunning, magic, abilities, damage_resistances, status_resistances):
-        super().__init__(name, textureIndex, pos, (), fitness * 10, magic * 10, 1, [], fitness, cunning, magic, cunning*2, (float(cunning) ** (2.0/3.0))/10.0,
-                         (None, None, None, None, None, None, None, None, None, None),
-                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), abilities, damage_resistances,
+        super().__init__(name, textureIndex, pos, [], fitness * 10, magic * 10, 1, [], fitness, cunning, magic, cunning*2, (float(cunning) ** (2.0/3.0))/10.0,
+                         [None, None, None, None, None, None, None, None, None, None],
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], abilities, damage_resistances,
                          status_resistances, [], 20, None, 0, 1)
     def check_level(self, grid):
-        if self.xp >= 100*self.level:
+        if self.xp >= 20*self.level:
             #TODO: display levelup screen, where player chooses to place their stat point in fitness, cunning, or magic and allocates their 5 (6 in case of human) skill points among their skills
             self.xp -= 100*self.level
             self.level += 1
@@ -286,6 +286,7 @@ class Equippable(Item):
         for slot in self.slots:
             if equipped_creature.equipment[lookup_equipment_slot(slot)] is None:
                 self.equipped = slot
+                equipped_creature.equipment = list(equipped_creature.equipment)
                 equipped_creature.equipment[lookup_equipment_slot(slot)] = self
                 equipped_creature.inventory.remove(self)
                 if self.enchantment is not None:
