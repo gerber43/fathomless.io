@@ -1,4 +1,24 @@
-<?php include("session.php");session_required();?>
+<?php include("session.php");
+
+
+if (isset($_REQUEST['test'])) {
+    $_SESSION['uuid'] = "Test";
+    $_SESSION['username'] = "Test";
+    $_SESSION['difficulty'] = "Test";
+    if (file_exists("logs/Test.txt")) {
+    unlink("logs/Test.txt");
+}
+if (file_exists("maps/Test.pkl")) {
+    unlink("maps/Test.pkl");
+}
+} else {
+    session_required();
+}
+
+
+
+
+?>
 <html>
     <head>
         <meta charset="utf-8">
@@ -26,7 +46,7 @@
             width:100vw;
             height:100svh;
             }
-            #page,#canvas .tile,#inventory,#inventory div, #keyBind {
+            #page,#canvas .tile,#inventory, #keyBind {
             display:flex;
             align-items:center;
             justify-content:center;
@@ -54,14 +74,8 @@
             font-size:0;
             color:white;
             }
-            #inventory div {
-            height:10%;
-            width:100%;
-            }
-            #inventory div img {
-            height:100%;
-            margin:20px;
-            }
+            
+            
             #dialogue, #alert {
             display:flex;
             align-items:center;
@@ -258,12 +272,15 @@
             #inspection::-webkit-scrollbar {
             display: none;
             }
-            #inspection button {
-            position:absolute;
+            #inspection .close {
+                position:absolute;
             top:0;
             right:0;
             width:30px;
             height:30px;
+            }
+            #inspection button {
+            
             background: none;
             color: inherit;
             border: none;
@@ -411,6 +428,45 @@
             background:url(https://img.freepik.com/premium-vector/seamless-pattern-old-wood-wall-background_117579-47.jpg);
             
         }
+        #inventory span {
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-direction:column;
+            width:200px;
+            height:200px;
+            font-size:20px;
+            text-align:center;
+             border:rgb(212,175,55) 2px solid;
+            background:saddlebrown;
+            color:rgb(212,175,55);
+            gap:0px;
+        }
+        #inventory span * {
+            padding:0;
+            margin:0;
+        }
+        #inventory div img {
+            height:100px;
+            }
+            #inventory {
+                flex-direction:row;
+                flex-wrap:wrap;
+                gap:20px
+            }
+            .use {
+                 background: none;
+            color: inherit;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            outline: inherit;
+                text-align:center;
+                width:100%;
+                font-size:20px;
+                color:rgb(212,175,55);
+            }
         </style>
     </head>
     <body>
@@ -429,9 +485,9 @@
                 
                 
                 <button id = "sfxVolume">SFX Volume: 0%</button>
-                <input class = "slider" data-setting = "sfxVolume" type = "range" min = "0" max = "100" value = "0">
+                <input  id = "sfxSlider" class = "slider" data-setting = "sfxVolume" type = "range" min = "0" max = "100" value = "0">
                 <button id = "musicVolume">Music Volume: 0%</button>
-                <input class = "slider"  data-setting = "musicVolume" type = "range" min = "0" max = "100" value = "0">
+                <input id = "musicSlider" class = "slider"  data-setting = "musicVolume" type = "range" min = "0" max = "100" value = "0">
                 <button data-setting = "toggleAscii">Enable Ascii</button>
                 <button data-setting = "toggleResolution">Toggle Resolution</button>
                 <button data-setting = "keyBind">Key Binds</button>
@@ -444,10 +500,32 @@
             const username = '<?=$_SESSION['username']?>';
             const tileObjects = JSON.parse('<?=file_get_contents("https://fathomless.io/json/objects.json")?>');
             const defaults = {"default":{"textureIndex":8,"intensity":0}};
-            var currentLevel = playerDirection = viewRadius = keyBindOpened = inspecting = music = playMusic = sfx = isLowResolution = start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter  = inventoryOpened = asciiMode= 0;
+            var songPosition = sfxVolume = musicVolume = currentLevel = playerDirection = viewRadius = keyBindOpened = inspecting = music = playMusic = sfx = isLowResolution = start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter  = inventoryOpened = asciiMode= 0;
             var objectTypes = ["Terrain","Item","Decor","Creature","Light"];
             var keyBinds = (!localStorage.getItem("keyBinds"))?{"Inventory":"KeyE","Select":"Enter","Settings":"Escape","Attack":"Space","Movement":["ArrowRight","ArrowDown","ArrowLeft","ArrowUp","KeyD","KeyS","KeyA","KeyW"]}:(JSON.parse(localStorage.getItem("keyBinds")));
-            sendRequest("?sendDirection");
+            if (localStorage.getItem("soundSettings")) {
+                var soundSettings = JSON.parse(localStorage.getItem("soundSettings"));
+            playMusic = soundSettings[0];
+            
+            musicVolume =  soundSettings[1]
+            
+            
+            playAudio = soundSettings[2];
+          if (playAudio) {
+                     sfx = [new Audio('https://fathomless.io/assets/audio/walking.mp3'),new Audio('https://fathomless.io/assets/audio/coin.mp3'),new Audio('https://fathomless.io/assets/audio/crash.mp3'),new Audio('https://fathomless.io/assets/audio/walk2.mp3'), new Audio('https://fathomless.io/assets/audio/woosh.mp3'), new Audio('https://fathomless.io/assets/audio/dead.mp3'), new Audio('https://fathomless.io/assets/audio/attack.mp3'), new Audio('https://fathomless.io/assets/audio/shoot.mp3'), new Audio('https://fathomless.io/assets/audio/hit.mp3'), new Audio('https://fathomless.io/assets/audio/kill.mp3')];
+
+          }
+            sfxVolume =  parseInt(soundSettings[3])
+            songPosition = parseInt(soundSettings[4])
+                                document.getElementById('musicVolume').innerHTML = "Music Volume: "+(musicVolume)+"%";
+
+            document.getElementById("musicSlider").value = musicVolume;
+                    document.getElementById('sfxVolume').innerHTML = "SFX Volume: "+(sfxVolume)+"%";
+
+                document.getElementById("sfxSlider").value = sfxVolume;
+            }
+
+            sendRequest();
             window.mobileCheck = function() {let check = false;(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);return check;};
             //if (mobileCheck()){toggleResolution()}
             function createModal(content) {
@@ -496,18 +574,17 @@
             var confirmationCoordinates = 0;
             function isValidMove(coordinates) {
                 var target = currentMap[coordinates[0]][coordinates[1]];
-                if (coordinates[0] != viewRadius || coordinates[1] != viewRadius) {
-                   
+
                     var range = (currentMap[viewRadius][viewRadius]["Creature"]["equipment"][0]['range'])
-                    if ((target["Terrain"]["textureIndex"] != 8) && document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= range) {
-                    if (target["Terrain"]["warn"] == "Yes") {
+                    if ((target["Terrain"]["textureIndex"] != 8) && ((document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= range && target["Creature"] !== undefined) || document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= 1)) {
+                    if (target["Terrain"]["warn"] == "Yes" && target["Creature"] === undefined) {
                         disableMovement = true;
                          createModal("<p>"+target["Terrain"]["warning"]+"</p><button onclick = 'this.parentElement.parentElement.remove();disableMovement=false;sendRequest(`?sendAttack=`+encodeURIComponent(confirmationCoordinates));'>Yes</button><button onclick = 'this.parentElement.parentElement.remove();disableMovement=false;'>No</button>");
 confirmationCoordinates = coordinates;
                         //confirmation = confirm(target["Terrain"]["warning"])
                         return false
                     }
-                    if (target["Decor"] && target["Decor"]["warn"] == "Yes") {
+                    if (target["Decor"] && target["Decor"]["warn"] == "Yes"  && target["Creature"] === undefined) {
                         disableMovement = true;
                          createModal("<p>"+target["Decor"]["warning"]+"</p><button onclick = 'this.parentElement.parentElement.remove();disableMovement=false;sendRequest(`?sendAttack=`+encodeURIComponent(confirmationCoordinates));'>Yes</button><button onclick = 'this.parentElement.parentElement.remove();disableMovement=false;'>No</button>");
 confirmationCoordinates = coordinates;
@@ -523,7 +600,7 @@ confirmationCoordinates = coordinates;
                             return true
                         }
                     }
-                } 
+                
                 return false
             }
             function toggleInspect(tileId){
@@ -544,12 +621,12 @@ confirmationCoordinates = coordinates;
             }
             function inspectTile(tileId){
                 var tile = toggleInspect(tileId);
-                document.getElementById('inspection').innerHTML = "<button onclick = 'toggleInspect(`"+tileId+"`)'>X</button>";
+                document.getElementById('inspection').innerHTML = "<button class = 'close' onclick = 'toggleInspect(`"+tileId+"`)'>X</button>";
                 Object.keys(tile).forEach((object) => {
                     if (tile[object]['name']) {
                         attributes = "";
                         Object.keys(tile[object]).forEach((attribute) => {
-                            specialFormats = ["equipment","drop_table","inventory","status_effects"];
+                            specialFormats = ["equipment","drop_table","inventory","status_effects","abilities"];
                             if (!specialFormats.includes(attribute)) {
                                 if (attribute == "textureIndex") {
                                     attributes+="<img src = '"+tileObjects[tile[object][attribute]]['icon']+"'>"
@@ -569,9 +646,13 @@ confirmationCoordinates = coordinates;
                                                 buffer += "<p>"+objectKeys[j]+" : "+attributeArray[i][objectKeys[j]]+"</p>";
                                             }
                                         }
+                                        if (attribute == "inventory" || attribute == "abilities")
+                                            buffer += "<button class = 'use' onclick = 'selectedItem = `"+attribute+":"+i+"`;toggleInspect(`"+tileId+"`);createMessage(`dialogue`,`Click On A Target`,2);'>Use</button>";
+
                                     } else {
                                         buffer += "<p>"+attributeArray[i]+"</p>";
                                     }
+                                    buffer += "<hr>";
                                 }
                                 attributes+="<div><p><span>"+attribute + "</span> : </p><hr>"+buffer+"</div>";
                             }
@@ -590,7 +671,7 @@ confirmationCoordinates = coordinates;
             }
             function displayManhattan(distance) {
                 document.getElementById('canvas').querySelectorAll('.manhattan').forEach((object) => {object.classList.remove("manhattan")});
-                for (var i = 1; i <= distance; i++){
+                for (var i = 0; i <= distance; i++){
                     document.getElementById('canvas').querySelectorAll(`[data-manhattan="`+i+`"]`).forEach((object) => {object.querySelector('.Light').classList.add("manhattan")});
                 }
             }
@@ -626,7 +707,7 @@ confirmationCoordinates = coordinates;
                     }
                 } 
                 if (type == "Creature" && object['textureIndex'] != "8") {
-                    selectedElement.innerHTML = currentMap[tileId.split(",")[0]][tileId.split(",")[1]]['Creature']['hp']+"/"+currentMap[tileId.split(",")[0]][tileId.split(",")[1]]['Creature']['max_hp'];
+                    selectedElement.innerHTML = currentMap[tileId.split(",")[0]][tileId.split(",")[1]]['Creature']['hp'];
                 }
             }
             function scaleTextures() {
@@ -642,7 +723,24 @@ confirmationCoordinates = coordinates;
                 }
                 return uuid;
             }
+            var selectedItem = 0;
             function toggleInventory() {
+                if (!inventoryOpened) {
+                    document.getElementById('inventory').innerHTML = "";
+                    var inventory = currentMap[viewRadius][viewRadius]["Creature"]["inventory"];
+                    
+                    
+                    for (var i = 0; i < inventory.length; i++) {
+                        item = inventory[i];
+                         var buffer = "<span><p>"+item['name']+"</p><img src = '"+tileObjects[item['textureIndex']]['icon']+"'><p>"+item['amount']+"</p><button class = 'use' onclick = 'selectedItem = `Inventory:"+i+"`;toggleInventory();createMessage(`dialogue`,`Click On A Target`,2);'>Use</button></span>";
+                     
+                        document.getElementById('inventory').innerHTML += "<div>"+buffer+"</div>"
+                        
+                    }
+                    
+                }  else {
+                     document.getElementById('inventory').innerHTML = "";
+                }
                 document.getElementById('inventory').style.height = (inventoryOpened)?"0":"100svh";
                 document.getElementById('inventory').style.fontSize = (inventoryOpened)?"0":"40px";
                 inventoryOpened = !inventoryOpened;
@@ -705,10 +803,14 @@ confirmationCoordinates = coordinates;
             }
             function loadTrack() {
                 if (playMusic) {
+                    if (music) {
                  music.pause();
+                    }
                  music = new Audio('https://fathomless.io/assets/audio/track'+currentLevel+'.mp3');
                  music.volume = musicVolume/100;
                             music.loop = true;
+                            
+                            music.currentTime = (songPosition)?songPosition:0;
                             music.play();
                 }
             }
@@ -731,6 +833,9 @@ confirmationCoordinates = coordinates;
                         if (update['after'][0] == viewRadius && update['after'][1] == viewRadius) {
                             playerDamage -= update['amount'];
                         }
+                    }
+                    if (update['level_up']) {
+                        playSound(9)
                     }
                     if (update['level']) {
                         currentLevel = update['level'].split(",");
@@ -758,13 +863,21 @@ confirmationCoordinates = coordinates;
                     updateMap();
                     disableMovement = false;
                     if (gameOver) {
-                        createModal("<p>Game Over!</p><p>Score "+currentMap[viewRadius][viewRadius]['Creature']['xp']+"</p><button onclick = 'sendRequest(`?sendDirection`);this.parentElement.parentElement.remove();currentLevel=0;loadTrack();'>Play Again</button><span class = 'log'>Game Log: "+ gameOver+"</span>");
+                        disableMovement = true;
+                        var endMessage = (currentLevel == 23)?"Congratulations, You Win!":"Game Over!";
+                        if (currentLevel != 23) {
+                            playSound(5)
+                        }
+                        createModal("<p>"+endMessage+"</p><p>Score "+currentMap[viewRadius][viewRadius]['Creature']['xp']+"</p><button onclick = 'sendRequest();this.parentElement.parentElement.remove();currentLevel=0;loadTrack();disableMovement=false;'>Play Again</button><span class = 'log'>Game Log: "+ gameOver+"</span>");
                         //alert("Temp Game Over Screen. Your Score "+currentMap[viewRadius][viewRadius]['Creature']['xp']+"\nGame Log:\n"+ gameOver);
                     }
                 }, (moved)?100:0);
                 createMessage("dialogue",response["message"],1);
                 if (response['message'] == "target hit") {
                     playSound(7);
+                }
+                if (response['message'] == "target killed") {
+                    playSound(1);
                 }
                 
                 displayManhattan(0);
@@ -801,7 +914,7 @@ confirmationCoordinates = coordinates;
                     createMessage("alert",(healthChange)+"<img src = '"+tileObjects[16]['icon']+"'>",1);
                 }
             }
-            function sendRequest(uri) {
+            function sendRequest(uri = "") {
                 start = performance.now();
                 var xmlhttp = new XMLHttpRequest();
                 xmlhttp.onreadystatechange = function () {
@@ -820,9 +933,13 @@ confirmationCoordinates = coordinates;
                 gameObject.style.transform = (x != 0 || y != 0)?"translate("+(offset*x)+"px, "+(offset*y)+"px)":"";
             }
             function directionHandler(tileCoordinates) {
+                if (playMusic && !music) {
+                loadTrack();
+            }
                 if (isValidMove(tileCoordinates)){
                     if (!disableMovement) {
-                        sendRequest("?sendAttack="+encodeURIComponent(tileCoordinates));
+                        sendRequest("?sendAttack="+encodeURIComponent(tileCoordinates)+(selectedItem?("&selected="+encodeURIComponent(selectedItem)):""));
+                        selectedItem = false;
                         disableMovement = true;
                         var player = document.getElementById(viewRadius+","+viewRadius).querySelector(".Creature");
                         var direction  = [(tileCoordinates[0]-viewRadius),(tileCoordinates[1]-viewRadius)];
@@ -905,7 +1022,6 @@ confirmationCoordinates = coordinates;
                     closeSetting = setTimeout(toggleSettings, 3000);
                 }
             });
-            var sfxVolume = musicVolume = 0;
             document.querySelectorAll('input[type="range"]').forEach((Item) => {
                 
                 Item.addEventListener("input", () => {
@@ -924,7 +1040,7 @@ confirmationCoordinates = coordinates;
                          if (sfx && sfxVolume != "0") {
                              playAudio = true;
                          }
-                        
+
                     }
                     if (Item.dataset.setting && Item.dataset.setting == "musicVolume") {
                         musicVolume = Item.value;
@@ -947,7 +1063,6 @@ confirmationCoordinates = coordinates;
                         }
                         
                         music.volume = musicVolume/100;
-                        
                     }
                     
                 })
@@ -955,6 +1070,10 @@ confirmationCoordinates = coordinates;
                 
                 
             });
+            
+            setInterval(function () {localStorage.setItem("soundSettings",JSON.stringify([playMusic,musicVolume,playAudio,sfxVolume,(music)?music.currentTime:0]));}, 1000);
+                                     
+
             document.querySelectorAll('button').forEach((Item) => {
                 
                 Item.addEventListener("click", () => {
