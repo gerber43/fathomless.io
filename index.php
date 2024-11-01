@@ -1,5 +1,6 @@
 <?php
     include("session.php");
+    $accountText = "";
     function guidv4($data = null) {
             $data = $data??random_bytes(16);
             assert(strlen($data) == 16);
@@ -14,6 +15,7 @@
         }
         if (isset($_REQUEST['create_account'])) {
             if (strlen($_REQUEST['username']) >= 3) {
+                if (!str_contains($_REQUEST['username'],"'") && !str_contains($_REQUEST['username'],'"')) {
                 $dbParams = json_decode(file_get_contents("dbPass.pem"),true);
                 $conn = new mysqli($dbParams[0],$dbParams[1],$dbParams[2],$dbParams[3]);
                 $stmt = $conn->prepare("SELECT user, hash, uuid FROM users WHERE user = ?");
@@ -36,6 +38,10 @@
                 } else {
                     $accountText = '<p>Username In Use</p>';
                 }
+            } else {
+                header("HTTP/1.0 403 Forbidden");
+                $accountText = '<p>Invalid Character</p>';
+            }
             } else {
                 $accountText = '<p>Username Too Short</p>';
             }
@@ -251,7 +257,7 @@
                     <input type = "submit" name = "guest_session" value = "Guest">
         </form>
         <div id = "page">
-            <header><button onclick = "<?=(isset($_SESSION['uuid']))?"location.replace('https://fathomless.io/engine/');":"toggleLogin();"?>"><?=(isset($_SESSION['uuid']))?"Continue Game":"Play Game";?></button></header>
+            <header><button onclick = "<?=(isset($_SESSION['uuid']))?"location.replace('https://fathomless.io/engine/');":"toggleLogin();"?>"><?=(isset($_SESSION['uuid']))?"Continue Game":"Play Game";?></button><?=(isset($_SESSION['uuid'])?"<button onclick = 'location.replace(`https://fathomless.io/logout/`)'>Logout</button>":"")?></header>
         <h1>Fathomless Caverns of Peril</h1>
         <hr>
         <span><p>Interesting Creatures</p><img src = "https://fathomless.io/assets/images/slide1.png"></span>
