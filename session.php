@@ -4,7 +4,7 @@
     /*Only use session variables to create access rules*/
     function session_required() {
         if (!$_SESSION['uuid']) {
-            header("Location: https://fathomless.io/account/");
+            header("Location: https://fathomless.io/");
         }
     }
 ?>
