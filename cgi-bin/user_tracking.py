@@ -111,7 +111,7 @@ def find_escape_direction(creature_pos, player_pos, game_map):
             new_distance = abs(player_pos[0] - new_x) + abs(player_pos[1] - new_y)
             # Update if this move takes the creature farther from the player
             if new_distance > max_distance:
-                max_distance = new_direction
+                max_distance = new_distance
                 best_direction = direction
 
     return best_direction
