@@ -40,7 +40,7 @@ def random_enchantment(item_level, is_weapon, depth):
     #find bounds for the enchantments of enchantment_level in the list
     start_index = -1
     end_index = -1
-    for i in range(list):
+    for i in range(len(list)):
         if list[i].level == enchantment_level:
             if start_index == -1:
                 start_index = i
@@ -186,7 +186,7 @@ def choose_enchantment_level(item_level, depth):
     enchantment_level = depth - item_level
     chance = 0.1
     while enchantment_level > 0:
-        roll = random.random
+        roll = random.random()
         if roll > chance:
             chance += 0.1
             enchantment_level -= 1
