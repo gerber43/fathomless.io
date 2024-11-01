@@ -14,18 +14,22 @@ if (isset($_REQUEST['uuid']) && file_exists("logs/".$_REQUEST['uuid'].".txt")) {
         $stmt->close();
         $username = ($result ->fetch_assoc());
         $username = ($username['user'])?$username['user']:"Guest";
-
-        
+        if ($_REQUEST['uuid'] == "Test") {
+            $username = "Test";
+        }
         
         $conn = new mysqli($dbParams[0],$dbParams[1],$dbParams[2],$dbParams[3]);
         $stmt = $conn->prepare("INSERT INTO leaderboard(uuid, user, score, date) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $_REQUEST['uuid'],$username,$score,time());
+        $currentTime = time();
+        $stmt->bind_param("ssss", $_REQUEST['uuid'],$username,$score,$currentTime);
         $stmt->execute(); 
         $stmt->close();
         $conn ->close();
+        echo "<p>".str_replace("\n","</p><p>",$gameLog)."</p>";
+        
         unlink("logs/".$_REQUEST['uuid'].".txt");
         unlink("maps/".$_REQUEST['uuid'].".pkl");
-        echo $gameLog;
+        
         
     } 
     
