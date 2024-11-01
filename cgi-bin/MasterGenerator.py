@@ -24,6 +24,6 @@ def generateMap(algorithm_index,depth,player = None):
         from GenerateMap import generateMap
     if algorithm_index == 1:
         from PathCarvedMap import generateMap
-    dimension = 10 + 2*int(depths[0]) if (depths[1] != "Test") else 20
+    dimension = 10 + 2*int(depths[0]) if (depths[1] != "Test" and int(depths[0]) != 22) else 20
     final_grid = generateMap(dimension, dimension ,depth, multipier*int(depths[0]),player)
     return final_grid
