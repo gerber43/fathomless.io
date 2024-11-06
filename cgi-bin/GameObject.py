@@ -41,8 +41,8 @@ class Gold(Item):
 
 class Creature(GameObject):
     def __init__(self, name, textureIndex, pos, segments, hp, mp, speed, status_effects, fitness, cunning, magic, dodge,
-                 crit_chance, perception, skills, abilities, damage_resistances, status_resistances, inventory,
-                 inventory_size, drop_table, xp, level, equipment):
+                 crit_chance, perception, skills, equipment, abilities, damage_resistances, status_resistances,
+                 inventory, inventory_size, drop_table, xp, level):
         super().__init__(name, textureIndex, pos)
         #list of creature segments, should be empty for single-tile creatures
         self.segments = segments
@@ -217,10 +217,11 @@ class Creature(GameObject):
 
 class Player(Creature):
     def __init__(self, name, textureIndex, pos, fitness, cunning, magic, perception, abilities, damage_resistances, status_resistances):
-        super().__init__(name, textureIndex, pos, [], fitness * 10, magic * 10, 1, [], fitness, cunning, magic, cunning*2, (float(cunning) ** (2.0/3.0))/10.0,perception,
-                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], abilities, damage_resistances,
-                         status_resistances, [], 20, None, 0, 1,
-                         [None, None, None, None, None, None, None, None, None, None])
+        super().__init__(name, textureIndex, pos, [], fitness * 10, magic * 10, 1, [], fitness, cunning, magic,
+                         cunning * 2, (float(cunning) ** (2.0 / 3.0)) / 10.0, perception,
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                         [None, None, None, None, None, None, None, None, None, None], abilities, damage_resistances,
+                         status_resistances, [], 20, None, 0, 1)
     def check_level(self, grid):
         if self.xp >= 20*self.level:
             #TODO: display levelup screen, where player chooses to place their stat point in fitness, cunning, or magic and allocates their 5 (6 in case of human) skill points among their skills
@@ -243,8 +244,8 @@ class Boss(Creature):
                  crit_chance, equipment, skills, abilities, damage_resistances, status_resistances, inventory,
                  inventory_size, drop_table, xp, level):
         super().__init__(name, textureIndex, pos, segments, hp, mp, speed, status_effects, fitness, cunning, magic,
-                         dodge, crit_chance, 10, skills, abilities, damage_resistances, status_resistances, inventory,
-                         inventory_size, drop_table, xp, level, equipment)
+                         dodge, crit_chance, 10, skills, equipment, abilities, damage_resistances, status_resistances,
+                         inventory, inventory_size, drop_table, xp, level)
     def die(self, grid, player, corpse):
         if self == player:
             return
