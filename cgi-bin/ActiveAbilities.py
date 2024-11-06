@@ -8,13 +8,14 @@ from GameObject import Weapon
 
 #Active ability base classes
 class ActiveAbility:
-    def __init__(self, name, textureIndex, level, cooldown, mp_cost, requirement):
+    def __init__(self, name, textureIndex, level, cooldown, mp_cost, range, requirement):
         self.name = name
         self.textureIndex = textureIndex
         self.level = level
         self.cooldown = cooldown
         self.turns_left = 0
         self.mp_cost = mp_cost
+        self.range = range
         self.requirement = requirement
     #front-end should validate that turns_left = 0 and player.mp >= mp_cost before calling use
     @abstractmethod
@@ -22,8 +23,8 @@ class ActiveAbility:
         self.turns_left = self.cooldown
 
 class Prayer(ActiveAbility):
-    def __init__(self, name, textureIndex, level, cooldown):
-        super().__init__(name, textureIndex, level, cooldown, 0, None)
+    def __init__(self, name, textureIndex, level, cooldown, range):
+        super().__init__(name, textureIndex, level, cooldown, range, 0, None)
     @abstractmethod
     def use(self, grid, caster, target):
         super().use(grid, caster, target)
@@ -61,7 +62,19 @@ class Technique(ActiveAbility):
 
 #player racial active abilities
 
+class Blink(ActiveAbility):
+    def __init__(self):
+        super().__init__("Blink", "1", 0, 20, 0, 3, "")
+    #target in this case is a grid location
+    def use(self, grid, caster, target):
+        grid[target[0]][target[1]].append(caster)
+        grid[caster.pos[0]][caster.pos[1]].remove(caster)
+        caster.pos = target
+        super().use(self, grid, caster, target)
+
+
 #player-available spells
+
 class HealingTouch(Spell):
     def __init__(self):
         super().__init__("Healing Touch", "45", 3, 20, "Enhancement")
