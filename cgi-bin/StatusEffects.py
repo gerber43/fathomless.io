@@ -32,7 +32,7 @@ class Suffocation(StatusEffect):
           creature.die()
       super().tick(grid, creature)
 
-#TODO: Stun functionality in frontend
+#TODO: Frozen functionality in frontend
 class Frozen(StatusEffect):
   def __init__(self, stacks, infinite):
       super().__init__("Frozen", stacks, infinite)
@@ -167,7 +167,6 @@ class Flight(StatusEffect):
   def tick(self, grid, creature):
       super().tick(grid, creature)
 
-#TODO: Luck functionality in item drop code
 class Luck(StatusEffect):
   def __init__(self, stacks, infinite):
       super().__init__("Luck", stacks, infinite)

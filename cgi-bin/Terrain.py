@@ -28,7 +28,13 @@ class Water(Terrain):
     def __init__(self, pos):
         super().__init__("Shallow Water", "2", pos, 100, (1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, False, "")
     def on_step(self, grid, creature):
+        for status in creature.status_effects:
+            if status.status_type == "Flight":
+                return
         creature.hp -= 5*(1.0-creature.damage_resistances[lookup_damage_type_id("WTR")])
+        for status in creature.status_effects:
+            if status.status_type == "Burning":
+                creature.status_effects.remove(status)
 
 #cave, cove: commonly
 class LightBeam(LightTerrain):
@@ -42,16 +48,25 @@ class DeepWater(Terrain):
     def __init__(self, pos):
         super().__init__("Deep Water", "2", pos, 100, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, False, "Start swimming?")
     def on_step(self, grid, creature):
+        for status in creature.status_effects:
+            if status.status_type == "Flight":
+                return
         creature.hp -= 5*(1.0-creature.damage_resistances[lookup_damage_type_id("WTR")])
         creature.gain_status_effect(grid,grid, lookup_status_resistance_id("Suffocation"), 5*(1-creature.damage_resistances[lookup_status_resistance_id("Suffocation")]), False)
+        for status in creature.status_effects:
+            if status.status_type == "Burning":
+                creature.status_effects.remove(status)
 
 #magma core, underworld: common
 class Fire(Terrain):
     def __init__(self, pos):
         super().__init__("Fire", "20", pos, 10, (1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, True, False, "Step into the flames?")
     def on_step(self, grid, creature):
+        for status in creature.status_effects:
+            if status.status_type == "Flight":
+                return
         creature.hp -= 10*(1.0-creature.damage_resistances[lookup_damage_type_id("Fire")])
-        creature.gain_status_effect(grid,"Burning", 5*(1-creature.status_resistances[lookup_status_resistance_id("Burning")]))
+        creature.gain_status_effect(grid, "Burning", 5*(1-creature.status_resistances[lookup_status_resistance_id("Burning")]), False, True, None)
 
     
 #magma core, underworld: very common
@@ -59,21 +74,30 @@ class Lava(LightTerrain):
     def __init__(self, grid, pos):
         super().__init__(grid, "Lava", "20", pos, 100, (1.0, 1.0, 1.0, 1.0, 1.0, 0.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "Swim in the lava?", 32, True)
     def on_step(self, grid, creature):
+        for status in creature.status_effects:
+            if status.status_type == "Flight":
+                return
         creature.hp -= 100*(1.0-creature.damage_resistances[lookup_damage_type_id("Fire")])
-        creature.gain_status_effect(grid,lookup_status_resistance_id("Burning"), 50*(1-creature.status_resistances[lookup_status_resistance_id("Burning")]))
+        creature.gain_status_effect(grid, "Burning", 50*(1-creature.status_resistances[lookup_status_resistance_id("Burning")]), False, True, None)
 
 #temple of the old ones, uncommon
 class Spikes(Terrain):
     def __init__(self, pos):
         super().__init__("Spikes", "21", pos, 20, (0.9, 0.2, 0.5, 1.0, 0.3, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, True, False, "Step onto the spikes?")
     def on_step(self, grid, creature):
-       creature.hp -= 20*(1.0-creature.damage_resistances[lookup_damage_type_id("Piercing")])
+        for status in creature.status_effects:
+            if status.status_type == "Flight":
+                return
+        creature.hp -= 20*(1.0-creature.damage_resistances[lookup_damage_type_id("Piercing")])
 
 #carrion: common
 class Blood(Terrain):
     def __init__(self, pos):
         super().__init__("Blood", "2", pos, 100, (1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, False, "")
     def on_step(self, grid, creature):
+        for status in creature.status_effects:
+            if status.status_type == "Flight":
+                return
         creature.hp -= 5*(1.0-creature.damage_resistances[lookup_damage_type_id("WTR")])
 
 #worldeater's gut: common
@@ -81,6 +105,9 @@ class WorldeaterBile(Terrain):
     def __init__(self, pos):
         super().__init__("Bile", "2", pos, 100, (1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, False, "Swim in the acidic bile?")
     def on_step(self, grid, creature):
+        for status in creature.status_effects:
+            if status.status_type == "Flight":
+                return
         creature.hp -= 100*(1.0-creature.damage_resistances[lookup_damage_type_id("AD")])
 
 #main tile of ancient city
@@ -94,8 +121,8 @@ class AbsoluteNothingness(Terrain):
         super().__init__("Nothing", "20", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, False, "")
     def on_step(self, grid, creature):
         if creature.equipment[lookup_equipment_slot("Left Finger")] is not None and creature.equipment[lookup_equipment_slot("Left Finger")].name != "Voidwalker's Ring" and creature.equipment[lookup_equipment_slot("Right Finger")] is not None and creature.equipment[lookup_equipment_slot("Right Finger")].name != "Voidwalker's Ring":
-            creature.gain_status_effect(grid,lookup_status_resistance_id("Suffocation"), 100, False)
-            creature.gain_status_effect(grid,lookup_status_resistance_id("Nonexistence"), 100, False)
+            creature.gain_status_effect(grid, "Suffocation", 100, False, True, None)
+            creature.gain_status_effect(grid, "Nonexistence", 100, False, True, None)
             pass
    
 class EmptySpace(Terrain):

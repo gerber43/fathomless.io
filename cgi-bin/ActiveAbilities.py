@@ -50,15 +50,16 @@ class Technique(ActiveAbility):
         super().__init__(name, textureIndex, level, cooldown, 0, weapon_type)
     @abstractmethod
     def use(self, grid, caster, target):
+        num_hits = 0
         if isinstance(caster.equipment[0], Weapon) and caster.equipment[0].type == self.requirement:
             super().use(grid, caster, target)
-            if caster.basic_attack_hit_check(grid, caster.equipment[0], target):
-                return 0
+            if caster.basic_attack_hit_check(grid, caster.equipment[0], isinstance(caster.equipment[1], Weapon), target):
+                num_hits = num_hits + 1
         if isinstance(caster.equipment[1], Weapon) and caster.equipment[1].type == self.requirement:
             super().use(grid, caster, target)
-            if caster.basic_attack_hit_check(grid, caster.equipment[1], target):
-                return 1
-        return -1
+            if caster.basic_attack_hit_check(grid, caster.equipment[1], isinstance(caster.equipment[0], Weapon), target):
+                num_hits = num_hits + 1
+        return num_hits
 
 #player racial active abilities
 
@@ -77,7 +78,7 @@ class Berserking(ActiveAbility):
         super().__init__("Berserking", "1", 0, 50, 0, 0, "")
     #target in this case is a grid location
     def use(self, grid, caster, target):
-        caster.gain_status_effect("Berserk", 20, False)
+        caster.gain_status_effect(grid, "Berserk", 20, False, False, None)
         super().use(self, grid, caster, target)
 
 class Torture(ActiveAbility):
@@ -85,7 +86,7 @@ class Torture(ActiveAbility):
         super().__init__("Torture", "1", 0, 30, 0, 3, "")
     #target in this case is a grid location
     def use(self, grid, caster, target):
-        target.gain_status_effect("Bleed", 3, False)
+        target.gain_status_effect(grid, "Bleed", 3, False, True, None)
         super().use(self, grid, caster, target)
 
 

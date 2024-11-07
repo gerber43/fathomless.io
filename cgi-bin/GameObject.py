@@ -83,7 +83,7 @@ class Creature(GameObject):
             #if isinstance(game_object, Terrain):
                 #game_object.on_step(grid, self)
 
-    def gain_status_effect(self, grid, status_type, stacks = None, infinite = None, negative = None, applicator = None):
+    def gain_status_effect(self, grid, status_type, stacks, infinite, negative, applicator):
         if negative:
             stacks = int(stacks*(1-self.status_resistances[lookup_status_resistance_id(status_type)]))
         if stacks == 0:
@@ -119,20 +119,46 @@ class Creature(GameObject):
         self.status_effects.append(new_status)
         new_status.on_apply(grid, self)
 
-    def basic_attack_hit_check(self, grid, weapon, target):
-        #TODO: Implement ammo checking and ammo decrement
+    def basic_attack_hit_check(self, grid, weapon, dual_wielding, target):
+        if weapon.type == "Sling":
+            found_ammo = False
+            for item in self.inventory:
+                if item.name == "Pebble":
+                    found_ammo = True
+                    item.amount = item.amount - 1
+                    if item.amound <= 0:
+                        self.inventory.remove(item)
+            if not found_ammo:
+                return False
+
+        if weapon.type == "Bow":
+            found_ammo = False
+            for item in self.inventory:
+                if item.name == "Arrow":
+                    found_ammo = True
+                    item.amount = item.amount - 1
+                    if item.amound <= 0:
+                        self.inventory.remove(item)
+            if not found_ammo:
+                return False
         
         if isinstance(target, CreatureSegment):
             target = target.creature
         
         if not isinstance(target, Creature):
             return True
-        
+
+        dual_penalty = 0
+        if dual_wielding:
+            dual_penalty = 10 - self.skills(lookup_skill_id("Dual-Wielding"))
+            if dual_penalty < 0:
+                dual_penalty = 0
+
         if isinstance(weapon, Weapon):
-            hit_diff = self.skills[lookup_skill_id(weapon.type)] - target.dodge
+            hit_diff = self.skills[lookup_skill_id(weapon.type)] - target.dodge - dual_penalty
         else:
-            hit_diff = weapon - target.dodge
-        for status in self.statusEffects:
+            hit_diff = weapon - target.dodge - dual_penalty
+        for status in self.status_effects:
             if status.status_type == "Blindness":
                 hit_diff -= status.stacks
                 break
@@ -167,22 +193,21 @@ class Creature(GameObject):
                 total = total + random.randint(-damage[2], damage[2])
             if (damage[0] == 0) or (damage[0] == 1) or (damage[0] == 2):
                 total = total + self.fitness
-                for status in self.statusEffects:
+                for status in self.status_effects:
                     if status.status_type == "Berserk":
                         total = total*(1+(1.0-(self.hp/self.max_hp)))
             total = int(total * (1.0-target.damage_resistances[damage[0]]))
             target.hp -= total
             if crit:
-                target.gain_status_effect(lookup_crit_status_effect(damage[0]), total // 10, False, True, self)
+                target.gain_status_effect(grid, lookup_crit_status_effect(damage[0]), total // 10, False, True, self)
         for status in weapon.statuses:
-            target.gain_status_effect(status.type_id, status.stacks, status.infinite, True, self)
+            target.gain_status_effect(grid, status.status_type, status.stacks, status.infinite, True, self)
     def basic_attack(self, grid, target):
-        #TODO: apply dual wielding penalty if dual wielding
         if isinstance(self.equipment[0], Weapon):
-            if self.basic_attack_hit_check(grid, self.equipment[0], target):
+            if self.basic_attack_hit_check(grid, self.equipment[0], isinstance(self.equipment[1], Weapon), target):
                 self.basic_attack_damage(grid, self.equipment[0], target, self.crit_check(grid))
         if isinstance(self.equipment[1], Weapon):
-            if not self.basic_attack_hit_check(grid, self.equipment[1], target):
+            if not self.basic_attack_hit_check(grid, self.equipment[1], isinstance(self.equipment[0], Weapon), target):
                 self.basic_attack_damage(grid, self.equipment[1], target, self.crit_check(grid))
 
     def pickup_item(self, grid, target):
@@ -201,7 +226,7 @@ class Creature(GameObject):
         self.inventory.remove(target)
 
     def heal(self, amount):
-        for status in self.statusEffects:
+        for status in self.status_effects:
             if status.status_type == "Bleed":
                 self.status_effects.remove(status)
             if status.status_type == "Rot":
@@ -221,6 +246,10 @@ class Creature(GameObject):
             drop_item = self.drop_table[i]
             drop_item.pos = corpse.pos
             probability = self.drop_table[i + 1]
+            for status in player.status_effects:
+                if status.status_type == "Luck":
+                    probability = probability*1.2
+                    break
             roll = random.random()
             if probability >= roll:
                 grid[self.pos[0]][self.pos[1]].append(drop_item)
@@ -274,9 +303,6 @@ class Consumable(Item):
         super().__init__(name, textureIndex, pos, amount, max_stack, level, price)
     @abstractmethod
     def use_effect(self, grid, target):
-        pass
-    @abstractmethod
-    def throw_effect(self, grid, target):
         pass
 
 class Equippable(Item):

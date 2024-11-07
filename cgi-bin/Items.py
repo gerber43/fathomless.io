@@ -34,10 +34,12 @@ def random_item(pos, depth):
 
 
 #items
-class Pebble(Consumable):
+class Pebble(Item):
     def __init__(self, pos, amount):
         super().__init__("Pebble", "17", pos, amount, 16, 1, 0)
-    #TODO: implement as ammo for slings
+class Arrow(Item):
+    def __init__(self, pos, amount):
+        super().__init__("Arrow", "17", pos, amount, 16, 2, 5)
 
 class LesserHealth(Consumable):
     def __init__(self, pos, amount):
@@ -63,7 +65,7 @@ class Bandage(Consumable):
     def use_effect(self, grid, target):
         target.heal(0)
 
-class Ore(Consumable):
+class Ore(Item):
     def __init__(self, pos, amount):
         super().__init__("Ore", "17", pos, amount, 10, 1, 10)
 
