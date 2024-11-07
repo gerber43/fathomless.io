@@ -132,7 +132,10 @@ class Creature(GameObject):
             hit_diff = self.skills[lookup_skill_id(weapon.type)] - target.dodge
         else:
             hit_diff = weapon - target.dodge
-        
+        for status in self.statusEffects:
+            if status.status_type == "Blindness":
+                hit_diff -= status.stacks
+                break
         hit_chance = 1.0 / (1.0 + (math.e ** (float(-hit_diff) / 4.0)))
         hit_roll = random.random()
         
@@ -164,10 +167,13 @@ class Creature(GameObject):
                 total = total + random.randint(-damage[2], damage[2])
             if (damage[0] == 0) or (damage[0] == 1) or (damage[0] == 2):
                 total = total + self.fitness
+                for status in self.statusEffects:
+                    if status.status_type == "Berserk":
+                        total = total*(1+(1.0-(self.hp/self.max_hp)))
             total = int(total * (1.0-target.damage_resistances[damage[0]]))
             target.hp -= total
             if crit:
-                target.gain_status_effect(lookup_crit_status_effect(damage[0]), total / 10, False, True, self)
+                target.gain_status_effect(lookup_crit_status_effect(damage[0]), total // 10, False, True, self)
         for status in weapon.statuses:
             target.gain_status_effect(status.type_id, status.stacks, status.infinite, True, self)
     def basic_attack(self, grid, target):
@@ -195,6 +201,12 @@ class Creature(GameObject):
         self.inventory.remove(target)
 
     def heal(self, amount):
+        for status in self.statusEffects:
+            if status.status_type == "Bleed":
+                self.status_effects.remove(status)
+            if status.status_type == "Rot":
+                amount = amount * (1.0-(status.stacks*0.05))
+        amount = int(amount)
         if self.hp + amount > self.max_hp:
             self.hp = self.max_hp
         else:

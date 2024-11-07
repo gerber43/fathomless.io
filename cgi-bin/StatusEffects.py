@@ -39,14 +39,12 @@ class Frozen(StatusEffect):
   def tick(self, grid, creature):
       super().tick(grid, creature)
 
-#TODO: Blindness functionality in basic_attack_hit_check
 class Blindness(StatusEffect):
   def __init__(self, stacks, infinite):
       super().__init__("Blindness", stacks, infinite)
   def tick(self, grid, creature):
       super().tick(grid, creature)
 
-#TODO: Rot functionality in healing code
 class Rot(StatusEffect):
   def __init__(self, stacks, infinite):
       super().__init__("Rot", stacks, infinite)
@@ -157,7 +155,6 @@ class Regeneration(StatusEffect):
           creature.hp += self.stacks
       super().tick(grid, creature)
 
-#TODO: Blindness functionality in basic_attack_damage
 class Berserk(StatusEffect):
   def __init__(self, stacks, infinite):
       super().__init__("Berserk", stacks, infinite)

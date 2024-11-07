@@ -41,21 +41,27 @@ class Pebble(Consumable):
 
 class LesserHealth(Consumable):
     def __init__(self, pos, amount):
-        super().__init__("Lesser Health Potion", "40", pos, amount, 16, 2, 0)
+        super().__init__("Lesser Health Potion", "40", pos, amount, 4, 2, 20)
     def use_effect(self, grid, target):
-        target.heal(int(target.max_hp*0.1))
+        target.heal(target.max_hp*0.1)
 
 class MedHealth(Consumable):
     def __init__(self, pos, amount):
-        super().__init__("Health Potion", "40", pos, amount, 16, 7, 0)
+        super().__init__("Health Potion", "40", pos, amount, 4, 7, 80)
     def use_effect(self, grid, target):
-        target.heal(int(target.max_hp*0.25))
+        target.heal(target.max_hp*0.25)
 
 class GreaterHealth(Consumable):
     def __init__(self, pos, amount):
-        super().__init__("Greater Health Potion", "40", pos, amount, 16, 15, 0)
+        super().__init__("Greater Health Potion", "40", pos, amount, 4, 15, 150)
     def use_effect(self, grid, target):
-        target.heal(int(target.max_hp*0.5))
+        target.heal(target.max_hp*0.5)
+
+class Bandage(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Bandage", "40", pos, amount, 16, 15, 5)
+    def use_effect(self, grid, target):
+        target.heal(0)
 
 class Ore(Consumable):
     def __init__(self, pos, amount):

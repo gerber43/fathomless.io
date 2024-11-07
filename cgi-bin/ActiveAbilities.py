@@ -72,6 +72,22 @@ class Blink(ActiveAbility):
         caster.pos = target
         super().use(self, grid, caster, target)
 
+class Berserking(ActiveAbility):
+    def __init__(self):
+        super().__init__("Berserking", "1", 0, 50, 0, 0, "")
+    #target in this case is a grid location
+    def use(self, grid, caster, target):
+        caster.gain_status_effect("Berserk", 20, False)
+        super().use(self, grid, caster, target)
+
+class Torture(ActiveAbility):
+    def __init__(self):
+        super().__init__("Torture", "1", 0, 30, 0, 3, "")
+    #target in this case is a grid location
+    def use(self, grid, caster, target):
+        target.gain_status_effect("Bleed", 3, False)
+        super().use(self, grid, caster, target)
+
 
 #player-available spells
 
