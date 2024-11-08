@@ -1,10 +1,12 @@
 #!/usr/bin/python3
+import copy
+import random
 import sys
 import cgi
-from GameObject import Decor, LightDecor, spread_light
+from GameObject import Decor, LightDecor, spread_light, Gold
 from Level import Level, Biome
 from Biomes import TempBiome
-from Items import Pebble, Ore, Corruptite
+from Items import *
 from Creatures import Ghost
 
 class Corpse(Decor):
@@ -110,3 +112,111 @@ class SpiritLight(LightDecor):
 class Energy(LightDecor):
     def __init__(self, grid, pos):
         super().__init__(grid, "Energy", "24", pos, 200, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0), True, "NO", "", 128, True)
+
+levelzero_dialogue = ["Are you sure you want to enter the caverns?"]
+cave_dialogue = ["Hi"]
+cove_dialogue = ["Hi"]
+mine_dialogue = ["Hi"]
+corruptmine_dialogue = ["Hi"]
+sewer_dialogue = ["Hi"]
+shantytown_dialogue = ["Hi"]
+magmacore_dialogue = ["It's really hot in here"]
+deepcavern_dialogue = ["Hi"]
+ziggurat_dialogue = ["sssh, be quiet, I'm not exactly welcome here"]
+catacomb_dialogue = ["Hi"]
+carrion_dialogue = ["Hi"]
+worldeatersgut_dialogue = ["I hardly get any business", "I don't know why I thought it was a good idea to set up shop in the belly of a new god"]
+necropolis_dialogue = ["I'm dead but I still love gold"]
+
+class Shop(Decor):
+    def __init__(self, name, pos, inventory, dialogue):
+        super().__init__(name, "24", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, False, "NO", "")
+        self.inventory = inventory
+        self.dialogue = dialogue
+    def on_interact(self, grid, creature):
+        pass
+        #TODO: show shop UI
+    def buy(self, grid, buyer, item):
+        buyer_gold = None
+        buyer_purchase = None
+        for buyer_item in buyer.inventory:
+            if isinstance(buyer_item, Gold):
+                buyer_gold = buyer_item
+            if buyer_item == item:
+                buyer_purchase = buyer_item
+        if buyer_gold is None or buyer_gold.amount < item.price:
+            return False
+        shop_gold = None
+        for shop_item in self.inventory:
+            if isinstance(shop_item, Gold):
+                shop_gold = shop_item
+        buyer_gold.amount -= item.price
+        if shop_gold is None:
+            self.inventory.append(Gold((-1, -1), item.price))
+        else:
+            shop_gold.amount += item.price
+        if buyer_purchase is None:
+            original_amount = item.amount
+            item.amount = 1
+            buyer.inventory.append(copy.copy(item))
+            item.amount = original_amount
+        else:
+            buyer_purchase.amount += 1
+        item.amount -= 1
+        if item.amount == 0:
+            self.inventory.remove(item)
+    def sell(self, grid, buyer, item):
+        buyer_gold = None
+        for buyer_item in buyer.inventory:
+            if isinstance(buyer_item, Gold):
+                buyer_gold = buyer_item
+            if buyer_item == item:
+                buyer_purchase = buyer_item
+        shop_gold = None
+        shop_purchase = None
+        for shop_item in self.inventory:
+            if isinstance(shop_item, Gold):
+                shop_gold = shop_item
+            if shop_item == item:
+                shop_purchase = shop_item
+        if shop_gold is None or shop_gold.amount < item.price:
+            return False
+        shop_gold.amount -= item.price
+        if buyer_gold is None:
+            self.inventory.append(Gold((-1, -1), item.price))
+        else:
+            buyer_gold.amount += item.price
+        if shop_purchase is None:
+            original_amount = item.amount
+            item.amount = 1
+            self.inventory.append(copy.copy(item))
+            item.amount = original_amount
+        else:
+            shop_purchase.amount += 1
+        item.amount -= 1
+        if item.amount == 0:
+            buyer.inventory.remove(item)
+    def talk(self):
+        return self.dialogue[random.randint(0, len(self.dialogue))]
+
+class RandomShop(Shop):
+    def __init__(self, name, pos, depth, dialogue):
+        inventory = [Gold((-1, -1), 100)]
+        for i in range(10):
+            inventory.append(random_item((-1, -1), depth))
+        super().__init__(name, pos, inventory, dialogue)
+
+class LevelZeroWeaponShop(Shop):
+    def __init__(self, pos):
+        inventory = [IronDagger((-1, -1), None), IronSpear((-1, -1), None), WoodenClub((-1, -1), None)]
+        super().__init__("Weapon Shop", pos, inventory, levelzero_dialogue)
+
+class LevelZeroArmorShop(Shop):
+    def __init__(self, pos):
+        inventory = [LeatherCuirass((-1, -1), None)]
+        super().__init__("Armor Shop", pos, inventory, levelzero_dialogue)
+
+class LevelZeroScrollShop(Shop):
+    def __init__(self, pos):
+        inventory = []
+        super().__init__("Scroll Shop", pos, inventory, levelzero_dialogue)
