@@ -28,7 +28,7 @@ def heuristic(a, b):
     return abs(x1 - x2) + abs(y1 - y2)
 
 # A* pathfinding function to find the shortest path from `start` to `goal`.
-def a_star(start, goal, game_map):
+def a_star(start, goal, game_map, creature):
     
     open_set = [] # A open set as a priority queue to explore nodes by their priority (lowest f_score first)
     
@@ -55,7 +55,7 @@ def a_star(start, goal, game_map):
             # Calculate the neighbor position by adding direction deltas to the current position
             neighbor_position = (current_node.position[0] + dx, current_node.position[1] + dy)
             # Skip this neighbor if it's not a valid move (e.g., out of bounds, obstacle)
-            if (not is_valid_move(neighbor_position[0], neighbor_position[1], game_map) and neighbor_position[0] != goal[0] and neighbor_position[1] != goal[1]):
+            if (not is_valid_move(neighbor_position[0], neighbor_position[1], game_map, creature) and neighbor_position[0] != goal[0] and neighbor_position[1] != goal[1]):
                 continue
             
             # The cost to move to this neighbor is current cost (`g_score[current]`) + 1 (assuming each move has a cost of 1)
@@ -77,9 +77,23 @@ def get_object_by_class(tile,className):
     return None if (len(parsedTile) == 0) else parsedTile[0]
     
 # Function to check if a move is valid (not out of bounds and no obstacle)
-def is_valid_move(x, y, game_map):
-    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]) or get_object_by_class(game_map[x][y],"Creature") or not get_object_by_class(game_map[x][y],"Terrain").passable:
+def is_valid_move(x, y, game_map, creature):
+    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]):
         return False
+
+    if get_object_by_class(game_map[x][y],"Creature"):
+        return False
+
+    terrain = get_object_by_class(game_map[x][y], "Terrain")
+    if not terrain.passable:
+        return false
+
+    #craeture will avoid lava if can't fly
+    if "flying" not in creature.abilities:
+        if terrain.name == "lava":
+            return fase
+
+    
     return True
 
 
@@ -94,7 +108,7 @@ def reconstruct_path_from_node(current_node):
     return path
     
 #funtion to find the path to run away from player
-def find_escape_direction(creature_pos, player_pos, game_map):
+def find_escape_direction(creature_pos, player_pos, game_map, creature):
     # Initial distance from the player
     initial_distance = abs(player_pos[0] - creature_pos[0]) + abs(player_pos[1] - creature_pos[1])
 
@@ -106,7 +120,7 @@ def find_escape_direction(creature_pos, player_pos, game_map):
         new_y = creature_pos[1] + dy
 
         #check if the move is valid
-        if is_valid_move(new_x, new_y, game_map):
+        if is_valid_move(new_x, new_y, game_map, creature):
             # Calculate the distance to the player from the new position
             new_distance = abs(player_pos[0] - new_x) + abs(player_pos[1] - new_y)
             # Update if this move takes the creature farther from the player
