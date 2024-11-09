@@ -10,8 +10,7 @@
         if (isset($_REQUEST['guest_session'])) {
             $_SESSION['uuid'] = guidv4();
             $_SESSION['username'] = "Guest";
-            $_SESSION['difficulty'] = $_REQUEST['difficulty'];
-            header("Location: https://fathomless.io/engine/");
+            header("Location: https://fathomless.io/character/");
         }
         if (isset($_REQUEST['create_account'])) {
             if (strlen($_REQUEST['username']) >= 3) {
@@ -26,7 +25,6 @@
                 if (!($result ->fetch_assoc())) {
                     $_SESSION['uuid'] = guidv4();
                     $username = $_REQUEST['username'];
-                    $_SESSION['difficulty'] = $_REQUEST['difficulty'];
                     $hash = password_hash($_REQUEST['password'],PASSWORD_DEFAULT);
                     $stmt = $conn->prepare("INSERT INTO users(user, hash, uuid) VALUES (?, ?, ?)");
                     $stmt->bind_param("sss", $_REQUEST['username'], $hash, $_SESSION['uuid']);
@@ -34,7 +32,7 @@
                     $result = $stmt->get_result();
                     $stmt->close();
                     $conn ->close();
-                    header("Location: https://fathomless.io/engine/");
+                    header("Location: https://fathomless.io/character/");
                 } else {
                     $accountText = '<p>Username In Use</p>';
                 }
@@ -247,8 +245,7 @@
         <form id = "login" method = "post" action = "">
             <?=$accountText?>
             <button onclick = "toggleLogin();" type = "button">Back</button>
-            <span><input type="radio" id  = "easy" name="difficulty" value="easy" checked><label for="easy">Easy</label><input type="radio" id  = "medium" name="difficulty" value="medium"><label for="medium">Medium</label><input type="radio" id  = "hard" name="difficulty" value="hard"><label for="hard">Hard</label></span>
-                    
+
                     <input type = "text" placeholder = "Username" name = "username">
                     <input type = "password" placeholder = "Password" name = "password">
                     <input type = "submit" name = "login" value = "Login">
