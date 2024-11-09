@@ -89,8 +89,10 @@ def is_valid_move(x, y, game_map, creature):
         return False
 
     #craeture will avoid lava if can't fly
-    if "flying" not in creature.abilities:
-        if terrain and terrain.name == "lava":
+    
+    is_flying = any(effect.status_type == "Flying" for effect in creature.status_effects)
+    if not is_flying:
+        if terrain.name == "lava":
             return False
 
     
