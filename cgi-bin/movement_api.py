@@ -7,10 +7,11 @@ import pickle
 from map_simplifier import delete_blank_object
 from user_tracking import a_star, find_escape_direction
 from GameObject import *
-from Creatures import Goblin, Player
+from Creatures import Goblin
 from MasterGenerator import generateMap
 from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace
 from Decor import Corpse
+from Races import *
 import Enchantment
 import cgitb
 cgitb.enable()
@@ -40,6 +41,7 @@ def find_player_position(game_map):
         for y, tile in enumerate(row):
             for gameObject in (tile):
                 if isinstance(gameObject, Player):
+                    
                     return[x,y]
     return None  # If player is not found
 
@@ -70,17 +72,22 @@ def process_Creature_movement(position, direction, game_map):
     message = "Creature has moved"
     global turn_log
     global game_log
-    turn_log.append({"type":"movement","before":get_relative_tile(get_object_by_class(game_map[x][y],"Creature").pos),"after":get_relative_tile([new_x,new_y])})
-    game_log += get_object_by_class(game_map[x][y],"Creature").name +" @ "+str(((get_object_by_class(game_map[x][y],"Creature").pos)))+" Moved To "+str(([new_x,new_y]))+"\n"
+    creatureType = "Creature"
+    if (get_object_by_class(game_map[x][y],creatureType) == None):
+        creatureType = "Player"
+        
+    turn_log.append({"type":"movement","before":get_relative_tile(get_object_by_class(game_map[x][y],creatureType).pos),"after":get_relative_tile([new_x,new_y])})
+    game_log += get_object_by_class(game_map[x][y],creatureType).name +" @ "+str(((get_object_by_class(game_map[x][y],creatureType).pos)))+" Moved To "+str(([new_x,new_y]))+"\n"
     
-    get_object_by_class(game_map[x][y],"Creature").move(game_map,[new_x, new_y])
-    get_object_by_class(game_map[new_x][new_y],"Terrain").on_step(game_map,get_object_by_class(game_map[new_x][new_y],"Creature"))
+    get_object_by_class(game_map[x][y],creatureType).move(game_map,[new_x, new_y])
+    if get_object_by_class(game_map[new_x][new_y],"Terrain"):
+        get_object_by_class(game_map[new_x][new_y],"Terrain").on_step(game_map,get_object_by_class(game_map[new_x][new_y],creatureType))
     
-    target = get_object_by_class(game_map[new_x][new_y],"Creature")
+    target = get_object_by_class(game_map[new_x][new_y],creatureType)
     for i in range(len(target.status_effects)):
         target.status_effects[i].tick(game_map,target)
     if (target.hp <= 0):
-        if (target.name == "Player"):
+        if (isinstance(target,Player)):
             global gameOver
             gameOver = True
             return (new_x, new_y), message
@@ -89,13 +96,13 @@ def process_Creature_movement(position, direction, game_map):
             #turn_log.append({"killed":"type"}) 
             game_log += target.name +" @ "+str(((target.pos)))+" Died In "+get_object_by_class(game_map[new_x][new_y],"Terrain").name+"\n"
 
-            target.die(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"),Corpse(target.pos,target.hp,target.damage_resistances))
+            target.die(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player"),Corpse(target.pos,target.hp,target.damage_resistances))
     return (new_x, new_y), message
 
 # Function to update all Creature positions
 def update_Creature_position(game_map, player_pos):
     player_pos = (list(player_pos))
-    Player = get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Creature")
+    Player = get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Player")
 
     moved_Creatures = []  # Track Creatures that have already moved
     
@@ -150,7 +157,7 @@ def get_direction_from_step(current_pos, next_pos):
 
 # Function to validate the movement
 def is_valid_move(x, y, game_map):
-    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]) or get_object_by_class(game_map[x][y],"Creature") or not get_object_by_class(game_map[x][y],"Terrain").passable:
+    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]) or get_object_by_class(game_map[x][y],"Creature") or (get_object_by_class(game_map[x][y],"Terrain") and not get_object_by_class(game_map[x][y],"Terrain").passable):
         if ((get_object_by_class(game_map[x][y],"Decor") != None and get_object_by_class(game_map[x][y],"Decor").passable)):
             return True
         else:
@@ -164,7 +171,7 @@ def get_map_subset(player_pos, game_map, fov_radius):
     if x_max > 0:
         y_max = len(game_map[0])
 
-    blank_tile = {"Terrain": {"textureIndex": 8}}
+    blank_tile = {"Bottom": {"textureIndex": 8}}
     
     map_subset = []
     for i in range(x - fov_radius, x + fov_radius + 1):
@@ -174,6 +181,10 @@ def get_map_subset(player_pos, game_map, fov_radius):
                 row_subset.append(blank_tile)
             else:
                 internalGrid = {gameObject.__class__.__base__.__name__.capitalize(): gameObject.__dict__ for gameObject in game_map[i][j]}
+                internalGrid["Bottom"] = {"textureIndex":1}
+                if (internalGrid.get('Player') is not None):
+                    internalGrid['Creature'] = internalGrid['Player']
+                    del internalGrid['Player']
                 if (internalGrid.get('Weapon') is not None):
                     #internalGrid['Weapon']['enchantment'] = internalGrid['Weapon']['enchantment'].name;
                     internalGrid['Item'] = internalGrid['Weapon']
@@ -196,11 +207,12 @@ def get_map_subset(player_pos, game_map, fov_radius):
                             internalGrid['Creature']['inventory'][i].enchantment = internalGrid['Creature']['inventory'][i].enchantment.name
                    '''
                     internalGrid['Creature']['inventory'] = [inventory.__dict__ for inventory in internalGrid['Creature']['inventory'] if inventory]
-                    internalGrid['Creature']['drop_table'] = list(internalGrid['Creature']['drop_table'])
-                    for k in range(len(internalGrid['Creature']['drop_table'])):
-                        if type(internalGrid['Creature']['drop_table'][k]) != type(0.7):
-                            internalGrid['Creature']['drop_table'][k] = internalGrid['Creature']['drop_table'][k].__dict__
-                    
+                    if (internalGrid['Creature'].get('drop_table') is not None):
+                        internalGrid['Creature']['drop_table'] = list(internalGrid['Creature']['drop_table'])
+                        for k in range(len(internalGrid['Creature']['drop_table'])):
+                            if type(internalGrid['Creature']['drop_table'][k]) != type(0.7):
+                                internalGrid['Creature']['drop_table'][k] = internalGrid['Creature']['drop_table'][k].__dict__
+                        
                 row_subset.append(internalGrid)
         map_subset.append(row_subset)
     
@@ -254,8 +266,8 @@ def process_attack(attacker, target):
     
         #check did the creature dead
         if target.hp <= 0:
-            target.die(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"),Corpse(target.pos,target.hp,target.damage_resistances))
-            if target.name == "Player":
+            target.die(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player"),Corpse(target.pos,target.hp,target.damage_resistances))
+            if isinstance(target,Player):
                 global gameOver
                 gameOver = True
             else:
@@ -277,6 +289,8 @@ if (HTTP_FIELDS.getvalue('uuid')):
       direction = None
       attack = [int(coordinate) for coordinate in HTTP_FIELDS.getvalue('attack').split(",")] if HTTP_FIELDS.getvalue('attack') else None
       difficulty = HTTP_FIELDS.getvalue('difficulty') if (HTTP_FIELDS.getvalue('difficulty')) else "Easy"
+      race = HTTP_FIELDS.getvalue('race') if (HTTP_FIELDS.getvalue('race')) else None
+
       selected = HTTP_FIELDS.getvalue('selected') if (HTTP_FIELDS.getvalue('selected')) else False
       level = HTTP_FIELDS.getvalue('level') if (HTTP_FIELDS.getvalue('level') and uuid == "Test") else "0"
       if (uuid == "Test"):
@@ -284,7 +298,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
     # Load the current map
       file_path = '../maps/'+uuid+'.pkl' 
       if (not os.path.exists(file_path)):
-          game_map = generateMap(0, level+","+difficulty)
+          game_map = generateMap(0, level+","+difficulty,None,race)
           turn_log.append({"level":level+","+difficulty})
           game_log += "New Level Generated "+level+","+difficulty+"\n"
           if (int(level) == 23):
@@ -297,7 +311,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
       player_pos = find_player_position(game_map)
       if (attack != None):
           target_coordinates = get_target_tile(attack)
-          player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature")
+          player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player")
           direction = get_direction_from_step(player_pos, target_coordinates)
           if (direction == 270):
              player.textureIndex = 36
@@ -312,7 +326,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
               target_coordinates = get_target_tile(attack)
               target_creature = get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature")
               if (target_creature):
-                  message = process_attack(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"), target_creature)
+                  message = process_attack(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player"), target_creature)
                   update_Creature_position(game_map, player_pos)
               else:
                   message = "no target at this position"
@@ -326,43 +340,43 @@ if (HTTP_FIELDS.getvalue('uuid')):
                   
                   
                   if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Item")):
-                      get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").pickup_item(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Item"))
+                      get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").pickup_item(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Item"))
                   if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Weapon")):
-                      get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").pickup_item(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Weapon"))
+                      get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").pickup_item(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Weapon"))
                   if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Consumable")):
-                      get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").pickup_item(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Consumable"))
+                      get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").pickup_item(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Consumable"))
                   if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Equippable")):
-                      get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").pickup_item(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Equippable"))
+                      get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").pickup_item(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Equippable"))
 
               else:
                   message = "Movement Out Of Range"
           
           if (not selected and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor") and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Stairs" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Corpse"): #interact 
               
-              get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").on_interact(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"))
+              get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").on_interact(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player"))
               
               message = "Creature has moved" if (message == "Creature has moved") else "interacted with"
-              game_log += get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").name +" @ "+str(((get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").pos)))+" Interacted With "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name +" @ "+str(((get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").pos)))+"\n"
+              game_log += get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").name +" @ "+str(((get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").pos)))+" Interacted With "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name +" @ "+str(((get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").pos)))+"\n"
 
           if (selected):
               selected_method = selected.split(":")[0]
               selected_index = int(selected.split(":")[1])
               
               if (selected_method == "inventory" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature")):
-                  targetItem = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").inventory[selected_index]
+                  targetItem = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").inventory[selected_index]
                   if (targetItem.__class__.__base__.__name__ == "Consumable"):
-                      get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").inventory[selected_index].use_effect(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature"))
+                      get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").inventory[selected_index].use_effect(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature"))
                       game_log += targetItem.name+" Consumed By "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").pos)
                       message = targetItem.name+" Consumed By "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").pos)
                       
                   if (targetItem.__class__.__base__.__name__ == "Equippable"):
-                      get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").inventory[selected_index].on_equip(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature"))
+                      get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").inventory[selected_index].on_equip(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature"))
                       game_log += targetItem.name+" Equipped Tp "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").pos)
                       message = targetItem.name+" Equipped To "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").pos)
                       
               if (selected_method == "abilities" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature")):
-                  get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").abilities[selected_index].use(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature"),get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature"))
-                  targetAbility = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").abilities[selected_index]
+                  get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").abilities[selected_index].use(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player"),get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature"))
+                  targetAbility = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").abilities[selected_index]
                   game_log += targetAbility.name+" Used On "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").pos)
                   message = targetAbility.name+" Used On "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").pos)
                       
@@ -373,15 +387,15 @@ if (HTTP_FIELDS.getvalue('uuid')):
       if (message == "Creature has moved"):
           update_Creature_position(game_map, player_pos)
           #print(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor").name)
-          if (get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor") and get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor").name == "Stairs") or (get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Terrain").name == "Pit"):
+          if (get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor") and get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor").name == "Stairs") or (get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Terrain") and get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Terrain").name == "Pit"):
               if get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor") and get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor").name == "Stairs":
                   stair = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor")
                   depth = str(int(stair.hp.split(",")[0]) + 1)+","+stair.hp.split(",")[1]
                   if ((int(stair.hp.split(",")[0]) + 1) == 23):
                       gameOver = True
               else:
-                  depth = "22,Easy"
-              player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature")
+                  depth = str(int(find_current_level(game_map).split(",")[0])+1)+","+find_current_level(game_map).split(",")[1]
+              player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player")
               player.textureIndex = 38
               
               game_map = generateMap(0, depth,player)
@@ -389,7 +403,8 @@ if (HTTP_FIELDS.getvalue('uuid')):
               message = "New Map: Level "+str(depth)
               player_pos = find_player_position(game_map)
               game_log += "New Level Generated "+depth+"\n"
-      player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature")
+
+      player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player")
       if player.xp >= 20*player.level:
             #TODO: display levelup screen, where player chooses to place their stat point in fitness, cunning, or magic and allocates their 5 (6 in case of human) skill points among their skills
             player.xp -= 20*player.level
@@ -420,7 +435,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
     #send subset_map and message back to client
       
       if (gameOver):
-         game_log += "Game Over. Final Score: "+str(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Creature").xp)
+         game_log += "Game Over. Final Score: "+str(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").xp)
       
       with open("../logs/"+uuid+".txt", "a") as myfile:
          myfile.write(game_log)
