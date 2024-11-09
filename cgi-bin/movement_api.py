@@ -157,11 +157,16 @@ def get_direction_from_step(current_pos, next_pos):
 
 # Function to validate the movement
 def is_valid_move(x, y, game_map):
-    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]) or get_object_by_class(game_map[x][y],"Creature") or (get_object_by_class(game_map[x][y],"Terrain") and not get_object_by_class(game_map[x][y],"Terrain").passable):
-        if ((get_object_by_class(game_map[x][y],"Decor") != None and get_object_by_class(game_map[x][y],"Decor").passable)):
-            return True
-        else:
-            return False
+    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]): #out of bounds
+        return False
+    if get_object_by_class(game_map[x][y],"Creature"):
+        return False
+    if (get_object_by_class(game_map[x][y],"Terrain") and not get_object_by_class(game_map[x][y],"Terrain").passable and (get_object_by_class(game_map[x][y],"Decor") and get_object_by_class(game_map[x][y],"Decor").passable)):
+        return True #if non passable terrain but passable decor 
+    if (get_object_by_class(game_map[x][y],"Terrain") and not get_object_by_class(game_map[x][y],"Terrain").passable):
+        return False
+    if ((get_object_by_class(game_map[x][y],"Decor") and not get_object_by_class(game_map[x][y],"Decor").passable)):
+        return False
     return True
 #Function to create the subset of map
 def get_map_subset(player_pos, game_map, fov_radius):
