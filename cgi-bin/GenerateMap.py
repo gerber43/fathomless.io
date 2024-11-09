@@ -12,34 +12,60 @@ from Decor import *
 from Creatures import *
 from Items import *
 from Races import *
+from Biomes import *
 
 
+temp_biome = TempBiome()
+caves = Caves()
+cove = Cove()
+mine = Mine()
+corruptite_mine = CorruptiteMine()
+sewer = Sewer()
+shantytown = Shantytown()
+magma_core = MagmaCore()
+deep_cavern = DeepCavern()
+ziggurat = Ziggurat()
+embers = Embers()
+undercity = Undercity()
+columbarium = Columbarium()
+catacomb = Catacomb()
+carrion = Carrion()
+worldeaters_gut = WorldeatersGut()
+necropolis = Necropolis()
+underworld1 = Underworld1()
+underworld2 = Underworld2()
+underworld3 = Underworld3()
+underworld4 = Underworld4()
+underworld5 = Underworld5()
+ancient_city = AncientCity()
+old_temple = OldTemple()
+cosmic_void = CosmicVoid()
+world_heart = WorldHeart()
 
-biomes = {
-    1: {"Creature":[Goblin, Spider, Bat]},             # Cave creatures
-    2: {"Creature":[Goblin, Spider, Bat]},             # Cave creatures
-    3: {"Creature":[Fishman, DrownedSailor, Pirate]},   # Cove creatures
-    4: {"Creature":[GoblinMiner, RockWorm]},           # Mine creatures
-    5: {"Creature":[GoblinMiner, RockWorm]},           # Mine creatures
-    6: {"Creature":[GiantSlime, SewerCroc]},          # Sewer creatures
-    7: {"Creature":[GiantSlime, SewerCroc]},          # Sewer creatures
-    8: {"Creature":[DiseasedScavenger, BloatedGuard]},  # Shantytown creatures
-    9: {"Creature":[MagmaGolem, FireElemental]},       # Magma Core creatures
-    10: {"Creature":[DarkElf, DarkDwarf]},              # Deep Cave creatures
-    11: {"Creature":[XotilWarrior, XotilAbomination, XotilHighPriest]},  # Ziggurat creatures
-    12: {"Creature":[AshGolem, ObsidianGolem]},         # Ember creatures
-    13: {"Creature":[AshGhoul, AshWight]},             # Columbarium creatures
-    14: {"Creature":[Skeleton, Necromancer]},  # Catacomb creatures
-    15: {"Creature":[FleshAmalgam, Polyp]},              # Carrion creatures
-    16: {"Creature":[Parasite, BloodCrawler]},         # Worldeater’s Gut creatures
-    17: {"Creature":[Lich, DeathKnight]},             # Necropolis creatures
-    18: {"Creature":[TricksterImp, DeceitArchdemon]}, # Underworld creatures
-    19: {"Creature":[AncientServant, Apparition]},       # Ancient City creatures
-    20: {"Creature":[Cultist, Shambler]},  # Temple of the Old One creatures
-    21: {"Creature":[VoidBeast]},                      # Cosmic Void creatures
-    22: {"Creature":[AbyssDragon]},                   # Heart of the World (Final Boss)
+biomes_dict = {
+    1: caves,            
+    2: caves,            
+    3: cove,             
+    4: mine,            
+    5: corruptite_mine,  
+    6: sewer,            
+    7: sewer,            
+    8: shantytown,       
+    9: magma_core,       
+    10: deep_cavern,     
+    11: ziggurat,        
+    12: embers,          
+    13: columbarium,     
+    14: catacomb,        
+    15: carrion,         
+    16: worldeaters_gut, 
+    17: necropolis,      
+    18: underworld1,     
+    19: ancient_city,    
+    20: old_temple,      
+    21: cosmic_void,     
+    22: world_heart      
 }
-
 
 def is_within_grid(x, y, width, height):
     return 0 <= x < width and 0 <= y < height
