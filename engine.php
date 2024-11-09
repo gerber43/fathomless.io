@@ -40,7 +40,7 @@ if (file_exists("maps/Test.pkl")) {
             -o-user-select: none;
             user-select: none;
             overflow-x:none;
-            background:#333;
+            background:black;
             }
             #page {
             width:100vw;
@@ -239,7 +239,7 @@ if (file_exists("maps/Test.pkl")) {
             transition:.75s;
             transform:scale(.9);
             }
-            .manhattan:hover, .selected .Light{
+            .manhattan:hover, .selected .Top{
             background: purple;
             opacity:.3;
             cursor:pointer;
@@ -501,7 +501,7 @@ if (file_exists("maps/Test.pkl")) {
             const tileObjects = JSON.parse('<?=file_get_contents("https://fathomless.io/json/objects.json")?>');
             const defaults = {"default":{"textureIndex":8,"intensity":0}};
             var songPosition = sfxVolume = musicVolume = currentLevel = playerDirection = viewRadius = keyBindOpened = inspecting = music = playMusic = sfx = isLowResolution = start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter  = inventoryOpened = asciiMode= 0;
-            var objectTypes = ["Terrain","Item","Decor","Creature","Light"];
+            var objectTypes = ["Terrain","Item","Decor","Creature","Light","Top"];
             var keyBinds = (!localStorage.getItem("keyBinds"))?{"Inventory":"KeyE","Select":"Enter","Settings":"Escape","Attack":"Space","Movement":["ArrowRight","ArrowDown","ArrowLeft","ArrowUp","KeyD","KeyS","KeyA","KeyW"]}:(JSON.parse(localStorage.getItem("keyBinds")));
             if (localStorage.getItem("soundSettings")) {
                 var soundSettings = JSON.parse(localStorage.getItem("soundSettings"));
@@ -537,8 +537,59 @@ if (file_exists("maps/Test.pkl")) {
                         document.body.appendChild(modal);
             }
             
-            
-            
+            function createLine(start, end) {
+                var dx = start[0]- end[0];
+                var dy =  start[1] - end[1];
+                var m = dy/dx;
+                for (var x = start[0]; x < end[0]; x++) {
+                    var y = m*(x - start[0]) + start[1];
+                    y = Math.floor(y)
+                    
+                    
+
+                    if ( (currentMap[x][y] && currentMap[x][y]["Terrain"]['textureIndex'] == "6")) {
+                        return false;
+                    }
+                }
+                return true;
+                
+            }
+            function createLight(tileId,brightness) {
+                var light = document.getElementById(tileId).querySelector(".Light");
+                light.style.background = "#000";
+                light.style.opacity = 1-brightness;
+            }
+            function lightSource(source,brightness) {
+                source = source.split(",");
+                for (var i = 0; i < currentMap.length; i++) {
+                   for (var j = 0; j < currentMap[0].length; j++) {
+                        var distance = (i!=source[0] || j!=source[1])?((((source[0]-i)**2+(source[1]-j)**2))**.5):.5;
+                        
+                        if (currentMap[i][j]["Terrain"]['textureIndex'] != 8) {
+                            var isBright = false;
+                            if (i < source[0]) {
+                                isBright = createLine([i,j],source)
+                            }
+                            if (i >= source[0]) {
+                                isBright = createLine(source,[i,j])
+                            }
+                            
+                          
+                          if (isBright) {
+                              createLight(i+","+j,brightness/(distance+1)**.5)
+                          } else {
+                              createLight(i+","+j,0);
+                          }
+                            
+                            
+                            
+                        
+                        }
+                        
+                        
+                }
+                }
+            }
             
             function toggleSettings() {
                 
@@ -562,7 +613,7 @@ if (file_exists("maps/Test.pkl")) {
                 }
                 document.getElementById('dialogue').style.backgroundImage = 'url("'+tileObjects[12]['icon']+'")';
                 document.getElementById('inventory').style.backgroundImage = 'url("'+tileObjects[12]['icon']+'")';
-                document.getElementById('page').style.backgroundImage = 'url("'+tileObjects[13]['icon']+'")';
+                //document.getElementById('page').style.backgroundImage = 'url("'+tileObjects[13]['icon']+'")';
                 scaleTextures();
                 document.getElementById("canvas").querySelectorAll('.tile').forEach((Item) => {
                     Item.addEventListener("click", () => {clickTile(Item.id);Item.blur();});
@@ -672,7 +723,7 @@ confirmationCoordinates = coordinates;
             function displayManhattan(distance) {
                 document.getElementById('canvas').querySelectorAll('.manhattan').forEach((object) => {object.classList.remove("manhattan")});
                 for (var i = 0; i <= distance; i++){
-                    document.getElementById('canvas').querySelectorAll(`[data-manhattan="`+i+`"]`).forEach((object) => {object.querySelector('.Light').classList.add("manhattan")});
+                    document.getElementById('canvas').querySelectorAll(`[data-manhattan="`+i+`"]`).forEach((object) => {object.querySelector('.Top').classList.add("manhattan")});
                 }
             }
             function updateMap() {
@@ -682,6 +733,7 @@ confirmationCoordinates = coordinates;
                         objectTypes.forEach((object) => {applyTexture(object,j+","+i,(currentMap[j][i] && object in currentMap[j][i])?currentMap[j][i][object]:defaults["default"]);});
                     }
                 }
+                lightSource(viewRadius+","+viewRadius,1);
             }
             function toggleAscii() {
                  document.getElementById("canvas").style.background = (asciiMode)?"":"white";
@@ -829,7 +881,7 @@ confirmationCoordinates = coordinates;
                 var gameOver = 0
                 response["turn_log"].forEach((update) => {
                     if (update['type'] == "attack") {
-                        applyEffects(document.getElementById((update['after'][0]+playerDirection[0])+","+(update['after'][1]+playerDirection[1])).querySelector(".Light"),"damaged",.2)
+                        applyEffects(document.getElementById((update['after'][0]+playerDirection[0])+","+(update['after'][1]+playerDirection[1])).querySelector(".Top"),"damaged",.2)
                         if (update['after'][0] == viewRadius && update['after'][1] == viewRadius) {
                             playerDamage -= update['amount'];
                         }
@@ -939,10 +991,12 @@ confirmationCoordinates = coordinates;
                 if (isValidMove(tileCoordinates)){
                     if (!disableMovement) {
                         sendRequest("?sendAttack="+encodeURIComponent(tileCoordinates)+(selectedItem?("&selected="+encodeURIComponent(selectedItem)):""));
+                        
                         selectedItem = false;
                         disableMovement = true;
                         var player = document.getElementById(viewRadius+","+viewRadius).querySelector(".Creature");
                         var direction  = [(tileCoordinates[0]-viewRadius),(tileCoordinates[1]-viewRadius)];
+                        
                         if (direction[0] == 0 && direction[1] == -1) {
                                 player.style.backgroundImage = 'url("'+tileObjects[36]['icon']+'")';
                             } else if (direction[0] == 1 && direction[1] == 0) {
@@ -954,6 +1008,8 @@ confirmationCoordinates = coordinates;
                             }
                         playerDirection = [0,0]
                         if (!currentMap[tileCoordinates[0]][tileCoordinates[1]]["Creature"] && ((currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"] && currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"]["passable"]) || !currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"])) {
+                                                    lightSource(tileCoordinates[0]+","+tileCoordinates[1],1);
+
                             playerDirection = direction;
                             moveObject(player,direction[0],direction[1]);
                             moveObject(document.getElementById('canvas'),-direction[0],-direction[1]);
@@ -988,14 +1044,65 @@ confirmationCoordinates = coordinates;
                         var deg = (keyBinds["Movement"].indexOf(e.code)%4)*Math.PI/2;
                         var currentSelect = keyboardOnly.split(',');
                         target = [parseInt(currentSelect[0])+Math.round(Math.cos(deg)),parseInt(currentSelect[1])+Math.round(Math.sin(deg))]
-                        if (currentMap[target[0]][target[1]]["Terrain"]['textureIndex'] != "8" && document.getElementById(target[0]+","+target[1]).dataset.manhattan <= currentMap[viewRadius][viewRadius]['Creature']['equipment'][0]['range']) {
+                        
+                       if (document.getElementById(target[0]+","+target[1]).dataset.manhattan > currentMap[viewRadius][viewRadius]['Creature']['equipment'][0]['range']) {
+                            deg = (keyBinds["Movement"].indexOf(e.code)%4)*90;
+                                if (deg == 0) {
+                                    target = [parseInt(currentSelect[0]) + 1,parseInt(currentSelect[1])+1];
+                                    if (document.getElementById(target[0]+","+target[1]).dataset.manhattan > currentMap[viewRadius][viewRadius]['Creature']['equipment'][0]['range']) {
+                                        target = [parseInt(currentSelect[0]) + 1,parseInt(currentSelect[1])-1];
+                                    }
+
+                                }
+                                
+                                if (deg == 90) {
+                                    target = [parseInt(currentSelect[0]) + 1,parseInt(currentSelect[1])+1];
+                                    if (document.getElementById(target[0]+","+target[1]).dataset.manhattan > currentMap[viewRadius][viewRadius]['Creature']['equipment'][0]['range']) {
+                                        target = [parseInt(currentSelect[0]) - 1,parseInt(currentSelect[1])+1];
+                                    }
+                                    
+
+                                }
+                                if (deg == 180) {
+                                    target = [parseInt(currentSelect[0]) - 1,parseInt(currentSelect[1])-1];
+                                    if (document.getElementById(target[0]+","+target[1]).dataset.manhattan > currentMap[viewRadius][viewRadius]['Creature']['equipment'][0]['range']) {
+                                        target = [parseInt(currentSelect[0]) - 1,parseInt(currentSelect[1])+1];
+                                    }
+
+                                }
+                                if (deg == 270) {
+                                    target = [parseInt(currentSelect[0]) - 1,parseInt(currentSelect[1])-1];
+                                    if (document.getElementById(target[0]+","+target[1]).dataset.manhattan > currentMap[viewRadius][viewRadius]['Creature']['equipment'][0]['range']) {
+                                        target = [parseInt(currentSelect[0]) + 1,parseInt(currentSelect[1])-1];
+                                    }
+
+                                }
+                                
+                                
+                            }
+                       
+                       
+                       
+                        if (currentMap[target[0]][target[1]]["Terrain"]['textureIndex'] != "8" && (document.getElementById(target[0]+","+target[1]).dataset.manhattan <= currentMap[viewRadius][viewRadius]['Creature']['equipment'][0]['range'])) {
+                            
+                            
+                            
                             document.getElementById(keyboardOnly).classList.remove("selected");
                             document.getElementById(target[0]+","+target[1]).classList.add("selected");
                             document.getElementById(target[0]+","+target[1]).focus();
                             keyboardOnly = target[0]+","+target[1];
+                            
+                            
+                            
+                            
+                            
+                            
                         }
+                        
+                        
                     }
                     if (e.code === keyBinds['Select'] && keyboardOnly)  {
+                        
                         var target = keyboardOnly.split(",");
                         directionHandler(target);
                     }
