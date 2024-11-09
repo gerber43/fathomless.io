@@ -111,7 +111,7 @@ def update_Creature_position(game_map, player_pos):
                 if int((Creature.equipment[0]).range) > int((Player.equipment[0]).range) and manhattan <= int((Player.equipment[0]).range):
                     current_pos = (x,y)
                     for move_num in range(Creature.speed):
-                        direction = find_escape_direction((x, y), player_pos, game_map)
+                        direction = find_escape_direction((x, y), player_pos, game_map, Creature)
                         current_pos, message = process_Creature_movement(current_pos, direction, game_map)
                     moved_Creatures.append(Creature)
             
@@ -122,7 +122,7 @@ def update_Creature_position(game_map, player_pos):
                 
                 #creature will move toward player if the player is in the tracking range
                 elif manhattan <= check:
-                    path = a_star((x, y), player_pos, game_map)
+                    path = a_star((x, y), player_pos, game_map, Creature)
                     if not path or len(path) < 2:
                         continue
                     current_pos = (x, y)
