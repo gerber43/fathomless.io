@@ -23,7 +23,7 @@ class Stairs(Decor):
 #used for the ziggurat>carrion level transition, as well as for the oldtemple>cosmicvoid and cosmicvoid>worldheart
 class Portal(Decor):
     def __init__(self, pos):
-        super().__init__("Portal", "23", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "Yes", "Go Down?")
+        super().__init__("Portal", "15", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "Yes", "Go Down?")
     def on_interact(self, current_level, creature):
         pass
 
@@ -52,7 +52,7 @@ class StoneDoor(Decor):
 #cave, mines, cove corruptite mines, deep cavern: common
 class Rock(Decor):
     def __init__(self, pos):
-        super().__init__("Rock", "24", pos, 70, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("Rock", "6", pos, 70, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
     def on_destroy(self, grid):
         grid[self.pos[0]][self.pos[1]].append(Pebble(self.pos, 10))
         super().on_destroy(grid)
@@ -60,12 +60,12 @@ class Rock(Decor):
 #cove: uncommon
 class Coral(Decor):
     def __init__(self, pos):
-        super().__init__("Coral", "24", pos, 40, (0.7, 0.9, 0.2, 1.0, 1.0, 1.0, 1.0, 0.1, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("Coral", "55", pos, 40, (0.7, 0.9, 0.2, 1.0, 1.0, 1.0, 1.0, 0.1, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
 
 # mines, corruptite mines: uncommon
 class Deposit(Decor):
     def __init__(self, pos):
-        super().__init__("Mineral Deposit", "24", pos, 70, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("Mineral Deposit", "46", pos, 70, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
     def on_destroy(self, grid):
         grid[self.pos[0]][self.pos[1]].append(Ore(self.pos, 5))
         super().on_destroy(grid)
@@ -73,7 +73,7 @@ class Deposit(Decor):
 #corruptite mines: rare
 class CorruptiteCluster(Decor):
     def __init__(self, pos):
-        super().__init__("Corruptite Cluster", "24", pos, 40, (0.7, 0.9, 0.2, 1.0, 1.0, 1.0, 1.0, 0.1, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("Corruptite Cluster", "48", pos, 40, (0.7, 0.9, 0.2, 1.0, 1.0, 1.0, 1.0, 0.1, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
     def on_destroy(self, grid):
         grid[self.pos[0]][self.pos[1]].append(Corruptite(self.pos, 3))
         super().on_destroy(grid)
@@ -82,36 +82,36 @@ class CorruptiteCluster(Decor):
 #catacombs: uncommon
 class Urn(Decor):
     def __init__(self, pos):
-        super().__init__("Burial Urn", "24", pos, 10, (0.0, 0.5, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("Burial Urn", "49", pos, 10, (0.0, 0.5, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
     def on_destroy(self, grid):
         grid[self.pos[0]][self.pos[1]].append(Ghost(self.pos))
         super().on_destroy(grid)
 
 #mine, corruptite mine, sewer, shantytown, ziggurat: common
 class StandingTorch(LightDecor):
-    def __init__(self, grid, pos):
-        super().__init__(grid, "Torch", "24", pos, 5, (0.7, 0.7, 0.3, -1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, "NO", "", 32, True)
+    def __init__(self, pos):
+        super().__init__( "Torch", "50", pos, 5, (0.7, 0.7, 0.3, -1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, "NO", "", 32, True)
 
 #embers: common
 class Ember(LightDecor):
-    def __init__(self, grid, pos):
-        super().__init__(grid, "Ember", "24", pos, 5, (0.7, 0.9, 1.0, 1.0, 0.7, 0.0, -1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, "NO", "", 16, True)
+    def __init__(self, pos):
+        super().__init__( "Ember", "51", pos, 5, (0.7, 0.9, 1.0, 1.0, 0.7, 0.0, -1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, "NO", "", 16, True)
 
 #carrion, worldeater's gut: common
 class LightGrowth(LightDecor):
-    def __init__(self, grid, pos):
-        super().__init__(grid, "Growth", "24", pos, 60, (0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0), False, "NO", "", 32, True)
+    def __init__(self, pos):
+        super().__init__( "Growth", "52", pos, 60, (0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0), False, "NO", "", 32, True)
 
 
 #columbarium, catacombs, necropolis: common
 class SpiritLight(LightDecor):
-    def __init__(self, grid, pos):
-        super().__init__(grid, "Spirit Light", "24", pos, 5, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0), True, "NO", "", 16, True)
+    def __init__(self, pos):
+        super().__init__( "Spirit Light", "53", pos, 5, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0), True, "NO", "", 16, True)
 
 #cosmic void: common
 class Energy(LightDecor):
-    def __init__(self, grid, pos):
-        super().__init__(grid, "Energy", "24", pos, 200, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0), True, "NO", "", 128, True)
+    def __init__(self, pos):
+        super().__init__( "Energy", "54", pos, 200, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0), True, "NO", "", 128, True)
 
 levelzero_dialogue = ["Are you sure you want to enter the caverns?"]
 cave_dialogue = ["Hi"]
@@ -130,7 +130,7 @@ necropolis_dialogue = ["I'm dead but I still love gold"]
 
 class Shop(Decor):
     def __init__(self, name, pos, inventory, dialogue):
-        super().__init__(name, "24", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, False, "NO", "")
+        super().__init__(name, "47", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, False, "NO", "")
         self.inventory = inventory
         self.dialogue = dialogue
     def on_interact(self, grid, creature):
