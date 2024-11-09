@@ -257,11 +257,18 @@ class Creature(GameObject):
         grid[self.pos[0]][self.pos[1]].remove(self)
 
 class Player(Creature):
-    def __init__(self, name, textureIndex, pos, fitness, cunning, magic, perception, abilities, damage_resistances, status_resistances):
+    def __init__(self, race, name, textureIndex, pos, fitness, cunning, magic, perception, abilities, damage_resistances, status_resistances):
+        self.race = "Race"
+        from Items import IronDagger, WoodenClub
+        weapon_choice = random.randint(0, 1)
+        if weapon_choice == 0:
+            weapon = IronDagger((-1, -1), None)
+        else:
+            weapon = WoodenClub((-1, -1), None)
         super().__init__(name, textureIndex, pos, [], fitness * 10, magic * 10, 1, [], fitness, cunning, magic,
                          cunning * 2, (float(cunning) ** (2.0 / 3.0)) / 10.0, perception,
                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                         [None, None, None, None, None, None, None, None, None, None], abilities, damage_resistances,
+                         [weapon, None, None, None, None, None, None, None, None, None], abilities, damage_resistances,
                          status_resistances, [], 20, None, 0, 1)
     def check_level(self, grid):
         if self.xp >= 20*self.level:
