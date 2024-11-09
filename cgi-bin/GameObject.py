@@ -201,7 +201,13 @@ class Creature(GameObject):
             if crit:
                 target.gain_status_effect(grid, lookup_crit_status_effect(damage[0]), total // 10, False, True, self)
         for status in weapon.statuses:
-            target.gain_status_effect(grid, status.status_type, status.stacks, status.infinite, True, self)
+            if isinstance(status, SmearStatus):
+                target.gain_status_effect(grid, status.status_effect.status_type, status.status_effect.stacks, status.status_effect.infinite, True, self)
+                status.uses_left -= 1
+                if status.uses_left <= 0:
+                    weapon.statuses.remove(status)
+            else:
+                target.gain_status_effect(grid, status.status_type, status.stacks, status.infinite, True, self)
     def basic_attack(self, grid, target):
         if isinstance(self.equipment[0], Weapon):
             if self.basic_attack_hit_check(grid, self.equipment[0], isinstance(self.equipment[1], Weapon), target):
@@ -312,11 +318,25 @@ class Consumable(Item):
     def use_effect(self, grid, target):
         pass
 
+class Smear(Consumable):
+    def __init__(self, name, textureIndex, pos, amount, max_stack, level, price, status_effect):
+        super().__init__(name, textureIndex, pos, amount, max_stack, level, price)
+        self.status_effect = status_effect
+    def use_effect(self, grid, target):
+        if isinstance(target.equipment[lookup_equipment_slot("Right Hand")], Weapon):
+            weapon = target.equipment[lookup_equipment_slot("Right Hand")]
+        elif isinstance(target.equipment[lookup_equipment_slot("Left Hand")], Weapon):
+            weapon = target.equipment[lookup_equipment_slot("Left Hand")]
+        else:
+            return False
+        weapon.statuses.append(SmearStatus(self.status_effect, target.cunning))
+        return True
+
 class Equippable(Item):
-    def __init__(self, name, textureIndex, pos, level, price, weight, slots, enchantment):
+    def __init__(self, name, textureIndex, pos, level, price, weight, slot, enchantment):
         super().__init__(name, textureIndex, pos, 1, 1, level, price)
         self.weight = weight
-        self.slots = slots
+        self.slot = slot
         self.enchantment = enchantment
         if enchantment is not None:
             self.name = self.name + " of " + enchantment.name
@@ -325,25 +345,39 @@ class Equippable(Item):
     def __eq__(self, other):
         if not super().__eq__(other):
             return False
-        if self.slots != other.slots:
+        if self.slot != other.slot:
             return False
         return True
     @abstractmethod
     def on_equip(self, grid, equipped_creature):
-        for slot in self.slots:
-            if equipped_creature.equipment[lookup_equipment_slot(slot)] is None:
-                self.equipped = slot
-                equipped_creature.equipment = list(equipped_creature.equipment)
-                equipped_creature.equipment[lookup_equipment_slot(slot)] = self
-                equipped_creature.inventory.remove(self)
-                if self.enchantment is not None:
-                    self.enchantment.on_equip(self, grid, equipped_creature)
-                return True
-        return False
+       chosen_slot = self.slot
+       if self.slot == "Hands":
+           if equipped_creature.equipment[lookup_equipment_slot("Right Hand")] is None:
+               chosen_slot = "Right Hand"
+           elif equipped_creature.equipment[lookup_equipment_slot("Left Hand")] is None:
+               chosen_slot = "Left Hand"
+           else:
+               return None
+       if self.slot == "Fingers":
+           if equipped_creature.equipment[lookup_equipment_slot("Right Finger")] is None:
+               chosen_slot = "Right Finger"
+           elif equipped_creature.equipment[lookup_equipment_slot("Left Finger")] is None:
+               chosen_slot = "Left Finger"
+           else:
+               return None
+       if equipped_creature.equipment[lookup_equipment_slot(chosen_slot)] is None:
+            self.equipped = chosen_slot
+            equipped_creature.equipment = list(equipped_creature.equipment)
+            equipped_creature.equipment[lookup_equipment_slot(chosen_slot)] = self
+            equipped_creature.inventory.remove(self)
+            if self.enchantment is not None:
+                self.enchantment.on_equip(self, grid, equipped_creature)
+            return chosen_slot
+       return None
     @abstractmethod
     def on_unequip(self, grid, equipped_creature):
         if self.equipped is None:
-            return False
+            return None
         equipped_creature.equipment[lookup_equipment_slot(self.equipped)] = None
         self.equipped = None
         if self.enchantment is not None:
@@ -353,6 +387,7 @@ class Equippable(Item):
             grid[self.pos[0]][self.pos[1]].append(self)
         else:
             equipped_creature.inventory.append(self)
+        return
 
     def on_move(self, grid, equipped_creature, new_pos):
         if not self.equipped:
@@ -384,8 +419,8 @@ class Equippable(Item):
             return True
 
 class Weapon(Equippable):
-    def __init__(self, name, textureIndex, pos, level, price, weight, type, range, crit_mult, damages, statuses, slots, enchantment):
-        super().__init__(name, textureIndex, pos, level, price, weight, slots, enchantment)
+    def __init__(self, name, textureIndex, pos, level, price, weight, type, range, crit_mult, damages, statuses, enchantment):
+        super().__init__(name, textureIndex, pos, level, price, weight, "Hands", enchantment)
         self.type = type
         self.range = range
         self.crit_mult = crit_mult
@@ -415,11 +450,31 @@ class Weapon(Equippable):
 
 #When a two-handed weapon is equipped in a hand slot, this is placed in the other hand slot
 class Unavailable(Equippable):
-    def __init__(self, pos):
-        super().__init__("", "", pos, 0, 0, 0, ("right_hand", "left_hand"), None)
+    def __init__(self):
+        super().__init__("", "", (-1, -1), 0, 0, 0, "Left Hand", None)
     def on_equip(self, grid, equipped_creature):
-        return super().on_equip(grid, equipped_creature)
+        pass
     def on_unequip(self, grid, equipped_creature):
+        pass
+
+class TwoHandedWeapon(Weapon):
+    def __init__(self, name, textureIndex, pos, level, price, weight, type, range, crit_mult, damages, statuses, enchantment):
+        super().__init__(name, textureIndex, pos, level, price, weight, type, range, crit_mult, damages, statuses, enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        if equipped_creature.equipment[lookup_equipment_slot("Right Hand")] is None and equipped_creature.equipment[lookup_equipment_slot("Left Hand")] is None:
+            self.equipped = "Right Hand"
+            equipped_creature.equipment = list(equipped_creature.equipment)
+            equipped_creature.equipment[lookup_equipment_slot("Right Hand")] = self
+            equipped_creature.inventory.remove(self)
+            equipped_creature.equipment[lookup_equipment_slot("Left Hand")] = Unavailable()
+            if self.enchantment is not None:
+                self.enchantment.on_equip(self, grid, equipped_creature)
+            return "Right Hand"
+        return None
+
+    def on_unequip(self, grid, equipped_creature):
+        equipped_creature.equipment[lookup_equipment_slot("Left Hand")] = None
         return super().on_unequip(grid, equipped_creature)
 
 class Terrain(GameObject):

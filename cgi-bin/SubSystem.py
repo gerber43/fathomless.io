@@ -34,6 +34,11 @@ class StatusEffect:
     def on_remove(self, grid, creature):
         pass
 
+class SmearStatus:
+    def __init__(self, status_effect, uses_left):
+        self.status_effect = status_effect
+        self.uses_left = uses_left
+
 def lookup_status_resistance_id(status_effect):
     if status_effect in statusEffects:
         return statusEffects.index(status_effect)
