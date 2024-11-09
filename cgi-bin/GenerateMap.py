@@ -178,19 +178,15 @@ def place_creatures(grid, num_creatures, depth):
                     grid[y][x].append(creature)
                     break
 
-def place_player(grid,player,race):
-    while True:
-        x = random.randint(0, len(grid) - 1)
-        y = random.randint(0, len(grid[0]) - 1)
-        # Check if the current cell contains EmptySpace and no creature yet
-        if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
-            if player == None:
-                grid[y][x].append(eval(race)("Name",(y, x)))
-                
-            else:
-                player.pos = [y,x]
-                grid[y][x].append(player)
-            break
+def place_player(grid, player, race, traversable_path):
+    y, x = random.choice(list(traversable_path))
+
+    if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
+        if player is None:
+            grid[y][x].append(eval(race)("Name", (y, x)))
+        else:
+            player.pos = [y, x]
+            grid[y][x].append(player)
 
 def fill_empty_spaces(grid):
     width = len(grid[0])
