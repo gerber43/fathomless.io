@@ -78,6 +78,26 @@ def get_object_by_class(tile,className):
     
 # Function to check if a move is valid (not out of bounds and no obstacle)
 def is_valid_move(x, y, game_map, creature):
+    if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]): #out of bounds
+        return False
+    if get_object_by_class(game_map[x][y],"Creature"):
+        return False
+    if (get_object_by_class(game_map[x][y],"Terrain") and not get_object_by_class(game_map[x][y],"Terrain").passable and (get_object_by_class(game_map[x][y],"Decor") and get_object_by_class(game_map[x][y],"Decor").passable)):
+        return True #if non passable terrain but passable decor 
+    if (get_object_by_class(game_map[x][y],"Terrain") and not get_object_by_class(game_map[x][y],"Terrain").passable):
+        return False
+    if ((get_object_by_class(game_map[x][y],"Decor") and not get_object_by_class(game_map[x][y],"Decor").passable)):
+        return False
+    #craeture will avoid lava if can't fly
+    is_flying = any(effect.status_type == "Flying" for effect in creature.status_effects)
+    if not is_flying:
+        if terrain.name == "Fire" or terrain.name == "Spikes" or terrain.name == "Lava":
+            return False
+            
+    return True
+    
+def is_valid_move(x, y, game_map, creature):
+    
     if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]):
         return False
 
@@ -89,10 +109,8 @@ def is_valid_move(x, y, game_map, creature):
         return False
 
     #craeture will avoid lava if can't fly
-    
-    is_flying = any(effect.status_type == "Flying" for effect in creature.status_effects)
-    if not is_flying:
-        if terrain.name == "lava":
+    if "flying" not in creature.abilities:
+        if terrain and terrain.name == "lava":
             return False
 
     
