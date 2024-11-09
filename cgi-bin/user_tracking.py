@@ -85,13 +85,13 @@ def is_valid_move(x, y, game_map, creature):
         return False
 
     terrain = get_object_by_class(game_map[x][y], "Terrain")
-    if not terrain.passable:
-        return false
+    if terrain and not terrain.passable:
+        return False
 
     #craeture will avoid lava if can't fly
     if "flying" not in creature.abilities:
-        if terrain.name == "lava":
-            return fase
+        if terrain and terrain.name == "lava":
+            return False
 
     
     return True
