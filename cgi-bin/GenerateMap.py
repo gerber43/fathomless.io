@@ -11,6 +11,8 @@ from Terrain import *
 from Decor import *
 from Creatures import *
 from Items import *
+from Races import *
+
 
 
 biomes = {
@@ -150,14 +152,15 @@ def place_creatures(grid, num_creatures, depth):
                     grid[y][x].append(creature)
                     break
 
-def place_player(grid,player):
+def place_player(grid,player,race):
     while True:
         x = random.randint(0, len(grid) - 1)
         y = random.randint(0, len(grid[0]) - 1)
         # Check if the current cell contains EmptySpace and no creature yet
         if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
             if player == None:
-                grid[y][x].append(Player((y, x)))
+                grid[y][x].append(eval(race)("Name",(y, x)))
+                
             else:
                 player.pos = [y,x]
                 grid[y][x].append(player)
@@ -326,7 +329,7 @@ texture_mapping = {
     'Pit': 18,
     'Wall': 6,  
 }
-def generateMap(width, height, depth, num_creatures, player):
+def generateMap(width, height, depth, num_creatures, player, race):
     # Generate terrain grid with probabilities
     terrain_probabilities = {
     'walls': 0.2,
@@ -347,8 +350,16 @@ def generateMap(width, height, depth, num_creatures, player):
     
     place_staircase(final_grid, final_traversable_grid,depth)
     
-    place_player(final_grid,player)
+    place_player(final_grid,player, race)
+    
+    for i in range(len(final_grid)):
+        for j in range(len(final_grid[i])):
+            for k in range(len(final_grid[i][j])):
+                if k < len(final_grid[i][j]) and isinstance(final_grid[i][j][k], EmptySpace):
+                    del final_grid[i][j][k]
 
+                
+    
     return final_grid
     #json_map = convert_grid_to_json(final_grid)
     # Convert the map to JSON format and print
