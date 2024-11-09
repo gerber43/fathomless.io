@@ -13,6 +13,9 @@ if (file_exists("maps/Test.pkl")) {
 }
 } else {
     session_required();
+    if (!file_exists("maps/".$_SESSION['uuid'].".pkl")) {
+        header("Location: https://fathomless.io/character/");
+    }
 }
 
 
@@ -65,6 +68,7 @@ if (file_exists("maps/Test.pkl")) {
             width:100%;
             height:100%;
             }
+            
             #inventory, #keyBind {
             transition:.75s;
             height:0;
@@ -77,6 +81,7 @@ if (file_exists("maps/Test.pkl")) {
             
             
             #dialogue, #alert {
+                
             display:flex;
             align-items:center;
             position:absolute;
@@ -121,6 +126,7 @@ if (file_exists("maps/Test.pkl")) {
             animation-duration: 4s;
             }
             #settings {
+    
             transition:4s;
             position:absolute;
             top:0;
@@ -467,6 +473,16 @@ if (file_exists("maps/Test.pkl")) {
                 font-size:20px;
                 color:rgb(212,175,55);
             }
+            
+            .tile .Light {
+                z-index:2;
+            }
+            .tile .Top {
+                z-index:3;
+            }
+            #inventory, #settings, #alert, #dialogue, #keyBind, #modal, #inspection {
+                z-index:4;
+            }
         </style>
     </head>
     <body>
@@ -499,9 +515,9 @@ if (file_exists("maps/Test.pkl")) {
         <script>
             const username = '<?=$_SESSION['username']?>';
             const tileObjects = JSON.parse('<?=file_get_contents("https://fathomless.io/json/objects.json")?>');
-            const defaults = {"default":{"textureIndex":8,"intensity":0}};
+            const defaults = {"default":{"textureIndex":8,"intensity":0},"Bottom":{"textureIndex":1}};
             var songPosition = sfxVolume = musicVolume = currentLevel = playerDirection = viewRadius = keyBindOpened = inspecting = music = playMusic = sfx = isLowResolution = start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter  = inventoryOpened = asciiMode= 0;
-            var objectTypes = ["Terrain","Item","Decor","Creature","Light","Top"];
+            var objectTypes = ["Bottom","Terrain","Item","Decor","Creature","Light","Top"];
             var keyBinds = (!localStorage.getItem("keyBinds"))?{"Inventory":"KeyE","Select":"Enter","Settings":"Escape","Attack":"Space","Movement":["ArrowRight","ArrowDown","ArrowLeft","ArrowUp","KeyD","KeyS","KeyA","KeyW"]}:(JSON.parse(localStorage.getItem("keyBinds")));
             if (localStorage.getItem("soundSettings")) {
                 var soundSettings = JSON.parse(localStorage.getItem("soundSettings"));
@@ -529,8 +545,7 @@ if (file_exists("maps/Test.pkl")) {
             window.mobileCheck = function() {let check = false;(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);return check;};
             //if (mobileCheck()){toggleResolution()}
             function createModal(content) {
-                var modal = Object.assign(document.createElement('div'),{classList:"modal"});
-                //var innerDiv = "<span class= 'close' ><button onclick = 'this.parentElement.parentElement.remove();' >X</button></span>";
+                var modal = Object.assign(document.createElement('div'),{classList:"modal",id:"modal"});
                       var innerDiv = "";
                        innerDiv +=  content;
                        modal.innerHTML = "<div>"+innerDiv+"</div>";
@@ -547,7 +562,7 @@ if (file_exists("maps/Test.pkl")) {
                     
                     
 
-                    if ( (currentMap[x][y] && currentMap[x][y]["Terrain"]['textureIndex'] == "6")) {
+                    if ( (currentMap[x][y] && currentMap[x][y]["Bottom"]['textureIndex'] == "6")) {
                         return false;
                     }
                 }
@@ -565,15 +580,17 @@ if (file_exists("maps/Test.pkl")) {
                    for (var j = 0; j < currentMap[0].length; j++) {
                         var distance = (i!=source[0] || j!=source[1])?((((source[0]-i)**2+(source[1]-j)**2))**.5):.5;
                         
-                        if (currentMap[i][j]["Terrain"]['textureIndex'] != 8) {
-                            var isBright = false;
+                        if (currentMap[i][j]["Bottom"]['textureIndex'] != 8) {
+                            var isBright = true;
+                            /*
+                             var isBright = false;
                             if (i < source[0]) {
                                 isBright = createLine([i,j],source)
                             }
                             if (i >= source[0]) {
                                 isBright = createLine(source,[i,j])
                             }
-                            
+                            */
                           
                           if (isBright) {
                               createLight(i+","+j,brightness/(distance+1)**.5)
@@ -627,27 +644,25 @@ if (file_exists("maps/Test.pkl")) {
                 var target = currentMap[coordinates[0]][coordinates[1]];
 
                     var range = (currentMap[viewRadius][viewRadius]["Creature"]["equipment"][0]['range'])
-                    if ((target["Terrain"]["textureIndex"] != 8) && ((document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= range && target["Creature"] !== undefined) || document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= 1)) {
-                    if (target["Terrain"]["warn"] == "Yes" && target["Creature"] === undefined) {
+                    if ((target["Bottom"]["textureIndex"] != 8) && ((document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= range && target["Creature"] !== undefined) || document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= 1)) {
+                    if (target["Terrain"] && target["Terrain"]["warning"] != "" && target["Creature"] === undefined) {
                         disableMovement = true;
                          createModal("<p>"+target["Terrain"]["warning"]+"</p><button onclick = 'this.parentElement.parentElement.remove();disableMovement=false;sendRequest(`?sendAttack=`+encodeURIComponent(confirmationCoordinates));'>Yes</button><button onclick = 'this.parentElement.parentElement.remove();disableMovement=false;'>No</button>");
 confirmationCoordinates = coordinates;
-                        //confirmation = confirm(target["Terrain"]["warning"])
                         return false
                     }
                     if (target["Decor"] && target["Decor"]["warn"] == "Yes"  && target["Creature"] === undefined) {
                         disableMovement = true;
                          createModal("<p>"+target["Decor"]["warning"]+"</p><button onclick = 'this.parentElement.parentElement.remove();disableMovement=false;sendRequest(`?sendAttack=`+encodeURIComponent(confirmationCoordinates));'>Yes</button><button onclick = 'this.parentElement.parentElement.remove();disableMovement=false;'>No</button>");
 confirmationCoordinates = coordinates;
-                        //confirmation = confirm(target["Terrain"]["warning"])
-                    
+
                         return false
                         
                     }
                         
                         
                         
-                        if (target["Terrain"]["passable"] || (!target["Terrain"]["passable"] && target["Decor"])) {
+                        if ((!target["Terrain"] && target["Bottom"]['textureIndex'] != "8") || (target["Terrain"] && target["Terrain"]["passable"]) || (target["Terrain"] && !target["Terrain"]["passable"] && target["Decor"])) {
                             return true
                         }
                     }
@@ -659,7 +674,7 @@ confirmationCoordinates = coordinates;
                 if (inspecting) {
                     document.getElementById(inspecting).classList.remove('inspecting');
                 }
-                if (inspecting == tileId || tile['Terrain']['textureIndex'] == 8 || !tileId) {
+                if (inspecting == tileId || tile['Bottom']['textureIndex'] == 8 || !tileId) {
                     document.getElementById('inspection').style.width = "0px";
                     document.getElementById('inspection').innerHTML = "";
                     inspecting = false;
@@ -684,7 +699,7 @@ confirmationCoordinates = coordinates;
                                 } else {
                                     attributes+="<p><span>"+attribute + "</span> : "+tile[object][attribute]+"</p>"
                                 }
-                            } else {
+                            } else if (tile[object][attribute]){
                                 var attributeArray = Object.keys(tile[object][attribute]).map((key) => tile[object][attribute][key]);
                                 buffer = ""
                                 for (var i = 0; i < attributeArray.length; i++) {
@@ -723,14 +738,24 @@ confirmationCoordinates = coordinates;
             function displayManhattan(distance) {
                 document.getElementById('canvas').querySelectorAll('.manhattan').forEach((object) => {object.classList.remove("manhattan")});
                 for (var i = 0; i <= distance; i++){
-                    document.getElementById('canvas').querySelectorAll(`[data-manhattan="`+i+`"]`).forEach((object) => {object.querySelector('.Top').classList.add("manhattan")});
+                    document.getElementById('canvas').querySelectorAll(`[data-manhattan="`+i+`"]`).forEach((object) => {
+                        var coordinates = object.id.split(",");
+                        if (currentMap[coordinates[0]][coordinates[1]]['Bottom']['textureIndex'] != "8") {
+                            object.querySelector('.Top').classList.add("manhattan")
+                        }
+                        
+                        
+                        
+                    });
                 }
             }
             function updateMap() {
                 moveObject(document.getElementById('canvas'),0,0);
                 for (var i = 0; i < viewDiameter; i++) {
                     for (var j = 0; j < viewDiameter; j++) {
-                        objectTypes.forEach((object) => {applyTexture(object,j+","+i,(currentMap[j][i] && object in currentMap[j][i])?currentMap[j][i][object]:defaults["default"]);});
+                        objectTypes.forEach((object) => {
+
+                            applyTexture(object,j+","+i,(currentMap[j][i] && object in currentMap[j][i])?currentMap[j][i][object]:defaults["default"]);});
                     }
                 }
                 lightSource(viewRadius+","+viewRadius,1);
@@ -748,6 +773,9 @@ confirmationCoordinates = coordinates;
                 var selectedElement = document.getElementById(tileId).querySelector('.'+type);
                 selectedElement.innerHTML = "";
                 moveObject(selectedElement,0,0);
+                if (type == "Light") {
+                    createLight(tileId,object['intensity'])
+                }
                 if (!isLowResolution) {
                     selectedElement.style.background = "";
                     selectedElement.style.borderRadius = "";
@@ -920,8 +948,7 @@ confirmationCoordinates = coordinates;
                         if (currentLevel != 23) {
                             playSound(5)
                         }
-                        createModal("<p>"+endMessage+"</p><p>Score "+currentMap[viewRadius][viewRadius]['Creature']['xp']+"</p><button onclick = 'sendRequest();this.parentElement.parentElement.remove();currentLevel=0;loadTrack();disableMovement=false;'>Play Again</button><span class = 'log'>Game Log: "+ gameOver+"</span>");
-                        //alert("Temp Game Over Screen. Your Score "+currentMap[viewRadius][viewRadius]['Creature']['xp']+"\nGame Log:\n"+ gameOver);
+                        createModal("<p>"+endMessage+"</p><p>Score "+currentMap[viewRadius][viewRadius]['Creature']['xp']+"</p><button onclick = 'location.href = `https://fathomless.io/character/`;'>Play Again</button><span class = 'log'>Game Log: "+ gameOver+"</span>");
                     }
                 }, (moved)?100:0);
                 createMessage("dialogue",response["message"],1);
@@ -932,7 +959,6 @@ confirmationCoordinates = coordinates;
                     playSound(1);
                 }
                 
-                displayManhattan(0);
                 if (response["message"] == "Creature has moved"){playSound(0);}
                 if (response["message"].includes("New Map")){playSound(4);
 
@@ -989,7 +1015,10 @@ confirmationCoordinates = coordinates;
                 loadTrack();
             }
                 if (isValidMove(tileCoordinates)){
+                    if (document.getElementById("modal")) {
+                    document.getElementById("modal").remove();}
                     if (!disableMovement) {
+                        displayManhattan(-1);
                         sendRequest("?sendAttack="+encodeURIComponent(tileCoordinates)+(selectedItem?("&selected="+encodeURIComponent(selectedItem)):""));
                         
                         selectedItem = false;
@@ -1008,11 +1037,14 @@ confirmationCoordinates = coordinates;
                             }
                         playerDirection = [0,0]
                         if (!currentMap[tileCoordinates[0]][tileCoordinates[1]]["Creature"] && ((currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"] && currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"]["passable"]) || !currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"])) {
-                                                    lightSource(tileCoordinates[0]+","+tileCoordinates[1],1);
+                            
+                            
 
                             playerDirection = direction;
                             moveObject(player,direction[0],direction[1]);
                             moveObject(document.getElementById('canvas'),-direction[0],-direction[1]);
+                            setTimeout(() => {lightSource(tileCoordinates[0]+","+tileCoordinates[1],1);}, 100);
+                            
                         }
                         document.body.appendChild(Object.assign(document.createElement('div'),{id:("cover")}));
                     } 
@@ -1036,11 +1068,11 @@ confirmationCoordinates = coordinates;
                 if (keyFunction) {
                     changeKeyBind(e.code);
                 } else {
-                    if (keyBinds["Movement"].indexOf(e.code) > -1 && !keyboardOnly) {
+                    if (keyBinds["Movement"].indexOf(e.code) > -1 && !keyboardOnly && !disableMovement) {
                         var deg = (keyBinds["Movement"].indexOf(e.code)%4)*Math.PI/2;
                         target = [viewRadius+Math.round(Math.cos(deg)),viewRadius+Math.round(Math.sin(deg))]
                         directionHandler(target);
-                    } else if (keyBinds["Movement"].indexOf(e.code) > -1 && keyboardOnly) {
+                    } else if (keyBinds["Movement"].indexOf(e.code) > -1 && keyboardOnly && !disableMovement) {
                         var deg = (keyBinds["Movement"].indexOf(e.code)%4)*Math.PI/2;
                         var currentSelect = keyboardOnly.split(',');
                         target = [parseInt(currentSelect[0])+Math.round(Math.cos(deg)),parseInt(currentSelect[1])+Math.round(Math.sin(deg))]
@@ -1083,7 +1115,7 @@ confirmationCoordinates = coordinates;
                        
                        
                        
-                        if (currentMap[target[0]][target[1]]["Terrain"]['textureIndex'] != "8" && (document.getElementById(target[0]+","+target[1]).dataset.manhattan <= currentMap[viewRadius][viewRadius]['Creature']['equipment'][0]['range'])) {
+                        if (currentMap[target[0]][target[1]]["Bottom"]['textureIndex'] != "8" && (document.getElementById(target[0]+","+target[1]).dataset.manhattan <= currentMap[viewRadius][viewRadius]['Creature']['equipment'][0]['range'])) {
                             
                             
                             
