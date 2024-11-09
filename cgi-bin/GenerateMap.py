@@ -43,6 +43,7 @@ cosmic_void = CosmicVoid()
 world_heart = WorldHeart()
 
 biomes_dict = {
+    0: caves,
     1: caves,            
     2: caves,            
     3: cove,             
@@ -231,6 +232,7 @@ def place_decor(grid, biome, width, height):
                             decor_class = globals().get(decor_type)  
                             if decor_class:
                                 decor_item = decor_class((y, x))
+                                
                                 grid[y][x].append(decor_item)
                                 break  # Place one decor per tile
     
@@ -349,16 +351,7 @@ def generate_terrain_with_probabilities(grid_width, grid_height, terrain_probabi
 
     fill_empty_spaces(grid)  
     return grid
-# def print_final_grid(grid):
-#     for row in grid:
-#         row_symbols = []
-#         for cell in row:
-#             # Gather the symbols for each GameObject in the cell
-#             symbols = [obj.symbol for obj in cell]
-#             row_symbols.append(f"[{', '.join(symbols)}]")
-#         print(" ".join(row_symbols))
-# # Print the final grid
-# print_final_grid(final_grid)
+
 def get_texture_index(terrain):
     if isinstance(terrain, EmptySpace):
         return texture_mapping['EmptySpace']
@@ -388,7 +381,8 @@ texture_mapping = {
     'Wall': 6,  
 }
 def generateMap(width, height, depth, num_creatures, player, race, num_items):
-    current_biome = biomes_dict.get(depth)
+    depths = depth.split(",")
+    current_biome = biomes_dict.get(int(depths[0]))
     if current_biome is None:
         raise ValueError(f"No biome defined for depth {depth}")
 
@@ -406,11 +400,11 @@ def generateMap(width, height, depth, num_creatures, player, race, num_items):
 
     place_decor(terrain_grid, current_biome, width, height)
     place_creatures_by_biome(terrain_grid, current_biome, num_creatures)
-    place_items(final_grid, num_items, depth)
     place_doors(terrain_grid, width, height)
     final_grid, final_traversable_grid = carve_guaranteed_paths(terrain_grid, width, height)
+    
     place_staircase(final_grid, final_traversable_grid,depth)
-    place_player(final_grid,player, race)
+    place_player(final_grid, player, race, final_traversable_grid)
     
     for i in range(len(final_grid)):
         for j in range(len(final_grid[i])):
@@ -421,11 +415,3 @@ def generateMap(width, height, depth, num_creatures, player, race, num_items):
                 
     
     return final_grid
-    #json_map = convert_grid_to_json(final_grid)
-    # Convert the map to JSON format and print
-    #json_output = json.dumps(json_map)
-    #print(json_output)
-
-    # save the output to a file
-    #with open("../maps/"+uuid+".json", "w") as json_file:
-        #json_file.write(json_output)
