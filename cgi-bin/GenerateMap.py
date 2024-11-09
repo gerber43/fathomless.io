@@ -221,6 +221,29 @@ def place_items(grid, num_items, depth):
                     grid[y][x].append(item) 
                 break
 
+def place_decor(grid, biome, width, height):
+        decor_spawns = biome.decor_spawns
+        for y in range(height):
+            for x in range(width):
+                if any(isinstance(obj, EmptySpace) for obj in grid[y][x]):
+                    for decor_type, probability in decor_spawns.items():
+                        if random.random() < probability:
+                            decor_class = globals().get(decor_type)  
+                            if decor_class:
+                                decor_item = decor_class((y, x))
+                                grid[y][x].append(decor_item)
+                                break  # Place one decor per tile
+    
+def place_creatures_by_biome(grid, biome, num_creatures):
+    for _ in range(num_creatures):
+        creature_type = random.choices(biome.creature_spawns, biome.creature_weights)[0]
+        while True:
+            x, y = random.randint(0, len(grid) - 1), random.randint(0, len(grid[0]) - 1)
+            if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
+                creature = eval(creature_type)((y, x))
+                grid[y][x].append(creature)
+                break
+
 
 # Carve a guaranteed path between sides of the map
 def carve_path(grid, start, end):
@@ -379,17 +402,9 @@ def generateMap(width, height, depth, num_creatures, player, race, num_items):
     'empty_space': 0.5
     }
     terrain_grid = generate_terrain_with_probabilities(width, height, terrain_probabilities)
-    
-    def place_creatures_by_biome(grid, biome, num_creatures):
-        for _ in range(num_creatures):
-            creature_type = random.choices(biome.creature_spawns, biome.creature_weights)[0]
-            while True:
-                x, y = random.randint(0, len(grid) - 1), random.randint(0, len(grid[0]) - 1)
-                if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
-                    creature = eval(creature_type)((y, x))
-                    grid[y][x].append(creature)
-                    break
+                    
 
+    place_decor(terrain_grid, current_biome, width, height)
     place_creatures_by_biome(terrain_grid, current_biome, num_creatures)
     place_items(final_grid, num_items, depth)
     place_doors(terrain_grid, width, height)
