@@ -115,9 +115,10 @@ class Creature(GameObject):
             self.status_effects.append(new_status)
             new_status.on_apply(grid, self)
             return
-        new_status = eval(status_type)(stacks, infinite)
-        self.status_effects.append(new_status)
-        new_status.on_apply(grid, self)
+        elif type(status_type) is str:
+            new_status = eval(status_type)(stacks, infinite)
+            self.status_effects.append(new_status)
+            new_status.on_apply(grid, self)
 
     def basic_attack_hit_check(self, grid, weapon, dual_wielding, target):
         if weapon.type == "Sling":
@@ -579,12 +580,13 @@ class LightSourceItem(Equippable):
         self.lit_tiles = spread_light(grid, equipped_creature.pos, self.level, [])
 
 class LightDecor(Decor):
-    def __init__(self, grid, name, textureIndex, pos, hp, resistances, passable, warn, warning, intensity, lit):
+    def __init__(self, name, textureIndex, pos, hp, resistances, passable, warn, warning, intensity, lit):
         super().__init__(name, textureIndex, pos, hp, resistances, passable, False, warn, warning)
         self.intensity = intensity
         self.lit = lit
         if lit:
-           spread_light(grid, pos, intensity, [])
+            pass
+           #spread_light(grid, pos, intensity, [])
     def on_interact(self, grid, creature):
         if self.lit:
             self.lit = False
