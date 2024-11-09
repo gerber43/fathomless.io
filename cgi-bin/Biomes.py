@@ -3,6 +3,7 @@ from Level import Biome
 class TempBiome(Biome):
     def __init__(self):
         super().__init__("Complex", "Wall", "Stairs", ["Goblin"], [10], ["Door", "Pit"], 22, [], None, -1)
+        self.decor_spawns = {"StandingTorch": 0.05}
 
 class Caves(Biome):
     def __init__(self):
@@ -12,6 +13,7 @@ class Caves(Biome):
                          ["Door", "Pit", "Rock", "Water", "LightBeam"],
                          4, [(1, "Cove", 1), (4, "Mine", 1), (4, "Sewer", 1)],
                          None, -1)
+        self.decor_spawns = {"Rock": 0.3, "StandingTorch": 0.1}
 
 class Cove(Biome):
     def __init__(self):
@@ -21,6 +23,7 @@ class Cove(Biome):
                          ["Door", "Pit", "Water", "DeepWater", "Coral", "LightBeam"],
                          2, [(2, "Cave", 4)],
                          "DrownedCaptain", 2)
+        self.decor_spawns = {"Coral": 0.2, "Rock": 0.1}
 
 class Mine(Biome):
     def __init__(self):
@@ -30,6 +33,7 @@ class Mine(Biome):
                          ["Door", "Pit", "Rock", "Deposit", "StandingTorch"],
                          4, [(1, "CorruptiteMine", 1), (4, "MagmaCore", 1), (4, "DeepCavern", 1)],
                          None, -1)
+        self.decor_spawns = {"Rock": 0.3, "Deposit": 0.1, "StandingTorch": 0.2}
 
 #NOTE: both types of miners spawn with corruptite in their inventories when spawning here, and they will use it when they see the player
 class CorruptiteMine(Biome):
@@ -40,6 +44,8 @@ class CorruptiteMine(Biome):
                          ["Door", "Pit", "Rock", "Deposit", "Corruptite", "StandingTorch"],
                          2, [(2, "Mine", 4)],
                          "CorruptBehemoth", 2)
+        self.decor_spawns = {"Rock": 0.2, "Deposit": 0.15, "CorruptiteCluster": 0.05}
+
 
 class Sewer(Biome):
     def __init__(self):
@@ -49,6 +55,8 @@ class Sewer(Biome):
                          ["Door", "Pit", "Water", "DeepWater", "StandingTorch"],
                          4, [(1, "Shantytown", 1), (4, "DeepCavern", 1)],
                          None, -1)
+        self.decor_spawns = {"StandingTorch": 0.15, "Rock": 0.1}
+
 
 class Shantytown(Biome):
     def __init__(self):
@@ -58,6 +66,7 @@ class Shantytown(Biome):
                          ["Door", "Wall", "StandingTorch"],
                          2, [(2, "Sewer", 4)],
                          "Rotmother", 2)
+        self.decor_spawns = {"StandingTorch": 0.2}
 
 class MagmaCore(Biome):
     def __init__(self):
@@ -67,6 +76,7 @@ class MagmaCore(Biome):
                          ["Lava"],
                          3, [(3, "Embers", 1)],
                          None, -1)
+        self.decor_spawns = {"Rock": 0.2, "Ember": 0.3}
 
 class DeepCavern(Biome):
     def __init__(self):
@@ -76,6 +86,7 @@ class DeepCavern(Biome):
                          ["Water", "Rock"],
                          3, [(1, "Ziggurat", 1), (3, "Undercity", 1)],
                          None, -1)
+        self.decor_spawns = {"Rock": 0.25, "StandingTorch": 0.05}
 
 class Ziggurat(Biome):
     def __init__(self):
@@ -85,6 +96,7 @@ class Ziggurat(Biome):
                          ["StoneDoor", "StandingTorch"],
                          3, [(3, "Catacomb", 1), (3, "Carrion", 1)],
                          "Xotil High Priest", 3)
+        self.decor_spawns = {"StoneDoor": 0.1, "StandingTorch": 0.15}
 
 class Embers(Biome):
     def __init__(self):
@@ -94,6 +106,7 @@ class Embers(Biome):
                          ["Rock", "Ember", "Pit"],
                          1, [(1, "Columbarium", 1)],
                          "AshColossus", 1)
+        self.decor_spawns = {"Ember": 0.3, "Rock": 0.15}
 
 class Undercity(Biome):
     def __init__(self):
@@ -103,6 +116,8 @@ class Undercity(Biome):
                          ["StoneDoor", "Water", "Rock"],
                          1, [(1, "Catacomb", 1)],
                          "DarkElfQueen", 1)
+        self.decor_spawns = {"StoneDoor": 0.2, "StandingTorch": 0.1}
+
 
 class Columbarium(Biome):
     def __init__(self):
@@ -112,6 +127,7 @@ class Columbarium(Biome):
                          ["StoneDoor", "Urn", "SpiritLight"],
                          1, [(1, "Catacomb", 2)],
                          None, -1)
+        self.decor_spawns = {"Urn": 0.2, "SpiritLight": 0.1}
 
 class Catacomb(Biome):
     def __init__(self):
@@ -121,6 +137,7 @@ class Catacomb(Biome):
                          ["StoneDoor", "Urn", "SpiritLight"],
                          3, [(3, "Necropolis", 1)],
                          None, -1)
+        self.decor_spawns = {"Urn": 0.1, "SpiritLight": 0.15}
 
 class Carrion(Biome):
     def __init__(self):
@@ -130,6 +147,7 @@ class Carrion(Biome):
                          ["Blood", "LightGrowth"],
                          2, [(2, "WorldeatersGut", 1)],
                          None, -1)
+        self.decor_spawns = {"LightGrowth": 0.25, "Rock": 0.1}
 
 class WorldeatersGut(Biome):
     def __init__(self):
@@ -139,6 +157,7 @@ class WorldeatersGut(Biome):
                          ["Bile", "LightGrowth"],
                          2, [(2, "AncientCity", 1)],
                          "WorldeaterHeart", 2)
+        self.decor_spawns = {"LightGrowth": 0.3}
 
 class Necropolis(Biome):
     def __init__(self):
@@ -148,6 +167,7 @@ class Necropolis(Biome):
                          ["StoneDoor", "SpiritLight"],
                          1, [(1, "Underworld1", 1)],
                          "DeadKing", 1)
+        self.decor_spawns = {"SpiritLight": 0.2}
 
 class Underworld1(Biome):
     def __init__(self):
@@ -157,6 +177,7 @@ class Underworld1(Biome):
                          ["Lava"],
                          1, [(1, "Underworld2", 1)],
                          "DecietArchdemon", 1)
+        self.decor_spawns = {"Rock": 0.15}
 
 class Underworld2(Biome):
     def __init__(self):
@@ -166,6 +187,7 @@ class Underworld2(Biome):
                          ["Lava"],
                          1, [(1, "Underworld3", 1)],
                          "RageArchdemon", 1)
+        self.decor_spawns = {"Rock": 0.1}
 
 class Underworld3(Biome):
     def __init__(self):
@@ -175,6 +197,7 @@ class Underworld3(Biome):
                          ["Lava"],
                          1, [(1, "Underworld4", 1)],
                          "GreedArchdemon", 1)
+        self.decor_spawns = {"Rock": 0.1}
 
 class Underworld4(Biome):
     def __init__(self):
@@ -184,6 +207,7 @@ class Underworld4(Biome):
                          ["Lava"],
                          1, [(1, "Underworld5", 1)],
                          "HopelessArchdemon", 1)
+        self.decor_spawns = {"Rock": 0.1}
 
 class Underworld5(Biome):
     def __init__(self):
@@ -193,6 +217,7 @@ class Underworld5(Biome):
                          ["Lava"],
                          1, [(1, "WorldHeart", 1)],
                          "DoomArchdemon", 1)
+        self.decor_spawns = {"Rock": 0.1}
 
 class AncientCity(Biome):
     def __init__(self):
@@ -202,6 +227,7 @@ class AncientCity(Biome):
                          ["StoneDoor", "MysticMist"],
                          2, [(2, "OldTemple", 1)],
                          None, -1)
+        self.decor_spawns = {"SpiritLight": 0.2}
 
 class OldTemple(Biome):
     def __init__(self):
@@ -211,6 +237,7 @@ class OldTemple(Biome):
                          ["StoneDoor", "Spikes"],
                          2, [(2, "CosmicVoid", 1)],
                          None, -1)
+        self.decor_spawns = {"SpiritLight": 0.2}
 
 class CosmicVoid(Biome):
     def __init__(self):
@@ -220,6 +247,7 @@ class CosmicVoid(Biome):
                          ["Energy"],
                          1, [(1, "WorldHeart", 1)],
                          "GreatDreamer", 1)
+        self.decor_spawns = {"Energy": 0.3}
 
 class WorldHeart(Biome):
     def __init__(self):
@@ -229,3 +257,4 @@ class WorldHeart(Biome):
                          [],
                          1, [],
                          "AbyssDragon", -1)
+        self.decor_spawns = {}
