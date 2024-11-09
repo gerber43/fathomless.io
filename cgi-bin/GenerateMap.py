@@ -208,6 +208,19 @@ def place_staircase(grid, traversable_path,depth):
         stairs.hp = depth
         grid[y][x].append(stairs)
 
+def place_items(grid, num_items, depth):
+    width = len(grid[0])
+    height = len(grid)
+    for _ in range(num_items):
+        while True:
+            x = random.randint(0, width - 1)
+            y = random.randint(0, height - 1)
+            if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Item) for obj in grid[y][x]):
+                item = random_item((y, x), depth)
+                if item:
+                    grid[y][x].append(item) 
+                break
+
 
 # Carve a guaranteed path between sides of the map
 def carve_path(grid, start, end):
@@ -351,7 +364,7 @@ texture_mapping = {
     'Pit': 18,
     'Wall': 6,  
 }
-def generateMap(width, height, depth, num_creatures, player, race):
+def generateMap(width, height, depth, num_creatures, player, race, num_items):
     current_biome = biomes_dict.get(depth)
     if current_biome is None:
         raise ValueError(f"No biome defined for depth {depth}")
@@ -378,14 +391,10 @@ def generateMap(width, height, depth, num_creatures, player, race):
                     break
 
     place_creatures_by_biome(terrain_grid, current_biome, num_creatures)
-    
+    place_items(final_grid, num_items, depth)
     place_doors(terrain_grid, width, height)
-    
-    # Carve guaranteed paths across the grid
     final_grid, final_traversable_grid = carve_guaranteed_paths(terrain_grid, width, height)
-    
     place_staircase(final_grid, final_traversable_grid,depth)
-    
     place_player(final_grid,player, race)
     
     for i in range(len(final_grid)):
