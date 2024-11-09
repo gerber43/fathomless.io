@@ -356,7 +356,11 @@ texture_mapping = {
     'Wall': 6,  
 }
 def generateMap(width, height, depth, num_creatures, player, race):
-    # Generate terrain grid with probabilities
+    current_biome = biomes_dict.get(depth)
+    if current_biome is None:
+        raise ValueError(f"No biome defined for depth {depth}")
+
+    
     terrain_probabilities = {
     'walls': 0.2,
     'spikes': 0.1,
@@ -367,7 +371,17 @@ def generateMap(width, height, depth, num_creatures, player, race):
     }
     terrain_grid = generate_terrain_with_probabilities(width, height, terrain_probabilities)
     
-    place_creatures(terrain_grid, num_creatures, depth)
+    def place_creatures_by_biome(grid, biome, num_creatures):
+        for _ in range(num_creatures):
+            creature_type = random.choices(biome.creature_spawns, biome.creature_weights)[0]
+            while True:
+                x, y = random.randint(0, len(grid) - 1), random.randint(0, len(grid[0]) - 1)
+                if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
+                    creature = eval(creature_type)((y, x))
+                    grid[y][x].append(creature)
+                    break
+
+    place_creatures_by_biome(terrain_grid, current_biome, num_creatures)
     
     place_doors(terrain_grid, width, height)
     
