@@ -4,14 +4,15 @@ import cgi
 import random
 
 from GameObject import Creature, CreatureSegment, Boss, Gold
-from Items import IronDagger, WoodenClub
+from Items import *
+from StatusEffects import Poison
 
 #Piercing, Slashing, Blunt, Fire, Lightning, Water, Cold, Acid, Light, Dark, Necrotic, Arcane, Existence
 basicDamageResistances = (0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0)
 #Bleed, Stun, Burning, Suffocation, Frozen, Blindness, Rot, Manaburn, Nonexistence, Poison, Fear, Confusion, Mindbreak, Midas Curse, Bloodsiphon, Manadrain, Death
 basicStatusResistances = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-#One-Handed Blades, One-Handed Axes, One-Handed Maces, Two-Handed Blades, Two-Handed Axes, Two-Handed Maces, Polearms, Slings, Bows, Elementalism, Cursing, Curse, Enhancement, Transmutation, Summoning, Dual-Wielding, Dual-Wielding, Memory, Search, Hide, Lockpicking, Disarm Trap
-
+#One-Handed Blades, One-Handed Axes, One-Handed Maces, Two-Handed Blades, Two-Handed Axes, Two-Handed Maces, Polearms, Slings, Bows, Elementalism, Cursing, Curse, Enhancement, Transmutation, Summoning, Dual-Wielding, Memory, Search, Hide, Lockpicking, Disarm Trap
+#Right Hand, Left Hand, Head, Torso, Legs, Feet, Hands, Neck, Right Finger, Left Finger
 
 # cave
 class Goblin(Creature):
@@ -31,39 +32,46 @@ class Bandit(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
+            weapon = IronShortsword((-1, -1), None)
         else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Bandit", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+            weapon = IronHatchet((-1, -1), None)
+        shield_choice = random.randint(0, 4)
+        if shield_choice == 4:
+            shield = WoodenBuckler((-1, -1), None)
+        else:
+            shield = None
+        super().__init__("Bandit", "22", pos, [], 20, 0, 1, [], 3, 3, 0, 3, 0.25, 10,
+                         (5, 5, 5, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 3, 0),
+                         (weapon, shield, None, LeatherCuirass((-1, -1), None), None, None, None, None, None, None), [],
+                         (0.025, 0.05, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),
+                         basicStatusResistances, [], 0, ((Gold((-1, -1), 5), 0.7)), 20, 2)
+        if shield is not None:
+            self.damage_resistances[0] += 0.02
+            self.damage_resistances[0] += 0.04
 
 #cave
 class Ogre(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Ogre", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Ogre", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 50, 0, 1, [], 7, 0, 0, 0.0, 0.1, 10,
+                         (0, 0, 5, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (WoodenGreatclub((-1, -1), None), None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
+                         basicStatusResistances, [], 0, ((Gold((-1, -1), 10), 0.7)), 50, 3)
+
+class SpiderFangs(Weapon):
+    def __init__(self):
+        super().__init__("Fang", "17", (-1, -1), 0, 0, 0, "One-Handed Blade", 1, 3,
+                         [(lookup_damage_type_id("Piercing"), 3, 1)], [Poison(3, False)], None)
 
 # cave
 class Spider(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Spider", "26", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
+        super().__init__("Spider", "26", pos, [], 10, 0, 1, [], 1, 3, 0, 0.4, 0.5, 20,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (None, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 5, False, target):
+                self.basic_attack_damage(grid, SpiderFangs(), target, self.crit_check(grid))
 
 # cave and deep cavern
 class Bat(Creature):

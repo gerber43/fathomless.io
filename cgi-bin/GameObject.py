@@ -70,7 +70,8 @@ class Creature(GameObject):
         self.level = level
 
     def move(self, grid, new_pos):
-        
+        diff = (new_pos[0] - self.pos[0], new_pos[1] - self.pos[1])
+        previous_movement = self.pos
         #for item in self.equipment:
             #if item is not None:
                 #item.on_move(self, new_pos)
@@ -82,7 +83,11 @@ class Creature(GameObject):
             
             #if isinstance(game_object, Terrain):
                 #game_object.on_step(grid, self)
-
+        for segment in self.segments:
+            if segment.type == "Static":
+                previous_movement = segment.move(grid, (self.pos[0] + diff[0], self.pos[1] + diff[1]))
+            if segment.type == "Fluid":
+                previous_movement = segment.move(grid, previous_movement)
     def gain_status_effect(self, grid, status_type, stacks, infinite, negative, applicator):
         if negative:
             stacks = int(stacks*(1-self.status_resistances[lookup_status_resistance_id(status_type)]))
@@ -121,7 +126,7 @@ class Creature(GameObject):
             new_status.on_apply(grid, self)
 
     def basic_attack_hit_check(self, grid, weapon, dual_wielding, target):
-        if weapon.type == "Sling":
+        if isinstance(weapon, Weapon) and weapon.type == "Sling":
             found_ammo = False
             for item in self.inventory:
                 if item.name == "Pebble":
@@ -132,7 +137,7 @@ class Creature(GameObject):
             if not found_ammo:
                 return False
 
-        if weapon.type == "Bow":
+        if isinstance(weapon, Weapon) and weapon.type == "Bow":
             found_ammo = False
             for item in self.inventory:
                 if item.name == "Arrow":
@@ -296,6 +301,17 @@ class CreatureSegment(GameObject):
         super().__init__(creature.name, textureIndex, pos)
         self.type = type
         self.creature = creature
+    def move(self, grid, new_pos):
+        old_pos = self.pos
+        grid[new_pos[0]][new_pos[1]].append(self)
+        grid[self.pos[0]][self.pos[1]].remove(self)
+        self.pos = new_pos
+        return old_pos
+
+        # for game_object in grid[new_pos[0]][new_pos[1]]:
+            # if isinstance(game_object, Terrain):
+                # game_object.on_step(grid, self)
+
 
 class Boss(Creature):
     def __init__(self, name, textureIndex, pos, segments, hp, mp, speed, status_effects, fitness, cunning, magic, dodge,
@@ -375,7 +391,7 @@ class Equippable(Item):
             equipped_creature.equipment[lookup_equipment_slot(chosen_slot)] = self
             equipped_creature.inventory.remove(self)
             if self.enchantment is not None:
-                self.enchantment.on_equip(self, grid, equipped_creature)
+                self.enchantment.on_equip(grid)
             return chosen_slot
        return None
     @abstractmethod
@@ -473,7 +489,7 @@ class TwoHandedWeapon(Weapon):
             equipped_creature.inventory.remove(self)
             equipped_creature.equipment[lookup_equipment_slot("Left Hand")] = Unavailable()
             if self.enchantment is not None:
-                self.enchantment.on_equip(self, grid, equipped_creature)
+                self.enchantment.on_equip(grid, grid)
             return "Right Hand"
         return None
 
