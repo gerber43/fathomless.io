@@ -71,6 +71,24 @@ def a_star(start, goal, game_map, creature):
     # no path found
     return None
 
+#default movement when the creature is not tracking the player
+def default_movement(creature_pos, game_map):
+    best_direction = None
+    highest_light_level = 0;
+
+    for direction, (dx, dy) in DIRECTIONS.items():
+        new_x = creature_pos[0] + dx
+        new_y = creature_pos[1] + dy
+
+        #check if the move is valid
+        if is_valid_move(new_x, new_y, game_map, creature):
+            new_light_level = get_object_by_class(game_map[new_x][new_y], "Light").level
+            # Update if this move takes the creature to a lighter position
+            if new_light_level > highest_light_level:
+                highest_light_level = new_light_level
+                best_direction = direction
+    return best_direction
+
 
 def get_object_by_class(tile,className):
     parsedTile = [gameObject for gameObject in tile if gameObject.__class__.__base__.__name__ == className]
