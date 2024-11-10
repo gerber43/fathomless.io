@@ -254,8 +254,7 @@ def carve_path(grid, start, end):
     x_goal, y_goal = end
     # Continue carving the path until we reach the end
     while current != end:
-        # Replace any existing terrain with free space
-        grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, Terrain)]
+        grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, GameObject)]
         grid[y][x].append(EmptySpace((y, x)))  # Carve out free space
         # Determine direction towards the goal
         x_dir = 1 if x_goal > x else -1 if x_goal < x else 0
@@ -266,11 +265,15 @@ def carve_path(grid, start, end):
             next_steps.append((y ,x + x_dir))  # Move horizontally towards the goal
         if y_dir != 0:
             next_steps.append((y + y_dir, x))  # Move vertically towards the goal
-        # Add small side variations but limit them
-        if x_dir != 0:  # Horizontal movement allowed
-            next_steps.append((y + random.choice([-1, 0, 1]), x + x_dir))  # Slight vertical deviation
-        if y_dir != 0:  # Vertical movement allowed
-            next_steps.append((y + y_dir, x + random.choice([-1, 0, 1])))  # Slight horizontal deviation
+        if x_dir != 0 and random.random() < 0.20:  # 20% chance of jog
+            jog_y = y + random.choice([-1, 1])
+            if 0 <= jog_y < len(grid):
+                next_steps.append((jog_y, x))  # Vertical jog while moving horizontally
+        if y_dir != 0 and random.random() < 0.20:  # 20% chance of jog
+            jog_x = x + random.choice([-1, 1])
+            if 0 <= jog_x < len(grid[0]):
+                next_steps.append((y, jog_x))  # Horizontal jog while moving vertically
+
         # Filter valid next steps (within bounds and not visited)
         valid_next_steps = [(nx, ny) for nx, ny in next_steps
                             if 0 <= nx < len(grid[0]) and 0 <= ny < len(grid)
