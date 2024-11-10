@@ -114,6 +114,10 @@ def update_Creature_position(game_map, player_pos):
             check = 10
 
             if Creature and Creature.name != "Player" and Creature not in moved_Creatures:
+                #if the creture is unable to detect the player, skip the tracking
+                if not is_player_avalible(player_pos, Player, Creature):
+                    continue
+                    
                 #if the creature's attack range is greater than player's, and the creature is in the player's attack range, it will move away from player
                 if int((Creature.equipment[0]).range) > int((Player.equipment[0]).range) and manhattan <= int((Player.equipment[0]).range):
                     current_pos = (x,y)
@@ -139,6 +143,21 @@ def update_Creature_position(game_map, player_pos):
                         current_pos, message = process_Creature_movement(current_pos, direction, game_map)
                     moved_Creatures.append(Creature)
 
+#helper funtion to check if the creature can detect the player
+def is_player_avalible(player_pos, Player, Creature):
+    Light = get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Light")
+    #if the Player's current position have 0 light level, The creature can't detect The player
+    if Light.level == 0:
+        return false
+
+    #if the Player's stealth skills is greater than the Creature's perception * Light lvel, Creature can't detect The player
+    if Creature.perception * Light.level < Player.Skills[19]:
+        return false
+
+    #otherwise, creature can detect the player
+    return true
+
+    
 # Helper function to get direction between two points
 def get_direction_from_step(current_pos, next_pos):
     dx = next_pos[0] - current_pos[0]
