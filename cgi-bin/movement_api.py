@@ -102,7 +102,7 @@ def process_Creature_movement(position, direction, game_map):
 # Function to update all Creature positions
 def update_Creature_position(game_map, player_pos):
     player_pos = (list(player_pos))
-    Player = get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Player")
+    player = get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Player")
 
     moved_Creatures = []  # Track Creatures that have already moved
     
@@ -113,13 +113,13 @@ def update_Creature_position(game_map, player_pos):
             manhattan = abs(player_pos[0] - x) + abs(player_pos[1] - y)
             check = 10
 
-            if Creature and Creature.name != "Player" and Creature not in moved_Creatures:
+            if Creature and not isinstance(Creature, Player) and Creature not in moved_Creatures:
                 #if the creture is unable to detect the player, skip the tracking
-                if not is_player_avalible(player_pos, Player, Creature):
+                if not is_player_avalible(player_pos, player, Creature):
                     continue
-                    
                 #if the creature's attack range is greater than player's, and the creature is in the player's attack range, it will move away from player
-                if int((Creature.equipment[0]).range) > int((Player.equipment[0]).range) and manhattan <= int((Player.equipment[0]).range):
+                
+                if int((Creature.equipment[0]).range) > int((player.equipment[0]).range) and manhattan <= int((player.equipment[0]).range):
                     current_pos = (x,y)
                     for move_num in range(Creature.speed):
                         direction = find_escape_direction((x, y), player_pos, game_map, Creature)
@@ -128,7 +128,7 @@ def update_Creature_position(game_map, player_pos):
             
                 #if player is in the creature's attack range, creature will attack player
                 elif manhattan <= int((Creature.equipment[0]).range):
-                    process_attack(Creature, Player)
+                    process_attack(Creature, player)
                     moved_Creatures.append(Creature)
                 
                 #creature will move toward player if the player is in the tracking range
@@ -142,20 +142,21 @@ def update_Creature_position(game_map, player_pos):
                         direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
                         current_pos, message = process_Creature_movement(current_pos, direction, game_map)
                     moved_Creatures.append(Creature)
-
 #helper funtion to check if the creature can detect the player
 def is_player_avalible(player_pos, Player, Creature):
     Light = get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Light")
     #if the Player's current position have 0 light level, The creature can't detect The player
-    if Light.level == 0:
-        return false
+    
+    if Light:
+        if Light.level == 0:
+            return False
 
-    #if the Player's stealth skills is greater than the Creature's perception * Light lvel, Creature can't detect The player
-    if Creature.perception * Light.level < Player.Skills[19]:
-        return false
+        #if the Player's stealth skills is greater than the Creature's perception * Light lvel, Creature can't detect The player
+        if Creature.perception * Light.level < Player.Skills[19]:
+            return False
 
     #otherwise, creature can detect the player
-    return true
+    return True
 
     
 # Helper function to get direction between two points
@@ -243,6 +244,12 @@ def get_map_subset(player_pos, game_map, fov_radius):
 
 
                 if (internalGrid.get('Creature') is not None):
+                     
+                    for a in range(len(internalGrid['Creature']['equipment'])):
+                        if hasattr(internalGrid['Creature']['equipment'][a], 'statuses'):
+                            for b in range(len(internalGrid['Creature']['equipment'][a].statuses)):
+                                internalGrid['Creature']['equipment'][a].statuses[b] = internalGrid['Creature']['equipment'][a].statuses[b].__dict__
+                    
                     internalGrid['Creature']['status_effects'] = [status_effects.__dict__ for status_effects in internalGrid['Creature']['status_effects'] if status_effects]
                     internalGrid['Creature']['equipment'] = [equipment.__dict__ for equipment in internalGrid['Creature']['equipment'] if equipment]
                     internalGrid['Creature']['abilities'] = [abilities.__dict__ for abilities in internalGrid['Creature']['abilities'] if abilities]
@@ -421,21 +428,21 @@ if (HTTP_FIELDS.getvalue('uuid')):
               creatureType = "Creature"
               if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType) == None):
                   creatureType = "Player"
-              if (selected_method == "Inventory" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]], creatureType)):
-                  
+              if (selected_method.lower() == "inventory" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]], creatureType)):
                   targetItem = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").inventory[selected_index]
+                  
                   if (targetItem.__class__.__base__.__name__ == "Consumable"):
                       get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").inventory[selected_index].use_effect(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType))
                       game_log += targetItem.name+" Consumed By "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).pos)
                       message = targetItem.name+" Consumed By "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).pos)
                       
-                  if (targetItem.__class__.__base__.__name__ == "Equippable"):
+                  if ((targetItem.__class__.__base__.__name__ == "Equippable") or (targetItem.__class__.__base__.__name__ == "Weapon")):
                       
                       get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").inventory[selected_index].on_equip(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType))
                       game_log += targetItem.name+" Equipped Tp "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).pos)
                       message = targetItem.name+" Equipped To "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).pos)
                       
-              if (selected_method == "abilities" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType)):
+              if (selected_method.lower() == "abilities" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType)):
                   get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").abilities[selected_index].use(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player"),get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType))
                   targetAbility = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").abilities[selected_index]
                   game_log += targetAbility.name+" Used On "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).pos)
