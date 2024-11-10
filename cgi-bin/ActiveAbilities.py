@@ -30,8 +30,8 @@ class Prayer(ActiveAbility):
         super().use(grid, caster, target)
 
 class Spell(ActiveAbility):
-    def __init__(self, name, textureIndex, level, mp_cost, magic_school):
-        super().__init__(name, textureIndex, level, 0, mp_cost, magic_school)
+    def __init__(self, name, textureIndex, level, mp_cost, range, magic_school):
+        super().__init__(name, textureIndex, level, 0, mp_cost, range, magic_school)
     @abstractmethod
     def use(self, grid, caster, target):
         caster.mp -= self.mp_cost
@@ -94,7 +94,7 @@ class Torture(ActiveAbility):
 
 class HealingTouch(Spell):
     def __init__(self):
-        super().__init__("Healing Touch", "45", 3, 20, "Enhancement")
+        super().__init__("Healing Touch", "45", 3, 20, "Enhancement", "")
     def use(self, grid, caster, target):
         target.hp = target.max_hp
         caster.mp -= self.mp_cost
