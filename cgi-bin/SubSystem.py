@@ -61,7 +61,7 @@ def lookup_skill_id(skill):
 #equipment subsystem
 def lookup_equipment_slot(slot):
     if slot in equipmentSlots:
-        equipmentSlots.index(slot)
+        return equipmentSlots.index(slot)
     else:
         return -1
 
