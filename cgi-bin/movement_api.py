@@ -116,9 +116,14 @@ def update_Creature_position(game_map, player_pos):
             if Creature and not isinstance(Creature, Player) and Creature not in moved_Creatures:
                 #if the creture is unable to detect the player, skip the tracking
                 if not is_player_avalible(player_pos, player, Creature):
-                    continue
+                    direction = default_movement((x, y), game_map)
+                    if direction is not None:
+                        current_pos = (x, y)
+                        current_pos, message = process_Creature_movement(current_pos, direction, game_map)
+                    moved_Creatures.append(Creature)
+                    continue  # Move to the next creature
+                    
                 #if the creature's attack range is greater than player's, and the creature is in the player's attack range, it will move away from player
-                
                 if int((Creature.equipment[0]).range) > int((player.equipment[0]).range) and manhattan <= int((player.equipment[0]).range):
                     current_pos = (x,y)
                     for move_num in range(Creature.speed):
@@ -142,6 +147,15 @@ def update_Creature_position(game_map, player_pos):
                         direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
                         current_pos, message = process_Creature_movement(current_pos, direction, game_map)
                     moved_Creatures.append(Creature)
+                    
+                # Perform default movement if no other action is taken
+                else:
+                    direction = default_movement((x, y), game_map)
+                    if direction is not None:
+                        current_pos = (x, y)
+                        current_pos, message = process_Creature_movement(current_pos, direction, game_map)
+                    moved_Creatures.append(Creature)
+                    
 #helper funtion to check if the creature can detect the player
 def is_player_avalible(player_pos, Player, Creature):
     Light = get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Light")
