@@ -261,11 +261,14 @@ class Creature(GameObject):
             if probability >= roll:
                 grid[self.pos[0]][self.pos[1]].append(drop_item)
         player.xp += self.xp
+        player.score = self.xp
         grid[self.pos[0]][self.pos[1]].remove(self)
 
 class Player(Creature):
     def __init__(self, race, name, textureIndex, pos, fitness, cunning, magic, perception, abilities, damage_resistances, status_resistances):
-        self.race = "Race"
+        self.score = 0
+        self.turns = 0
+        self.race = race
         from Items import IronDagger, WoodenClub
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
