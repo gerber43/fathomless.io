@@ -158,7 +158,7 @@ class IronGreataxe(TwoHandedWeapon):
 
 class WoodenClub(Weapon):
     def __init__(self, pos, enchantment):
-        super().__init__("Wooden Club", "17", pos, 1, 1, 15, "One-Handed Mace", 1, 1.5,
+        super().__init__("Wooden Club", "43", pos, 1, 1, 15, "One-Handed Mace", 1, 1.5,
                          [(lookup_damage_type_id("Blunt"), 5, 0)], [], enchantment)
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
