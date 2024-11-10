@@ -20,7 +20,7 @@ class Pit(Terrain):
             if status.status_type == "Flight":
                 not_flying = False
         if not_flying:
-            creature.hp -= 0*(1.0-creature.damage_resistances[lookup_damage_type_id("BLT")])
+            creature.hp -= 1*(1.0-creature.damage_resistances[lookup_damage_type_id("BLT")])
             #load new level
 #cave, mine, corruptite mine, deep cavern: uncommonly
 #cove, sewer: very commonly
@@ -60,7 +60,7 @@ class DeepWater(Terrain):
 #magma core, underworld: common
 class Fire(Terrain):
     def __init__(self, pos):
-        super().__init__("Fire", "20", pos, 10, (1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, True, False, "Step into the flames?")
+        super().__init__("Fire", "51", pos, 10, (1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, True, False, "Step into the flames?")
     def on_step(self, grid, creature):
         for status in creature.status_effects:
             if status.status_type == "Flight":
