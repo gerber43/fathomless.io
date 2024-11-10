@@ -67,7 +67,7 @@ class Spider(Creature):
     def __init__(self, pos):
         super().__init__("Spider", "26", pos, [], 10, 0, 1, [], 1, 3, 0, 0.4, 0.5, 20,
                          (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-                         (None, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
+                         (SpiderFangs(), None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
     def basic_attack(self, grid, target):
         if self.basic_attack_hit_check(grid, 5, False, target):
