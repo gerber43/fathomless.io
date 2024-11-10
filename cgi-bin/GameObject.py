@@ -156,7 +156,7 @@ class Creature(GameObject):
 
         dual_penalty = 0
         if dual_wielding:
-            dual_penalty = 10 - self.skills(lookup_skill_id("Dual-Wielding"))
+            dual_penalty = 10 - self.skills[lookup_skill_id("Dual-Wielding")]
             if dual_penalty < 0:
                 dual_penalty = 0
 
