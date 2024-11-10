@@ -739,7 +739,25 @@ confirmationCoordinates = coordinates;
                                             if (objectKeys[j] == "textureIndex") {
                                                 attributes+="<img src = '"+tileObjects[attributeArray[i][objectKeys[j]]]['icon']+"'>"
                                             } else {
-                                                buffer += "<p>"+objectKeys[j]+" : "+attributeArray[i][objectKeys[j]]+"</p>";
+                                                if (objectKeys[j] != "statuses") {
+                                                    buffer += "<p>"+objectKeys[j]+" : "+attributeArray[i][objectKeys[j]]+"</p>";
+                                                } else {
+                                                    buffer += "<p>"+[objectKeys[j]]+"</p>";
+                                                    buffer += "<hr>"
+                                                    for (var m = 0; m < attributeArray[i][objectKeys[j]].length; m++) {
+                                                        
+                                                        var statusKeys = Object.keys(attributeArray[i][objectKeys[j]][m]);
+                                                        console.log(statusKeys)
+                                                        for (var n = 0; n < statusKeys.length; n++) {
+                                                            buffer += "<p>"+statusKeys[n]+" : "+attributeArray[i][objectKeys[j]][m][statusKeys[n]]+"</p>";
+
+                                                        }
+                                                        
+                                                    }
+                                               
+                                                }
+
+                                                
                                             }
                                         }
                                         if ((attribute == "inventory" || attribute == "abilities") && attributeArray[i]['name'] != "Gold")
