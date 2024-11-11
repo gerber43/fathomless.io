@@ -2,9 +2,10 @@
 import random
 import sys
 import cgi
-from GameObject import Item, Consumable, Equippable, Weapon, TwoHandedWeapon, LightSourceItem
+from GameObject import Item, Consumable, Equippable, Weapon, TwoHandedWeapon, Smear, LightSourceItem
 from SubSystem import lookup_damage_type_id, lookup_skill_id
 from ActiveAbilities import Spell, Technique, HealingTouch
+from StatusEffects import Bleed, Poison
 from Enchantment import random_enchantment
 
 #list of spawnable items, the name, their level, and their type
@@ -266,3 +267,32 @@ class HealingTouchScroll(Consumable):
         if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
             return -1
         target.abilities.append(HealingTouch())
+
+#smears
+
+class MinorPoison(Smear):
+    def __init__(self, pos, amount, max_stack, level, price, status_effect):
+        super().__init__("Minor Poison", "17", pos, amount, 4, 2, 50, Poison(3, False))
+
+class MediumPoison(Smear):
+    def __init__(self, pos, amount, max_stack, level, price, status_effect):
+        super().__init__("Poison", "17", pos, amount, 4, 6, 200, Poison(6, False))
+
+class DeadlyPoison(Smear):
+    def __init__(self, pos, amount, max_stack, level, price, status_effect):
+        super().__init__("Deadly Poison", "17", pos, amount, 4, 12, 500, Poison(9, False))
+
+
+class SoftWhetstone(Smear):
+    def __init__(self, pos, amount, max_stack, level, price, status_effect):
+        super().__init__("Soft Whetstone", "17", pos, amount, 2, 4, 70, Bleed(2, False))
+
+
+class Whetstone(Smear):
+    def __init__(self, pos, amount, max_stack, level, price, status_effect):
+        super().__init__("Whetstone", "17", pos, amount, 2, 10, 250, Bleed(4, False))
+
+
+class HardWhetstone(Smear):
+    def __init__(self, pos, amount, max_stack, level, price, status_effect):
+        super().__init__("Hard Whetstone", "17", pos, amount, 2, 15, 700, Bleed(6, False))

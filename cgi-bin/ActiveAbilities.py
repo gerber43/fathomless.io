@@ -5,6 +5,7 @@ import math
 import random
 from abc import abstractmethod
 from GameObject import Weapon
+from SubSystem import lookup_damage_type_id
 
 #Active ability base classes
 class ActiveAbility:
@@ -92,12 +93,19 @@ class Torture(ActiveAbility):
 
 #player-available spells
 
+class IceBolt(Spell):
+    def __init__(self):
+        super().__init__("Healing Touch", "45", 2, 5, 3, "Elementalism")
+    def use(self, grid, caster, target):
+        target.hp -= 5*target.resistances(lookup_damage_type_id("Cold"))
+        super().use(grid, caster, target)
+
 class HealingTouch(Spell):
     def __init__(self):
-        super().__init__("Healing Touch", "45", 3, 20, "Enhancement", "")
+        super().__init__("Healing Touch", "45", 3, 20, 1, "Enhancement")
     def use(self, grid, caster, target):
         target.hp = target.max_hp
-        caster.mp -= self.mp_cost
+        super().use(grid, caster, target)
 
 #player-available techniques
 
@@ -106,5 +114,12 @@ class HealingTouch(Spell):
 #enemy-only active abilities
 
 #enemy-only spells
+
+class ChokingDeep(Spell):
+    def __init__(self):
+        super().__init__("Choking Deep", "45", 4, 5, 7, "Cursing")
+    def use(self, grid, caster, target):
+        target.gain_status_effect(grid, "Suffocation", 10, False, True, None)
+        super().use(grid, caster, target)
 
 #enemy-only techniques
