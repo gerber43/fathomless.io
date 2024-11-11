@@ -172,7 +172,7 @@ class Necropolis(Biome):
 class Underworld1(Biome):
     def __init__(self):
         super().__init__("Cave", "Wall", "Stair",
-                         ["Imp", "Demon", "Hellhound", "Hellbat", "TricksterImp", "ConfusedSoul", "DecietDemon"],
+                         ["Imp", "Demon", "Hellhound", "Hellbat", "TricksterImp", "ConfusedSoul", "DeceitDemon"],
                          [20, 10, 15, 20, 40, 35, 20],
                          ["Lava"],
                          1, [(1, "Underworld2", 1)],
@@ -232,7 +232,7 @@ class AncientCity(Biome):
 class OldTemple(Biome):
     def __init__(self):
         super().__init__("Complex(Large)", "Wall", "Portal",
-                         ["Culstist", "Shambler", "WritingOne", "DeepLord", "Mother", "Destroyer", "Scholar", "Schemer"],
+                         ["Cultist", "Shambler", "WrithingOne", "DeepLord", "Mother", "Destroyer", "Scholar", "Schemer"],
                          [20, 10, 5, 1, 1, 1, 1, 1],
                          ["StoneDoor", "Spikes"],
                          2, [(2, "CosmicVoid", 1)],
@@ -252,8 +252,8 @@ class CosmicVoid(Biome):
 class WorldHeart(Biome):
     def __init__(self):
         super().__init__("None", "Pit", "",
-                         [],
-                         [],
+                         ["AbyssDragon"],
+                         [1],
                          [],
                          1, [],
                          "AbyssDragon", -1)
