@@ -1,7 +1,7 @@
 <?php include("session.php");
 session_required();
  if (isset($_REQUEST['submit'])) {
-     file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=".$_SESSION['uuid']."&difficulty=".$_REQUEST['difficulty']."&race=".$_REQUEST['race']);
+     file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=".urlencode($_SESSION['uuid'])."&difficulty=".urlencode($_REQUEST['difficulty'])."&race=".urlencode($_REQUEST['race'])."&name=".urlencode($_REQUEST['name']));
 
     }
 
@@ -14,6 +14,10 @@ if (file_exists("maps/".$_SESSION['uuid'].".pkl")) {
 <html>
     <head>
         <style>
+        @import url('https://fonts.cdnfonts.com/css/8bit-wonder');
+         * {
+            font-family: '8BIT WONDER', sans-serif;
+            }
         html, body {
             border:0;
             padding:0;
@@ -21,13 +25,13 @@ if (file_exists("maps/".$_SESSION['uuid'].".pkl")) {
             background:url(https://community.gamedev.tv/uploads/db2322/original/4X/b/3/b/b3bb7e4daf0a046bd4c49d762e5b15a1cf215cd9.png);
             
         }
+                    
         #page {
              display:flex;
             align-items:center;
             justify-content:center;
             flex-direction:column;
             width:100vw;
-            height:100svh;
         }
         form {
             display:flex;
@@ -87,6 +91,20 @@ if (file_exists("maps/".$_SESSION['uuid'].".pkl")) {
             transition:.75s;
             transform:scale(.9);
             }
+             input[type=text], input[type=password] {
+            padding:5px;
+            background:url();
+            background:saddlebrown;
+            cursor:text;
+            width:50vw;
+            }
+             ::placeholder {
+            color: 	rgb(212,175,55);
+            opacity: 1; /* Firefox */
+            }
+            ::-ms-input-placeholder { /* Edge 12 -18 */
+            color: 	rgb(212,175,55);
+            }
         </style>
         
         
@@ -95,14 +113,13 @@ if (file_exists("maps/".$_SESSION['uuid'].".pkl")) {
         <div id  ="page">
         <h1>Fathomless Caverns of Peril</h1>
         <form method = "post">
+            <input type = "text" name = "name" placeholder = "Enter Character Name">
             
             
-            <p>Choose Your Difficulty</p>
-            <div id = "difficulty"><p>Information about the selected difficulty will appear here</p></div>
+            <p id = "difficulty">Choose Your Difficulty</p>
 
             <span><input type="radio" id  = "easy" name="difficulty" value="easy" checked><label for="easy">Easy</label><input type="radio" id  = "medium" name="difficulty" value="medium"><label for="medium">Medium</label><input type="radio" id  = "hard" name="difficulty" value="hard"><label for="hard">Hard</label></span>
-    <p>Choose Your Character</p>
-    <div id = "race"><p>Information about the selected character will appear here</p></div>
+    <p id = "race">Choose Your Character</p>
 
                 <span><input type="radio" id  = "human" name="race" value="Human" checked><label for="human">Human</label>
                 <input type="radio" id  = "elf" name="race" value="Elf" ><label for="elf">Elf</label>
@@ -146,10 +163,10 @@ if (file_exists("maps/".$_SESSION['uuid'].".pkl")) {
                     mobSpawns = "x3";
                     itemSpawns = "x0.3";
                 }
-                hintBox.innerHTML = "<span><p>"+mobSpawns+" as many Creatures will spawn</p><p>"+itemSpawns+" as many Creatures will appear</p></span>";
+                hintBox.innerHTML = mobSpawns+" as many Creatures will spawn | "+itemSpawns+" as many Creatures will appear";
                 }
                 if (name == "race") {
-                    hintBox.innerHTML = "<p>Selected Race: "+selected+"</p>";
+                    hintBox.innerHTML = "Selected Race: "+selected;
 
                 }
             }
