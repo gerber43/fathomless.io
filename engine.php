@@ -275,6 +275,7 @@ if (file_exists("maps/Test.pkl")) {
             justify-content:start;
             flex-direction:column;
             }
+            
             #inspection::-webkit-scrollbar {
             display: none;
             }
@@ -309,12 +310,30 @@ if (file_exists("maps/Test.pkl")) {
             width:90%;
             padding:5px;
             }
+            
             #inspection div p {
             word-wrap: break-word;
             }
-            #inspection > p {
+            #inspection p.center {
+                padding-top:20px;
             text-align:center;
             }
+            #inspection > div {
+                border:none;
+            } #inspection div button {
+                 background: none;
+            color: inherit;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            outline: inherit;
+                text-align:center;
+                width:100%;
+                font-size:20px;
+                color:red;
+            }
+            
             .inspecting, .selected {
             transition:.75s;
             border:#eee dotted 2px;
@@ -488,20 +507,7 @@ if (file_exists("maps/Test.pkl")) {
                 flex-wrap:wrap;
                 gap:20px
             }
-            .use {
-                 background: none;
-            color: inherit;
-            border: none;
-            padding: 0;
-            font: inherit;
-            cursor: pointer;
-            outline: inherit;
-                text-align:center;
-                width:100%;
-                font-size:20px;
-                color:rgb(212,175,55);
-            }
-            
+          
             .tile .Light {
                 z-index:2;
             }
@@ -511,6 +517,7 @@ if (file_exists("maps/Test.pkl")) {
             #inventory, #settings, #alert, #dialogue, #keyBind, #modal, #inspection {
                 z-index:4;
             }
+            
         </style>
     </head>
     <body>
@@ -714,66 +721,71 @@ confirmationCoordinates = coordinates;
                     inspecting  = tileId;
                 }
                 return tile;
+            }                                           
+            function inspectObject(tileArray,tileId) {
+                var buffer = "";
+                var outerDiv = false;
+                if (tileArray !=null && typeof tileArray != "string") {
+                    Object.keys(tileArray).forEach((object) => {
+                        if (object == "Bottom") {
+                            return
+                        }
+                        outerDiv = (object == "Creature" || object == "Item" || object == "Terrain" || object == "Decor");
+                        if (outerDiv) {
+                            buffer += "<div>";
+                        }
+                        if ((!Array.isArray(tileArray[object]) && typeof tileArray[object] != "object")|| (Array.isArray(tileArray[object]) && tileArray[object].length)){
+                            if (object != "textureIndex") {
+                                buffer += "<p>"+object+": "+tileArray[object]+"</p>";
+                            } else {
+                                buffer += "<img src = '"+tileObjects[tileArray[object]]['icon']+"'>";
+                            }     
+                            
+                        } else if (typeof tileArray[object] == "object" && tileArray[object] != null && tileArray[object] != "") {
+                            buffer  += "<p class = 'center'>"+object+"</p>";
+                        } else {
+                            buffer  += "<p>"+object+": None</p>";
+                        }
+                        buffer+= "<div>"
+                        if (tileArray[object] !=null && typeof tileArray[object] != "string" && typeof tileArray[object] != "number")  {
+                            Object.keys(tileArray[object]).forEach((attribute) => {
+                                if (typeof tileArray[object][attribute] == "object" && !Array.isArray(tileArray[object][attribute]) && tileArray[object][attribute] != null) {
+                                        buffer  += inspectObject(tileArray[object][attribute],tileId);
+                                } else if (Array.isArray(tileArray[object][attribute]) && tileArray[object][attribute] != null && tileArray[object][attribute].length > 0 && parseInt(attribute) !=0)  {
+                                    if (typeof tileArray[object][attribute][0] != "object") {
+                                        buffer += "<p>"+attribute+": "+tileArray[object][attribute]+"</p>";
+                                    } else {
+                                        buffer += "<p class = 'center'>"+attribute+"</p>";
+                                    }
+                                    for (var i = 0; i < tileArray[object][attribute].length; i++) {
+                                         if (attribute == "abilities" || attribute == "inventory" && tileArray[object][attribute][i]['name'] != "Gold") {
+                                            buffer += "<div><button class = 'use' onclick = 'selectedItem = `"+attribute+":"+i+"`;toggleInspect(`"+tileId+"`);createMessage(`dialogue`,`Click On A Target`,2);'>Use</button>"+inspectObject(tileArray[object][attribute][i],tileId)+"</div>";
+                                        } else {
+                                            buffer += "<div>"+inspectObject(tileArray[object][attribute][i],tileId)+"</div>";
+
+                                        }
+                                    }
+                                } else if (!parseInt(attribute) && attribute != 0) {
+                                    if (attribute != "textureIndex") {
+                                        buffer += "<p>"+attribute+": "+tileArray[object][attribute]+"</p>";
+                                    } else {
+                                        buffer += "<img src = '"+tileObjects[tileArray[object][attribute]]['icon']+"'>";
+                                    }
+                                }
+                            });
+                        }
+                        buffer+= "</div>"
+                    });
+                    if (outerDiv) {
+                            buffer += "</div>";
+                        }
+                } 
+                return buffer.replace(/<[^/>][^>]*><\/[^>]+>/gim, "")
             }
             function inspectTile(tileId){
                 var tile = toggleInspect(tileId);
                 document.getElementById('inspection').innerHTML = "<button class = 'close' onclick = 'toggleInspect(`"+tileId+"`)'>X</button>";
-                Object.keys(tile).forEach((object) => {
-                    if (tile[object]['name']) {
-                        attributes = "";
-                        Object.keys(tile[object]).forEach((attribute) => {
-                            specialFormats = ["equipment","drop_table","inventory","status_effects","abilities"];
-                            if (!specialFormats.includes(attribute)) {
-                                if (attribute == "textureIndex") {
-                                    attributes+="<img src = '"+tileObjects[tile[object][attribute]]['icon']+"'>"
-                                } else {
-                                    attributes+="<p><span>"+attribute + "</span> : "+tile[object][attribute]+"</p>"
-                                }
-                            } else if (tile[object][attribute]){
-                                var attributeArray = Object.keys(tile[object][attribute]).map((key) => tile[object][attribute][key]);
-                                buffer = ""
-                                for (var i = 0; i < attributeArray.length; i++) {
-                                    if (typeof(attributeArray[i]) == "object") {
-                                        objectKeys = Object.keys(attributeArray[i]);
-                                        for (var j = 0; j < objectKeys.length; j++) {
-                                            if (objectKeys[j] == "textureIndex") {
-                                                attributes+="<img src = '"+tileObjects[attributeArray[i][objectKeys[j]]]['icon']+"'>"
-                                            } else {
-                                                if (objectKeys[j] != "statuses") {
-                                                    buffer += "<p>"+objectKeys[j]+" : "+attributeArray[i][objectKeys[j]]+"</p>";
-                                                } else {
-                                                    buffer += "<p>"+[objectKeys[j]]+"</p>";
-                                                    buffer += "<hr>"
-                                                    for (var m = 0; m < attributeArray[i][objectKeys[j]].length; m++) {
-                                                        
-                                                        var statusKeys = Object.keys(attributeArray[i][objectKeys[j]][m]);
-                                                        console.log(statusKeys)
-                                                        for (var n = 0; n < statusKeys.length; n++) {
-                                                            buffer += "<p>"+statusKeys[n]+" : "+attributeArray[i][objectKeys[j]][m][statusKeys[n]]+"</p>";
-
-                                                        }
-                                                        
-                                                    }
-                                               
-                                                }
-
-                                                
-                                            }
-                                        }
-                                        if ((attribute == "inventory" || attribute == "abilities") && attributeArray[i]['name'] != "Gold")
-                                            buffer += "<button class = 'use' onclick = 'selectedItem = `"+attribute+":"+i+"`;toggleInspect(`"+tileId+"`);createMessage(`dialogue`,`Click On A Target`,2);'>Use</button>";
-
-                                    } else {
-                                        buffer += "<p>"+attributeArray[i]+"</p>";
-                                    }
-                                    buffer += "<hr>";
-                                }
-                                attributes+="<div><p><span>"+attribute + "</span> : </p><hr>"+buffer+"</div>";
-                            }
-                        });
-                        document.getElementById('inspection').innerHTML += "<p>"+object+"</p><div>"+attributes+"</div>";
-                    }
-                });
+                document.getElementById('inspection').innerHTML += inspectObject(tile, tileId);
             }
             function clickTile(tileId) {
                 var coordinates = tileId.split(",");
