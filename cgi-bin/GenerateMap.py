@@ -1,17 +1,10 @@
-#!/usr/bin/python3
-import sys
-import json
-import cgi
 import random
-
-HTTP_FIELDS = cgi.FieldStorage()
 
 from GameObject import *
 from Terrain import *  
 from Decor import *
 from Creatures import *
 from Items import *
-from Races import *
 from Biomes import *
 
 
@@ -178,15 +171,12 @@ def place_creatures(grid, num_creatures, depth):
                     grid[y][x].append(creature)
                     break
 
-def place_player(grid, player, race, traversable_path):
+def place_player(grid, player, traversable_path):
     y, x = random.choice(list(traversable_path))
 
     if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
-        if player is None:
-            grid[y][x].append(eval(race)("Name", (y, x)))
-        else:
-            player.pos = [y, x]
-            grid[y][x].append(player)
+        player.pos = [y, x]
+        grid[y][x].append(player)
 
 def fill_empty_spaces(grid):
     width = len(grid[0])
@@ -352,16 +342,7 @@ def generate_terrain_with_probabilities(grid_width, grid_height, terrain_probabi
 
     fill_empty_spaces(grid)  
     return grid
-# def print_final_grid(grid):
-#     for row in grid:
-#         row_symbols = []
-#         for cell in row:
-#             # Gather the symbols for each GameObject in the cell
-#             symbols = [obj.symbol for obj in cell]
-#             row_symbols.append(f"[{', '.join(symbols)}]")
-#         print(" ".join(row_symbols))
-# # Print the final grid
-# print_final_grid(final_grid)
+
 def get_texture_index(terrain):
     if isinstance(terrain, EmptySpace):
         return texture_mapping['EmptySpace']
@@ -390,7 +371,7 @@ texture_mapping = {
     'Pit': 18,
     'Wall': 6,  
 }
-def generateMap(width, height, depth, num_creatures, player, race, num_items):
+def generateMap(width, height, depth, num_creatures, player, num_items):
     depths = depth.split(",")
     current_biome = biomes_dict.get(int(depths[0]))
     if current_biome is None:
@@ -414,7 +395,7 @@ def generateMap(width, height, depth, num_creatures, player, race, num_items):
     final_grid, final_traversable_grid = carve_guaranteed_paths(terrain_grid, width, height)
     
     place_staircase(final_grid, final_traversable_grid,depth)
-    place_player(final_grid, player, race, final_traversable_grid)
+    place_player(final_grid, player, final_traversable_grid)
     place_items(final_grid, num_items, int(depths[0]))
     for i in range(len(final_grid)):
         for j in range(len(final_grid[i])):
@@ -425,11 +406,3 @@ def generateMap(width, height, depth, num_creatures, player, race, num_items):
                 
     
     return final_grid
-    #json_map = convert_grid_to_json(final_grid)
-    # Convert the map to JSON format and print
-    #json_output = json.dumps(json_map)
-    #print(json_output)
-
-    # save the output to a file
-    #with open("../maps/"+uuid+".json", "w") as json_file:
-        #json_file.write(json_output)
