@@ -116,14 +116,16 @@ def update_Creature_position(game_map, player_pos):
             if Creature and not isinstance(Creature, Player) and Creature not in moved_Creatures:
                 #if the creture is unable to detect the player, skip the tracking
                 if not is_player_avalible(player_pos, player, Creature):
+                    '''
                     direction = default_movement((x, y), game_map)
                     if direction is not None:
                         current_pos = (x, y)
                         current_pos, message = process_Creature_movement(current_pos, direction, game_map)
-                    moved_Creatures.append(Creature)
+                    moved_Creatures.append(Creature)'''
                     continue  # Move to the next creature
-                    
+                
                 #if the creature's attack range is greater than player's, and the creature is in the player's attack range, it will move away from player
+                
                 if int((Creature.equipment[0]).range) > int((player.equipment[0]).range) and manhattan <= int((player.equipment[0]).range):
                     current_pos = (x,y)
                     for move_num in range(Creature.speed):
@@ -148,13 +150,14 @@ def update_Creature_position(game_map, player_pos):
                         current_pos, message = process_Creature_movement(current_pos, direction, game_map)
                     moved_Creatures.append(Creature)
                     
+                '''   
                 # Perform default movement if no other action is taken
                 else:
                     direction = default_movement((x, y), game_map)
                     if direction is not None:
                         current_pos = (x, y)
                         current_pos, message = process_Creature_movement(current_pos, direction, game_map)
-                    moved_Creatures.append(Creature)
+                    moved_Creatures.append(Creature)'''
                     
 #helper funtion to check if the creature can detect the player
 def is_player_avalible(player_pos, Player, Creature):
@@ -357,6 +360,8 @@ if (HTTP_FIELDS.getvalue('uuid')):
       attack = [int(coordinate) for coordinate in HTTP_FIELDS.getvalue('attack').split(",")] if HTTP_FIELDS.getvalue('attack') else None
       difficulty = HTTP_FIELDS.getvalue('difficulty') if (HTTP_FIELDS.getvalue('difficulty')) else "Easy"
       race = HTTP_FIELDS.getvalue('race') if (HTTP_FIELDS.getvalue('race')) else None
+      name = HTTP_FIELDS.getvalue('name') if (HTTP_FIELDS.getvalue('name')) else "Name"
+
 
 
       levelUp = HTTP_FIELDS.getvalue('levelUp') if (HTTP_FIELDS.getvalue('levelUp')) else None
@@ -374,7 +379,9 @@ if (HTTP_FIELDS.getvalue('uuid')):
     # Load the current map
       file_path = '../maps/'+uuid+'.pkl' 
       if (not os.path.exists(file_path)):
-          game_map = generateMap(0, level+","+difficulty,None,race)
+          player = eval(race)(-1, -1)
+          player.name = name
+          game_map = generateMap(0, level+","+difficulty,player)
           turn_log.append({"level":level+","+difficulty})
           game_log += "New Level Generated "+level+","+difficulty+"\n"
           if (int(level) == 23):
