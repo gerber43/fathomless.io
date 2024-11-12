@@ -84,7 +84,7 @@ class Bat(Creature):
     def __init__(self, pos):
         super().__init__("Bat", "27", pos, [], 5, 0, 2, [Flight(1, True)], 1, 3, 0, 5, 0.05, 30,
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (None, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
+                         (BatFangs(), None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0), [], 0, (), 5, 1)
     def basic_attack(self, grid, target):
         if self.basic_attack_hit_check(grid, 3, False, target):
@@ -108,7 +108,7 @@ class FishmanShaman(Creature):
     def __init__(self, pos):
         super().__init__("Deep One Shaman", "22", pos, [IceBolt(), ChokingDeep()], 25, 50, 1, [], 0, 3, 5, 2, 0.05, 10,
                          (0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0),
-                         (None, None, None, None, None, None, None, None, None, None), [], (0.2, 0.5, 0.0, -0.5, -0.2, 2.0, 0.9, 0.0, 1.0, 0.5, 0.0, 0.3, 0.0),
+                         (CrusherClaw(), None, None, None, None, None, None, None, None, None), [], (0.2, 0.5, 0.0, -0.5, -0.2, 2.0, 0.9, 0.0, 1.0, 0.5, 0.0, 0.3, 0.0),
                          (0.9, 0.0, -0.5, 1.0, 0.9, 0.5, 0.0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), [LesserMana((-1, -1), 4)], 0, ((Gold((-1, -1), 7), 0.7), (LesserMana((-1, -1), 1), 0.2)), 40, 4)
 
 class CrusherClaw(Weapon):
