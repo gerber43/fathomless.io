@@ -293,7 +293,7 @@ def carve_guaranteed_paths(grid, width, height):
 
     for pos in traversable_path:
         x, y = pos
-        grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, GameObject)]
+        grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, GameObject)]  # Remove terrain
         grid[y][x].append(EmptySpace((y, x)))  # Replace with free space
     return grid, traversable_path
 
@@ -308,6 +308,7 @@ def generate_terrain_with_probabilities(grid_width, grid_height, terrain_probabi
 
     for y in range(grid_height):
         for x in range(grid_width):
+            
             # Randomly decide terrain type based on probabilities
             terrain_type = random.choices(
                 list(terrain_probabilities.keys()),
@@ -387,7 +388,7 @@ def generateMap(width, height, depth, num_creatures, player, num_items):
     'empty_space': 0.5
     }
     terrain_grid = generate_terrain_with_probabilities(width, height, terrain_probabilities)
-                    
+        
 
     place_decor(terrain_grid, current_biome, width, height)
     place_creatures_by_biome(terrain_grid, current_biome, num_creatures)
@@ -399,6 +400,7 @@ def generateMap(width, height, depth, num_creatures, player, num_items):
     place_items(final_grid, num_items, int(depths[0]))
     for i in range(len(final_grid)):
         for j in range(len(final_grid[i])):
+            final_grid[i][j].append(Bottom("Floor", 1,(-1,-1)))
             for k in range(len(final_grid[i][j])):
                 if k < len(final_grid[i][j]) and isinstance(final_grid[i][j][k], EmptySpace):
                     del final_grid[i][j][k]
