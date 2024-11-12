@@ -222,9 +222,16 @@ def get_map_subset(player_pos, game_map, fov_radius):
             if i < 0 or i >= x_max or j < 0  or j >= y_max:
                 row_subset.append(blank_tile)
             else:
-                internalGrid = {gameObject.__class__.__base__.__name__.capitalize(): gameObject.__dict__ for gameObject in game_map[i][j]}
-                internalGrid["Bottom"] = {"textureIndex":1}
                 
+                internalGrid = {gameObject.__class__.__base__.__name__.capitalize(): gameObject.__dict__ for gameObject in game_map[i][j]}
+                if (internalGrid.get('Gameobject') is not None):
+                    internalGrid['Bottom'] = internalGrid['Gameobject']
+                    del internalGrid['Gameobject']
+
+                
+                
+                
+
                 if (internalGrid.get('Weapon') is not None):
                     internalGrid['Item'] = internalGrid['Weapon']
                     del internalGrid['Weapon']
@@ -259,7 +266,7 @@ def get_map_subset(player_pos, game_map, fov_radius):
                     #internalGrid['Weapon']['enchantment'] = internalGrid['Weapon']['enchantment'].name;
                     internalGrid['Item'] = internalGrid['Equippable']
 
-
+                
                 if (internalGrid.get('Creature') is not None):
                      
                     for a in range(len(internalGrid['Creature']['equipment'])):
