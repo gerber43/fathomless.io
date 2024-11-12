@@ -14,6 +14,11 @@ class GameObject:
         self.name = name
         self.textureIndex = textureIndex
         self.pos = pos
+        
+class Bottom(GameObject):
+      def __init__(self, name, textureIndex, pos):
+        super().__init__(name, textureIndex, pos)
+
 
 class Item(GameObject):
     def __init__(self, name, textureIndex, pos, amount, max_stack, level, price):
@@ -84,9 +89,9 @@ class Creature(GameObject):
             #if isinstance(game_object, Terrain):
                 #game_object.on_step(grid, self)
         for segment in self.segments:
-            if segment.type == "Static":
+            if hasattr(segment,"Static") and segment.type == "Static":
                 previous_movement = segment.move(grid, (self.pos[0] + diff[0], self.pos[1] + diff[1]))
-            if segment.type == "Fluid":
+            if hasattr(segment,"Static") and segment.type == "Fluid":
                 previous_movement = segment.move(grid, previous_movement)
     def gain_status_effect(self, grid, status_type, stacks, infinite, negative, applicator):
         if negative:
