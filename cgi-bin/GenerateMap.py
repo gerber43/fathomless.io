@@ -293,7 +293,7 @@ def carve_guaranteed_paths(grid, width, height):
 
     for pos in traversable_path:
         x, y = pos
-        grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, Terrain)]  # Remove terrain
+        grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, GameObject)]
         grid[y][x].append(EmptySpace((y, x)))  # Replace with free space
     return grid, traversable_path
 
