@@ -58,7 +58,8 @@ biomes_dict = {
     19: ancient_city,    
     20: old_temple,      
     21: cosmic_void,     
-    22: world_heart      
+    22: world_heart,
+    23: world_heart  
 }
 
 def is_within_grid(x, y, width, height):
@@ -171,12 +172,20 @@ def place_creatures(grid, num_creatures, depth):
                     grid[y][x].append(creature)
                     break
 
-def place_player(grid, player, traversable_path):
+def place_player(grid, player, traversable_path, times = 0):
     y, x = random.choice(list(traversable_path))
 
-    if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
+    if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]) and not any(isinstance(obj, Decor) for obj in grid[y][x]):
         player.pos = [y, x]
         grid[y][x].append(player)
+    else:
+        if (times < len(traversable_path)):
+            place_player(grid, player, traversable_path, times + 1)
+        else:
+            grid[y][x] = []
+            player.pos = [y, x]
+            grid[y][x].append(player)
+            
 
 def fill_empty_spaces(grid):
     width = len(grid[0])
