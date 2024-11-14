@@ -288,6 +288,10 @@ def get_map_subset(player_pos, game_map, fov_radius):
                         internalGrid['Creature']['drop_table'] = list(internalGrid['Creature']['drop_table'])
                         for k in range(len(internalGrid['Creature']['drop_table'])):
                             if type(internalGrid['Creature']['drop_table'][k]) != type(0.7):
+                                if (hasattr(internalGrid['Creature']['drop_table'][k], 'status_effect')):
+                                    
+                                    internalGrid['Creature']['drop_table'][k].status_effect = internalGrid['Creature']['drop_table'][k].status_effect.__dict__
+                                #print(internalGrid['Creature']['drop_table'][k])
                                 internalGrid['Creature']['drop_table'][k] = internalGrid['Creature']['drop_table'][k].__dict__
                         
                 row_subset.append(internalGrid)
