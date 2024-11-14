@@ -28,7 +28,7 @@ def heuristic(a, b):
     return abs(x1 - x2) + abs(y1 - y2)
 
 # A* pathfinding function to find the shortest path from `start` to `goal`.
-def a_star(start, goal, game_map, creature):
+def a_star(start, goal, game_map, creature, move_by_destruct_terrain):
     
     open_set = [] # A open set as a priority queue to explore nodes by their priority (lowest f_score first)
     
@@ -55,7 +55,7 @@ def a_star(start, goal, game_map, creature):
             # Calculate the neighbor position by adding direction deltas to the current position
             neighbor_position = (current_node.position[0] + dx, current_node.position[1] + dy)
             # Skip this neighbor if it's not a valid move (e.g., out of bounds, obstacle)
-            if (not is_valid_move(neighbor_position[0], neighbor_position[1], game_map, creature) and neighbor_position[0] != goal[0] and neighbor_position[1] != goal[1]):
+            if (not is_valid_move(neighbor_position[0], neighbor_position[1], game_map, creature, move_by_destruct_terrain) and neighbor_position[0] != goal[0] and neighbor_position[1] != goal[1]):
                 continue
             
             # The cost to move to this neighbor is current cost (`g_score[current]`) + 1 (assuming each move has a cost of 1)
@@ -95,26 +95,44 @@ def get_object_by_class(tile,className):
     return None if (len(parsedTile) == 0) else parsedTile[0]
     
 # Function to check if a move is valid (not out of bounds and no obstacle)
-def is_valid_move(x, y, game_map, creature):
+def is_valid_move(x, y, game_map, creature, move_by_destruct_terrain):
     if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]): #out of bounds
         return False
     if get_object_by_class(game_map[x][y],"Creature"):
         return False
     if (get_object_by_class(game_map[x][y],"Terrain") and not get_object_by_class(game_map[x][y],"Terrain").passable and (get_object_by_class(game_map[x][y],"Decor") and get_object_by_class(game_map[x][y],"Decor").passable)):
         return True #if non passable terrain but passable decor 
-    if (get_object_by_class(game_map[x][y],"Terrain") and not get_object_by_class(game_map[x][y],"Terrain").passable):
-        return False
+    # 
+    if move_by_destruct_terrain:
+        terrain = get_object_by_class(game_map[x][y], "Terrain")
+        if terrain and not terrian.passable and not is_destrutible:
+            return False
+    else:
+        if (get_object_by_class(game_map[x][y],"Terrain") and not get_object_by_class(game_map[x][y],"Terrain").passable):
+            return False
     if ((get_object_by_class(game_map[x][y],"Decor") and not get_object_by_class(game_map[x][y],"Decor").passable)):
         return False
     #craeture will avoid lava if can't fly
     terrain = get_object_by_class(game_map[x][y], "Terrain")
-    is_flying = any(effect.status_type == "Flying" for effect in creature.status_effects)
+    is_flying = False
+    if creature.status_effects
+    for effect in creature.status_effects:
+        if effect.status_type and effect.status_type == "Flying":
+            is_flying = True
     if not is_flying:
         if terrain and (terrain.name == "Fire" or terrain.name == "Spikes" or terrain.name == "Lava"):
             return False
             
     return True
-    
+
+def is_destructible(terrian, game_map):
+    if terrian.hp and terrian.hp != 1:
+        return True
+
+    for resistance in terrian.resistances:
+        if resistance and resistance != 1:
+            return True
+    return False
 
 
 # Function to reconstruct the path from the end node
