@@ -271,7 +271,7 @@ class HealingTouchScroll(Consumable):
 #smears
 
 class MinorPoison(Smear):
-    def __init__(self, pos, amount, max_stack, level, price, status_effect):
+    def __init__(self, pos, amount):
         super().__init__("Minor Poison", "17", pos, amount, 4, 2, 50, Poison(3, False))
 
 class MediumPoison(Smear):
