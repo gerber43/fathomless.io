@@ -140,14 +140,34 @@ def update_Creature_position(game_map, player_pos):
                 
                 #creature will move toward player if the player is in the tracking range
                 elif manhattan <= check:
-                    path = a_star((x, y), player_pos, game_map, Creature)
+                    path_avoid_terrain = a_star((x, y), player_pos, game_map, Creature, False)
+                    path_destruct_terrain = a_star((x, y), player_pos, game_map, Creature, True)
+                    #calculate how many turn will cost the creature to destroy all the terrain in path_destruct_terrain
+                    turn_needed = 0 
+                    for step in range(len(path_destruc_terrain) - 1):
+                        next_pos = path[move_num + 1]
+                        terrain = get_object_by_class(game_map[next_pos[0]][next_pos[1]], "Terrain")
+                        if terrain:
+                            damage = 1 #TODO, calculate the damage did on the terrain
+                            turn_needed += (terrain.hp / damage)
+                    if ((len(path_destruc_terrain) - 1) + turn_needed) * 2 < len(path_avoid_terrain) - 1):
+                        path = path_destruc_terrain
+                    else:
+                        path = path_avoid_terrain
+                    
                     if not path or len(path) < 2:
                         continue
                     current_pos = (x, y)
+                    path_counter = min(Creature.speed, len(path) - 1)
                     for move_num in range(min(Creature.speed, len(path) - 1)):
-                        next_pos = path[move_num + 1]
-                        direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
-                        current_pos, message = process_Creature_movement(current_pos, direction, game_map)
+                        next_pos = path[path_counter + 1]
+                        next_terrain = get_object_by_class(game_map[next_pos[0]][next_pos[1]], "Terrain")
+                        if next_terrain and not next_terrain.passable:
+                            process_attack_to_terrain(Creature, next_terrain)
+                        else:
+                            direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
+                            current_pos, message = process_Creature_movement(current_pos, direction, game_map)
+                            path_counter++;
                     moved_Creatures.append(Creature)
                     
                 '''   
@@ -331,7 +351,30 @@ def get_relative_tile(tile):
         return None
     return [target_x,target_y]
 
-#funtion to process the acttack action
+#function to process the attack action to a terrain
+def process_attack_to_terrain(attacker, terrain):
+    
+    global game_map
+    beforeHp = terrain.hp
+    attacker.basic_attack(game_map, terrain)
+    damage = beforeHp - terrain.hp
+    # reduce terrain's hp
+    if (damage > 0):
+        global turn_log 
+        global game_log 
+        turn_log.append({"type":"attack","before":get_relative_tile(attacker.pos),"after":get_relative_tile(terrain.pos),"amount":damage})
+        game_log += attacker.name +" @ "+str(((attacker.pos)))+" Attacked "+terrain.name +" @ "+str((terrain.pos))+" For "+str(damage)+"\n"
+    
+        #check did the creature dead
+        if target.hp <= 0:
+            #TODO, remove terrain from the spot
+            return "terrain destoyed"     
+        return "terrain hit"
+    else:
+        return "terrain missed"
+    
+
+#funtion to process the acttack action to a creature
 def process_attack(attacker, target):
     
     global game_map
