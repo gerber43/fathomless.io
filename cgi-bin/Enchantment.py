@@ -63,11 +63,11 @@ class Heat(Enchantment):
 
 class Fire(Enchantment):
     def __init__(self,):
-        super().__init__("Fire", 2, 60, [(lookup_damage_type_id("Fire"), 10, 4)], [])
+        super().__init__("Flames", 2, 60, [(lookup_damage_type_id("Fire"), 10, 4)], [])
 
 class Hellfire(Enchantment):
     def __init__(self,):
-        super().__init__("Fire", 8, 240, [(lookup_damage_type_id("Fire"), 10, 4), (lookup_damage_type_id("Dark"), 10, 0)], [])
+        super().__init__("Hellfire", 8, 240, [(lookup_damage_type_id("Fire"), 10, 4), (lookup_damage_type_id("Dark"), 10, 0)], [])
 
 class Incineration(Enchantment):
     def __init__(self,):

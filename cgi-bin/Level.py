@@ -4,7 +4,7 @@ import sys
 import cgi
 
 class Biome:
-    def __init__(self, generation_algorithm, default_terrain, exit_decor, creature_spawns, creature_weights, other_spawns, num_levels, biome_connections, boss, boss_level):
+    def __init__(self, generation_algorithm, default_terrain, exit_decor, creature_spawns, creature_weights, other_spawns, other_weights, num_levels, biome_connections, boss, boss_level):
         self.generation_algorithm = generation_algorithm
         #will be wall in most cases
         self.default_terrain = default_terrain
@@ -15,7 +15,9 @@ class Biome:
         #will be a list of the creatures' spawn weights
         self.creature_weights = creature_weights
         #will be a list of special terrain or decor name, no weight since spawn conditions are environmental
-        self.other_spawn_table = other_spawns
+        self.other_spawns = other_spawns
+        # will be a list of special terrain or decor name, no weight since spawn conditions are environmental
+        self.other_weights = other_weights
         #the number of levels in the biome
         self.num_levels = num_levels
         #a list of other biomes the biome connects to, represented by an array of tuples,
@@ -28,6 +30,9 @@ class Biome:
         #on which of the biome's levels the boss spawns at, biomes without a boss have -1
         self.boss_level = boss_level
     def random_creature(self, pos):
+        creature_name = random.choices(self.creature_spawns, self.creature_weights)
+        return eval(creature_name)(pos)
+    def random_other(self, pos):
         creature_name = random.choices(self.creature_spawns, self.creature_weights)
         return eval(creature_name)(pos)
 

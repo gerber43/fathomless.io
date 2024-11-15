@@ -7,7 +7,7 @@ from GameObject import Creature, CreatureSegment, Boss, Gold, Unavailable
 from Items import *
 from StatusEffects import Poison, Flight
 from ActiveAbilities import *
-#from Enchantment import *
+from Enchantment import *
 
 #Piercing, Slashing, Blunt, Fire, Lightning, Water, Cold, Acid, Light, Dark, Necrotic, Arcane, Existence
 basicDamageResistances = (0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0)
