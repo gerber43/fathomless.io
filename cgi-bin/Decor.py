@@ -52,7 +52,7 @@ class StoneDoor(Decor):
 #cave, mines, cove corruptite mines, deep cavern: common
 class Rock(Decor):
     def __init__(self, pos):
-        super().__init__("Rock", "6", pos, 70, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, True, "NO", "")
+        super().__init__("Rock", "56", pos, 70, (0.7, 0.9, 1.0, 1.0, 0.7, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), True, True, "NO", "")
     def on_destroy(self, grid):
         grid[self.pos[0]][self.pos[1]].append(Pebble(self.pos, 10))
         super().on_destroy(grid)
