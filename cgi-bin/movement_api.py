@@ -144,8 +144,6 @@ def update_Creature_position(game_map, player_pos):
                     path_destruct_terrain = a_star((x, y), player_pos, game_map, Creature, True)
                     #calculate how many turn will cost the creature to destroy all the terrain in path_destruct_terrain
                     turn_needed = 0 
-                    
-                    '''  
                     for step in range(len(path_destruct_terrain) - 1):
                         next_pos = path[move_num + 1]
                         terrain = get_object_by_class(game_map[next_pos[0]][next_pos[1]], "Terrain")
@@ -170,7 +168,6 @@ def update_Creature_position(game_map, player_pos):
                             direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
                             current_pos, message = process_Creature_movement(current_pos, direction, game_map)
                             path_counter += 1
-                             '''  
                     moved_Creatures.append(Creature)
                     
                 '''   
