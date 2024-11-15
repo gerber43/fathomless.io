@@ -320,19 +320,7 @@ if (file_exists("maps/Test.pkl")) {
             }
             #inspection > div {
                 border:none;
-            } #inspection div button {
-                 background: none;
-            color: inherit;
-            border: none;
-            padding: 0;
-            font: inherit;
-            cursor: pointer;
-            outline: inherit;
-                text-align:center;
-                width:100%;
-                font-size:20px;
-                color:red;
-            }
+            } 
             
             .inspecting, .selected {
             transition:.75s;
@@ -396,6 +384,9 @@ if (file_exists("maps/Test.pkl")) {
             font-size:20px;
             
             
+        }
+        #modal {
+            text-align:center;
         }
         .modal div .close button{
                 padding:20px;
@@ -530,19 +521,7 @@ if (file_exists("maps/Test.pkl")) {
         #inventory > span > span > span p {
             height:30px;
         }
-         #inventory > span > span > span button {
-             transition:.75s;
-            background: none;
-            color: inherit;
-            border: none;
-            padding: 0;
-            font: inherit;
-            cursor: pointer;
-            outline: inherit;
-            color:red;
-            
-
-         }
+         
         
         #inventory img {
             height:50px;
@@ -563,15 +542,69 @@ if (file_exists("maps/Test.pkl")) {
                 z-index:4;
             }
             #action {
+                transition:.75s;
                 display:flex;
                 align-items:center;
                 justify-content:center;
-                width:100vw;
+                width:100%;
                 gap:20px;
                 position:absolute;
                 top:0;
                 left:0;
                 background:#eee;
+                border:rgb(212,175,55) 2px solid;
+            background:saddlebrown;
+            color:rgb(212,175,55);
+            height:0;
+            margin:0;
+            padding:0;
+            box-sizing: border-box;
+            }
+            #action button {
+                transition:.75s;
+            background: none;
+            color: inherit;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            outline: inherit;
+            width:75%;
+            height:fit-content;
+            color:gold;
+            font-size:20px;
+            border:2px burlywood solid;
+            background:saddlebrown;
+            padding:20px;
+            background:url(https://img.freepik.com/premium-vector/seamless-pattern-old-wood-wall-background_117579-47.jpg);
+            
+            }
+            #inventory button, #inspection div button, #inventory > span > span > span button {
+                transition:.75s;
+            background: none;
+            color: inherit;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            outline: inherit;
+            width:fit-content;
+            height:fit-content;
+            color:gold;
+            font-size:20px;
+            border:2px burlywood solid;
+            background:saddlebrown;
+            padding:20px;
+            background:url(https://img.freepik.com/premium-vector/seamless-pattern-old-wood-wall-background_117579-47.jpg);
+            text-align:center;
+            }
+            #inventory button:nth-child(1) {
+                position:absolute;
+                top:0;
+                left:0;
+            }
+            #inspection div button {
+                width:100%;
             }
            
             
@@ -647,6 +680,7 @@ if (file_exists("maps/Test.pkl")) {
                 inspectingPlayer = !inspectingPlayer;
             }
             function toggleActions(tileId) {
+                var coordinates = tileId.split(",");
                 if (tileId == viewRadius+","+viewRadius && !inventoryOpened) {
                     toggleInventory();
                     return;
@@ -658,16 +692,15 @@ if (file_exists("maps/Test.pkl")) {
                 if (document.getElementById(activeTile)) {
                     document.getElementById(activeTile).classList.remove('inspecting');
                 }
-                var coordinates = tileId.split(",");
-
-                if ((!isAction || tileId != activeTile) && currentMap[coordinates[0]][coordinates[1]]['Bottom']['textureIndex'] != 8) {
+                
+                if ((!isAction || tileId != activeTile) && currentMap[coordinates[0]][coordinates[1]]['Bottom']['textureIndex'] != 8 && (Object.keys(currentMap[coordinates[0]][coordinates[1]]).length > 1)) {
                     document.getElementById("action").style.height = "100px";
                     var selectedTile = currentMap[coordinates[0]][coordinates[1]];
                     document.getElementById(tileId).classList.add('inspecting');
-                    var inspectButton = "<button onclick = 'inspectTile(activeTile)'>Inspect</button>";
-                    var attackButton = "<button onclick = 'directionHandler([parseInt(activeTile.split(`,`)[0]),parseInt(activeTile.split(`,`)[1])])'>Attack</button>";
-                    var moveButton = "<button onclick = 'directionHandler([parseInt(activeTile.split(`,`)[0]),parseInt(activeTile.split(`,`)[1])])'>Move</button>";
-                    var interactButton = "<button onclick = 'directionHandler([parseInt(activeTile.split(`,`)[0]),parseInt(activeTile.split(`,`)[1])])'>Interact</button>";
+                    var inspectButton = "<button onclick = 'inspectTile(activeTile);'>Inspect</button>";
+                    var attackButton = "<button onclick = 'directionHandler([parseInt(activeTile.split(`,`)[0]),parseInt(activeTile.split(`,`)[1])]);toggleActions(activeTile);'>Attack</button>";
+                    var moveButton = "<button onclick = 'directionHandler([parseInt(activeTile.split(`,`)[0]),parseInt(activeTile.split(`,`)[1])]);toggleActions(activeTile);'>Move</button>";
+                    var interactButton = "<button onclick = 'directionHandler([parseInt(activeTile.split(`,`)[0]),parseInt(activeTile.split(`,`)[1])]);toggleActions(activeTile);'>Interact</button>";
                     if (currentMap[coordinates[0]][coordinates[1]]['Bottom']['textureIndex'] != 8) {
                     document.getElementById('action').innerHTML = inspectButton;
                         if (document.getElementById(tileId).dataset.manhattan == 1) {
@@ -702,6 +735,9 @@ if (file_exists("maps/Test.pkl")) {
                        innerDiv +=  content;
                        modal.innerHTML = "<div id = '"+id+"'>"+innerDiv+"</div>";
                         document.body.appendChild(modal);
+                        
+                        modal.querySelector('button').focus();
+
             }
             
             function createLine(start, end) {
@@ -745,7 +781,7 @@ if (file_exists("maps/Test.pkl")) {
                             */
                           
                           if (isBright) {
-                              createLight(i+","+j,brightness/(distance+1)**.5)
+                              createLight(i+","+j,brightness/(distance+1)**1)
                           } else {
                               createLight(i+","+j,0);
                           }
@@ -878,7 +914,7 @@ confirmationCoordinates = coordinates;
                                     }
                                     for (var i = 0; i < tileArray[object][attribute].length; i++) {
                                          if (attribute == "abilities" || attribute == "inventory" && tileArray[object][attribute][i]['name'] != "Gold") {
-                                            buffer += "<div><button class = 'use' onclick = 'selectedItem = `"+attribute+":"+i+"`;toggleInspect(`"+tileId+"`);createMessage(`dialogue`,`Click On A Target`,2);'>Use</button>"+inspectObject(tileArray[object][attribute][i],tileId)+"</div>";
+                                            buffer += "<div>"+inspectObject(tileArray[object][attribute][i],tileId)+"<button class = 'use' onclick = 'selectedItem = `"+attribute+":"+i+"`;toggleInspect(`"+tileId+"`);createMessage(`dialogue`,`Click On A Target`,2);'>Use</button></div>";
                                         } else {
                                             buffer += "<div>"+inspectObject(tileArray[object][attribute][i],tileId)+"</div>";
 
@@ -902,6 +938,7 @@ confirmationCoordinates = coordinates;
                 return buffer.replace(/<[^/>][^>]*><\/[^>]+>/gim, "")
             }
             function inspectTile(tileId){
+                
                 var tile = toggleInspect(tileId);
                 document.getElementById('inspection').innerHTML = "<button class = 'close' onclick = 'toggleInspect(`"+tileId+"`)'>X</button>";
                 document.getElementById('inspection').innerHTML += inspectObject(tile, tileId);
@@ -984,11 +1021,17 @@ confirmationCoordinates = coordinates;
             }
             var selectedItem = 0;
             function toggleInventory() {
+                document.getElementById('inspection').style.width = "0px";
+                    document.getElementById('inspection').innerHTML = "";
+                    inspecting = false;
                 if (!inventoryOpened) {
-                    inspecting = 0
-                    if (isAction) {
-                    toggleActions(viewRadius+","+viewRadius)
-                    }
+                    
+                   if (activeTile) {
+                    document.getElementById("action").style.height = "0px";
+                     document.getElementById('action').innerHTML = "";
+                    activeTile = 0;
+                    isAction = false;
+                }
                     
                     var player =  currentMap[viewRadius][viewRadius]["Creature"];
                     var inventory = currentMap[viewRadius][viewRadius]["Creature"]["inventory"];

@@ -105,7 +105,7 @@ def is_valid_move(x, y, game_map, creature, move_by_destruct_terrain):
     # 
     if move_by_destruct_terrain:
         terrain = get_object_by_class(game_map[x][y], "Terrain")
-        if terrain and not terrian.passable and not is_destrutible:
+        if terrain and not terrain.passable:
             return False
     else:
         if (get_object_by_class(game_map[x][y],"Terrain") and not get_object_by_class(game_map[x][y],"Terrain").passable):
@@ -115,21 +115,21 @@ def is_valid_move(x, y, game_map, creature, move_by_destruct_terrain):
     #craeture will avoid lava if can't fly
     terrain = get_object_by_class(game_map[x][y], "Terrain")
     is_flying = False
-    if creature.status_effects
-    for effect in creature.status_effects:
-        if effect.status_type and effect.status_type == "Flying":
-            is_flying = True
-    if not is_flying:
-        if terrain and (terrain.name == "Fire" or terrain.name == "Spikes" or terrain.name == "Lava"):
-            return False
+    if creature.status_effects:
+        for effect in creature.status_effects:
+            if effect.status_type and effect.status_type == "Flying":
+                is_flying = True
+        if not is_flying:
+            if terrain and (terrain.name == "Fire" or terrain.name == "Spikes" or terrain.name == "Lava"):
+                return False
             
     return True
 
-def is_destructible(terrian, game_map):
-    if terrian.hp and terrian.hp != 1:
+def is_destructible(terrain, game_map):
+    if terrain.hp and terrain.hp != 1:
         return True
 
-    for resistance in terrian.resistances:
+    for resistance in terrain.resistances:
         if resistance and resistance != 1:
             return True
     return False
