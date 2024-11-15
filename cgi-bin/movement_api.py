@@ -145,7 +145,7 @@ def update_Creature_position(game_map, player_pos):
                     #calculate how many turn will cost the creature to destroy all the terrain in path_destruct_terrain
                     turn_needed = 0 
                     for step in range(len(path_destruct_terrain) - 1):
-                        next_pos = path_destruct_terrain[move_num + 1]
+                        next_pos = path_destruct_terrain[step + 1]
                         terrain = get_object_by_class(game_map[next_pos[0]][next_pos[1]], "Terrain")
                         if terrain:
                             damage = 1 #TODO, calculate the damage did on the terrain
