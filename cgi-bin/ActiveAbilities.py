@@ -5,7 +5,7 @@ import math
 import random
 from abc import abstractmethod
 from GameObject import Weapon
-from SubSystem import lookup_damage_type_id
+from SubSystem import *
 
 #Active ability base classes
 class ActiveAbility:
@@ -40,8 +40,8 @@ class Spell(ActiveAbility):
         for item in caster.equipment:
             if item is not None:
                 equip_weight += item.weight
-        success_chance = (0.75*math.log10(float(self.requirement)))-(0.005*equip_weight)
-        failure_roll = random.random
+        success_chance = (0.75*math.log10(float(lookup_skill_id(self.requirement))))-(0.005*equip_weight)
+        failure_roll = random.random()
         if failure_roll > success_chance:
             return False
         return True
