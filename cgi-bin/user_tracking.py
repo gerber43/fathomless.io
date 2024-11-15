@@ -72,7 +72,7 @@ def a_star(start, goal, game_map, creature, move_by_destruct_terrain):
     return None
 
 #default movement when the creature is not tracking the player
-def default_movement(creature_pos, game_map):
+def default_movement(creature_pos, game_map, creature):
     best_direction = None
     highest_light_level = 0;
 
@@ -81,8 +81,11 @@ def default_movement(creature_pos, game_map):
         new_y = creature_pos[1] + dy
 
         #check if the move is valid
-        if is_valid_move(new_x, new_y, game_map, creature):
-            new_light_level = get_object_by_class(game_map[new_x][new_y], "Light").level
+        new_light_level = 0
+        if is_valid_move(new_x, new_y, game_map, creature, False):
+            for objects in game_map[new_x][new_y]:
+                if objects.name == "Light":
+                    new_light_level = objects.intensity
             # Update if this move takes the creature to a lighter position
             if new_light_level > highest_light_level:
                 highest_light_level = new_light_level
@@ -157,7 +160,7 @@ def find_escape_direction(creature_pos, player_pos, game_map, creature):
         new_y = creature_pos[1] + dy
 
         #check if the move is valid
-        if is_valid_move(new_x, new_y, game_map, creature):
+        if is_valid_move(new_x, new_y, game_map, creature, False):
             # Calculate the distance to the player from the new position
             new_distance = abs(player_pos[0] - new_x) + abs(player_pos[1] - new_y)
             # Update if this move takes the creature farther from the player
