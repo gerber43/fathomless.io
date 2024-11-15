@@ -125,11 +125,11 @@ def is_valid_move(x, y, game_map, creature, move_by_destruct_terrain):
             
     return True
 
-def is_destructible(terrian, game_map):
-    if terrian.hp and terrian.hp != 1:
+def is_destructible(terrain, game_map):
+    if terrain.hp and terrain.hp != 1:
         return True
 
-    for resistance in terrian.resistances:
+    for resistance in terrain.resistances:
         if resistance and resistance != 1:
             return True
     return False
