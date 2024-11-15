@@ -18,6 +18,7 @@ class GameObject:
 class Bottom(GameObject):
       def __init__(self, name, textureIndex, pos):
         super().__init__(name, textureIndex, pos)
+        self.name = "Bottom"
 
 
 class Item(GameObject):
@@ -271,7 +272,7 @@ class Creature(GameObject):
             if probability >= roll:
                 grid[self.pos[0]][self.pos[1]].append(drop_item)
         player.xp += self.xp
-        player.score = self.xp
+        player.score += self.xp
         grid[self.pos[0]][self.pos[1]].remove(self)
 
 class Player(Creature):
@@ -303,6 +304,7 @@ class Player(Creature):
 #support multi-tile creatures
 class CreatureSegment(GameObject):
     def __init__(self, creature, textureIndex, pos, type):
+        print(creature)
         super().__init__(creature.name, textureIndex, pos)
         self.type = type
         self.creature = creature
@@ -540,9 +542,10 @@ class Decor(GameObject):
         pass
 
 class Light(GameObject):
-    def __init__(self, pos, level):
+    def __init__(self, pos, intensity):
         super().__init__("Light", "", pos)
-        self.level = level
+        self.intensity = intensity
+        self.textureIndex = "8"
 
 def spread_light(grid, pos, level, touched_tiles):
     if level == 0:
