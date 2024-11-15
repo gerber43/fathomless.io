@@ -534,6 +534,7 @@ if (file_exists("maps/Test.pkl")) {
           
             .tile .Light {
                 z-index:2;
+                background:#000;
             }
             .tile .Top {
                 z-index:3;
@@ -572,7 +573,6 @@ if (file_exists("maps/Test.pkl")) {
             width:75%;
             height:fit-content;
             color:gold;
-            font-size:20px;
             border:2px burlywood solid;
             background:saddlebrown;
             padding:20px;
@@ -693,8 +693,9 @@ if (file_exists("maps/Test.pkl")) {
                     document.getElementById(activeTile).classList.remove('inspecting');
                 }
                 
-                if ((!isAction || tileId != activeTile) && currentMap[coordinates[0]][coordinates[1]]['Bottom']['textureIndex'] != 8 && (Object.keys(currentMap[coordinates[0]][coordinates[1]]).length > 1)) {
+                if ((!isAction || tileId != activeTile) && currentMap[coordinates[0]][coordinates[1]]['Bottom']['textureIndex'] != 8 && (Object.keys(currentMap[coordinates[0]][coordinates[1]]).length > 2)) {
                     document.getElementById("action").style.height = "100px";
+                     document.getElementById("action").style.fontSize = "20px";
                     var selectedTile = currentMap[coordinates[0]][coordinates[1]];
                     document.getElementById(tileId).classList.add('inspecting');
                     var inspectButton = "<button onclick = 'inspectTile(activeTile);'>Inspect</button>";
@@ -716,6 +717,7 @@ if (file_exists("maps/Test.pkl")) {
                     
                 } else {
                     document.getElementById("action").style.height = "0px";
+                    document.getElementById("action").style.fontSize = "0px";
                      document.getElementById('action').innerHTML = "";
                     activeTile = 0;
                     isAction = false;
@@ -893,7 +895,9 @@ confirmationCoordinates = coordinates;
                             if (object != "textureIndex") {
                                 buffer += "<p>"+object+": "+tileArray[object]+"</p>";
                             } else {
-                                buffer += "<img src = '"+tileObjects[tileArray[object]]['icon']+"'>";
+                                if (tileArray[object] != "8") {
+                                    buffer += "<img src = '"+tileObjects[tileArray[object]]['icon']+"'>";
+                                }
                             }     
                             
                         } else if (typeof tileArray[object] == "object" && tileArray[object] != null && tileArray[object] != "") {
@@ -924,7 +928,9 @@ confirmationCoordinates = coordinates;
                                     if (attribute != "textureIndex") {
                                         buffer += "<p>"+attribute+": "+tileArray[object][attribute]+"</p>";
                                     } else {
+                                        if (tileArray[object][attribute] != "8") {
                                         buffer += "<img src = '"+tileObjects[tileArray[object][attribute]]['icon']+"'>";
+                                        }
                                     }
                                 }
                             });
@@ -938,7 +944,11 @@ confirmationCoordinates = coordinates;
                 return buffer.replace(/<[^/>][^>]*><\/[^>]+>/gim, "")
             }
             function inspectTile(tileId){
-                
+                document.getElementById("action").style.height = "0px";
+                    document.getElementById("action").style.fontSize = "0px";
+                     document.getElementById('action').innerHTML = "";
+                    activeTile = 0;
+                    isAction = false;
                 var tile = toggleInspect(tileId);
                 document.getElementById('inspection').innerHTML = "<button class = 'close' onclick = 'toggleInspect(`"+tileId+"`)'>X</button>";
                 document.getElementById('inspection').innerHTML += inspectObject(tile, tileId);
@@ -974,7 +984,7 @@ confirmationCoordinates = coordinates;
                             applyTexture(object,j+","+i,(currentMap[j][i] && object in currentMap[j][i])?currentMap[j][i][object]:defaults["default"]);});
                     }
                 }
-                lightSource(viewRadius+","+viewRadius,1);
+                //lightSource(viewRadius+","+viewRadius,1);
             }
             function toggleAscii() {
                  document.getElementById("canvas").style.background = (asciiMode)?"":"white";
@@ -1350,7 +1360,7 @@ confirmationCoordinates = coordinates;
                             playerDirection = direction;
                             moveObject(player,direction[0],direction[1]);
                             moveObject(document.getElementById('canvas'),-direction[0],-direction[1]);
-                            setTimeout(() => {lightSource(tileCoordinates[0]+","+tileCoordinates[1],1);}, 100);
+                            //setTimeout(() => {lightSource(tileCoordinates[0]+","+tileCoordinates[1],1);}, 100);
                             
                         }
                         document.body.appendChild(Object.assign(document.createElement('div'),{id:("cover")}));
