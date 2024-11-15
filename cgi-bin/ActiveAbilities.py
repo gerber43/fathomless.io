@@ -6,6 +6,7 @@ import random
 from abc import abstractmethod
 from GameObject import Weapon
 from SubSystem import lookup_damage_type_id
+from Terrain import DeepWater
 
 #Active ability base classes
 class ActiveAbility:
@@ -121,5 +122,16 @@ class ChokingDeep(Spell):
     def use(self, grid, caster, target):
         target.gain_status_effect(grid, "Suffocation", 10, False, True, None)
         super().use(grid, caster, target)
+
+class TidalWave(Spell):
+    def __init__(self):
+        super().__init__("Tidal Wave", "45", 8, 20, 5, "Elementalism")
+    def use(self, grid, caster, target):
+        for i in range(1):
+            for j in range(1):
+                grid[target.pos[0] + i][target.pos[0] + j].append(DeepWater([target.pos[0] + i, target.pos[0] + j]))
+                grid[target.pos[0] - i][target.pos[0] + j].append(DeepWater([target.pos[0] - i, target.pos[0] + j]))
+                grid[target.pos[0] + i][target.pos[0] - j].append(DeepWater([target.pos[0] + i, target.pos[0] - j]))
+                grid[target.pos[0] - i][target.pos[0] - j].append(DeepWater([target.pos[0] - i, target.pos[0] - j]))
 
 #enemy-only techniques

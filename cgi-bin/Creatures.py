@@ -3,16 +3,17 @@ import sys
 import cgi
 import random
 
-from GameObject import Creature, CreatureSegment, Boss, Gold
+from GameObject import Creature, CreatureSegment, Boss, Gold, Unavailable
 from Items import *
 from StatusEffects import Poison, Flight
 from ActiveAbilities import *
+from Enchantment import *
 
 #Piercing, Slashing, Blunt, Fire, Lightning, Water, Cold, Acid, Light, Dark, Necrotic, Arcane, Existence
 basicDamageResistances = (0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0)
 #Bleed, Stun, Burning, Suffocation, Frozen, Blindness, Rot, Manaburn, Nonexistence, Poison, Fear, Confusion, Mindbreak, Midas Curse, Bloodsiphon, Manadrain, Death
 basicStatusResistances = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-#One-Handed Blades, One-Handed Axes, One-Handed Maces, Two-Handed Blades, Two-Handed Axes, Two-Handed Maces, Polearms, Slings, Bows, Elementalism, Cursing, Curse, Enhancement, Transmutation, Summoning, Dual-Wielding, Memory, Search, Hide, Lockpicking, Disarm Trap
+#One-Handed Blades, One-Handed Axes, One-Handed Maces, Two-Handed Blades, Two-Handed Axes, Two-Handed Maces, Polearms, Slings, Bows, Elementalism, Cursing, Enhancement, Transmutation, Summoning, Dual-Wielding, Memory, Search, Hide, Lockpicking, Disarm Trap
 #Right Hand, Left Hand, Head, Torso, Legs, Feet, Hands, Neck, Right Finger, Left Finger
 
 # cave
@@ -43,7 +44,7 @@ class Bandit(Creature):
             shield = None
         super().__init__("Bandit", "22", pos, [], 20, 0, 1, [], 3, 3, 0, 3, 0.25, 10,
                          (5, 5, 5, 0, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 3, 0),
-                         (weapon, shield, None, LeatherCuirass((-1, -1), None), None, None, None, None, None, None), [],
+                         (weapon, shield, None, LeatherCuirass((-1, -1), None), None, LeatherBoots((-1, -1), None), None, None, None, None), [],
                          (0.025, 0.05, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 5), 0.7)), 20, 2)
         if shield is not None:
@@ -108,8 +109,8 @@ class FishmanShaman(Creature):
     def __init__(self, pos):
         super().__init__("Deep One Shaman", "22", pos, [], 25, 50, 1, [], 0, 3, 5, 2, 0.05, 10,
                          (0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0),
-                         (CrusherClaw(), None, None, None, None, None, None, None, None, None), [IceBolt(), ChokingDeep()], (0.2, 0.5, 0.0, -0.5, -0.2, 2.0, 0.9, 0.0, 1.0, 0.5, 0.0, 0.3, 0.0),
-                         (0.9, 0.0, -0.5, 1.0, 0.9, 0.5, 0.0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), [LesserMana((-1, -1), 4)], 0, [[Gold((-1, -1), 7), 0.7], [LesserMana((-1, -1), 1), 0.2]], 40, 4)
+                         (WoodenClub((-1, -1), None), None, None, None, None, None, None, None, None, None), [IceBolt(), ChokingDeep()], (0.2, 0.5, 0.0, -0.5, -0.2, 2.0, 0.9, 0.0, 1.0, 0.5, 0.0, 0.3, 0.0),
+                         (0.9, 0.0, -0.5, 1.0, 0.9, 0.5, 0.0, 0.0, 0.0, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), [LesserMana((-1, -1), 4)], 1, [[Gold((-1, -1), 7), 0.7], [LesserMana((-1, -1), 1), 0.2]], 40, 4)
 
 class CrusherClaw(Weapon):
     def __init__(self):
@@ -138,66 +139,60 @@ class Pirate(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
+            weapon_one = IronShortsword((-1, -1), None)
+            weapon_two = IronShortsword((-1, -1), None)
+            inventory = []
+            inventory_size = 0
+            drop_table = ((Gold((-1, -1), 50), 0.4))
         else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Pirate", "29", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+            weapon_one = OakShortbow((-1, -1), None)
+            weapon_two = Unavailable()
+            inventory = [Arrow((-1, -1), 16), Arrow((-1, -1), 16), Arrow((-1, -1), 16), Arrow((-1, -1), 16)]
+            inventory_size = 4
+            drop_table = ((Gold((-1, -1), 20), 0.4), (Arrow((-1, -1), 4), 0.5))
+        super().__init__("Pirate", "29", pos, [], 30, 0, 1, [], 3, 5, 0, 7, 0.5, 10,
+                         (10, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 5, 0),
+                         (weapon_one, weapon_two, None, None, None, None, None, LeatherBoots((-1, -1), None), None, None), [], (0.01, 0.02, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),
+                         basicStatusResistances, inventory, inventory_size, drop_table, 30, 3)
 
+class DrownedAttack(Weapon):
+    def __init__(self):
+        super().__init__("", "17", (-1, -1), 0, 0, 0, "One-Handed Mace", 1, 3,
+                         [(lookup_damage_type_id("Blunt"), 3, 0)], [], None)
 # cove
 class Drowned(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Drowned", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Drowned", "22", pos, [], 100, 0, 1, [], 10, 0, 0, 1, 0.05, 10,
+                         (3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (DrownedAttack(), None, None, None, None, None, None, None, None, None), [], (0.0, 0.0, 0.0, -0.5, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, -0.5),
+                         (1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, -0.25, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0), [], 0, (), 20, 2)
 
 # cove
 class DrownedSailor(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Drowned Sailor", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("DrownedSailor", "22", pos, [], 100, 0, 1, [], 10, 0, 0, 1, 0.05, 10,
+                         (3, 3, 3, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (IronHatchet([-1, -1], None), None, None, None, None, LeatherBoots([-1, -1], None), None, None, None, None), [], (0.0, 0.0, 0.0, -0.5, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, -0.5),
+                         (1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, -0.25, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0), [], 0, (), 25, 2)
+
 
 # cove
 class DrownedPirate(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Drowned Pirate", "30", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("DrownedSailor", "22", pos, [], 100, 0, 1, [], 10, 0, 0, 1, 0.05, 10,
+                         (3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0),
+                         (IronShortsword([-1, -1], None), IronShortsword([-1, -1], None), None, None, None, LeatherBoots([-1, -1], None), None, None, None, None), [], (0.01, 0.02, 0.0, -0.5, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, -0.5),
+                         (1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, -0.25, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0), [], 0, (), 40, 3)
 
 
 # boss in cove 2
 class DrownedCaptain(Boss):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Drowned Captain", "31", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
-                         (weapon, None, None, None, None, None, None, None, None, None),
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
-                         basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Drowned Captain", "31", pos, [], 150, 100, 1, [], 15, 5, 10, 10, 0.25,
+                         (SteelShortsword([-1, -1], Chilling()), SteelShortsword([-1, -1], Decay()), None, None, None, LeatherBoots([-1, -1], None), None, None, None, None),
+                         (15, 15, 0, 0, 0, 0, 0, 0, 0, 10, 10, 0, 0, 0, 0, 0, 10, 0, 2, 0, 5, 0), [ChokingDeep(), TidalWave()],
+                         (0.01, 0.02, 0.0, -0.5, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, -0.5),
+                         (1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, -0.25, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0), [], 0, [SteelShortsword([-1, -1], Chilling()), SteelShortsword([-1, -1], Decay())], 200, 10)
 
 # Mine and Corruptite Mine
 class GoblinMiner(Creature):

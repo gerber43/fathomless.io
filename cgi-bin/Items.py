@@ -220,6 +220,107 @@ class OakLongbow(TwoHandedWeapon):
     def on_unequip(self, grid, equipped_creature):
         super().on_unequip(grid, equipped_creature)
 
+#Tier 2 Weapons
+
+class SteelDagger(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Iron Dagger", "17", pos, 5, 50, 1, "One-Handed Blade", 1, 3,
+                         [(lookup_damage_type_id("Piercing"), 6, 1)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class SteelShortsword(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Iron Shortsword", "17", pos, 5, 100, 3, "One-Handed Blade", 1, 1.5,
+                         [(lookup_damage_type_id("Slashing"), 10, 2)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class SteelGreatsword(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Iron Greatsword", "17", pos, 5, 300, 10, "Two-Handed Blade", 1, 2,
+                         [(lookup_damage_type_id("Slashing"), 20, 4)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class SteelAxe(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Iron Hatchet", "17", pos, 5, 100, 5, "One-Handed Axe", 1, 1.75,
+                         [(lookup_damage_type_id("Slashing"), 10, 4)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class SteelGreataxe(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Iron Greataxe", "17", pos, 5, 300, 15, "Two-Handed Axe", 1, 2.25,
+                         [(lookup_damage_type_id("Slashing"), 20, 8)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class SteelMace(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Wooden Club", "43", pos, 5, 50, 15, "One-Handed Mace", 1, 1.5,
+                         [(lookup_damage_type_id("Blunt"), 10, 0)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class SteelGreatmaul(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Wooden Club", "17", pos, 5, 50, 20, "Two-Handed Mace", 1, 1.25,
+                         [(lookup_damage_type_id("Blunt"), 20, 0)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class SteelSpear(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Iron Spear", "17", pos, 5, 150, 5, "Polearm", 2, 1.25,
+                         [(lookup_damage_type_id("Piercing"), 6, 1)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class SteelHalberd(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Iron Halberd", "17", pos, 5, 300, 15, "Polearm", 2, 1.25,
+                         [(lookup_damage_type_id("Piercing"), 10, 1), (lookup_damage_type_id("Slashing"), 5, 4)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class YewShortbow(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Oak Shortbow", "17", pos, 5, 150, 3, "Bow", 5, 2,
+                         [(lookup_damage_type_id("Piercing"), 10, 2)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class YewLongbow(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Oak Longbow", "17", pos, 5, 300, 7, "Bow", 9, 2,
+                         [(lookup_damage_type_id("Piercing"), 10, 2)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
 #level 1 armor
 
 class WoodenBuckler(Equippable):
@@ -252,6 +353,37 @@ class LeatherCuirass(Equippable):
         super().on_unequip(grid, equipped_creature)
         (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.025
         (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.05
+
+
+class LeatherSkullcap(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Leather Skullcap", "42", pos, 2, 5, 3, "Head", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.01
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.02
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.01
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.02
+
+class LeatherBoots(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Leather Boots", "42", pos, 2, 5, 3, "Feet", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.01
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.02
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.01
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.02
 
 #scrolls
 
