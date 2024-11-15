@@ -409,7 +409,10 @@ def generateMap(width, height, depth, num_creatures, player, num_items):
     place_items(final_grid, num_items, int(depths[0]))
     for i in range(len(final_grid)):
         for j in range(len(final_grid[i])):
-            final_grid[i][j].append(Bottom("Floor", 1,(-1,-1)))
+            final_grid[i][j].append(Bottom("Bottom", 1,(j,i)))
+            
+            final_grid[i][j].append(Light((j,i),.4))
+            
             for k in range(len(final_grid[i][j])):
                 if k < len(final_grid[i][j]) and isinstance(final_grid[i][j][k], EmptySpace):
                     del final_grid[i][j][k]
