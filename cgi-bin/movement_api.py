@@ -5,11 +5,11 @@ import cgi
 import os
 import pickle
 from map_simplifier import delete_blank_object
-from user_tracking import a_star, find_escape_direction
+from user_tracking import *
 from GameObject import *
 from Creatures import Goblin
 from MasterGenerator import generateMap
-from Terrain import Wall, Pit, Water, Fire, Spikes, EmptySpace
+from Terrain import *
 from Decor import Corpse
 from Races import *
 import Enchantment
@@ -116,12 +116,12 @@ def update_Creature_position(game_map, player_pos):
             if Creature and not isinstance(Creature, Player) and Creature not in moved_Creatures:
                 #if the creture is unable to detect the player, skip the tracking
                 if not is_player_avalible(player_pos, player, Creature):
-                    '''
-                    direction = default_movement((x, y), game_map)
+                    
+                    direction = default_movement((x, y), game_map, Creature)
                     if direction is not None:
                         current_pos = (x, y)
                         current_pos, message = process_Creature_movement(current_pos, direction, game_map)
-                    moved_Creatures.append(Creature)'''
+                    moved_Creatures.append(Creature)
                     continue  # Move to the next creature
                 
                 #if the creature's attack range is greater than player's, and the creature is in the player's attack range, it will move away from player
@@ -170,26 +170,31 @@ def update_Creature_position(game_map, player_pos):
                             path_counter += 1
                     moved_Creatures.append(Creature)
                     
-                '''   
+                  
                 # Perform default movement if no other action is taken
                 else:
-                    direction = default_movement((x, y), game_map)
+                    direction = default_movement((x, y), game_map, Creature)
                     if direction is not None:
                         current_pos = (x, y)
                         current_pos, message = process_Creature_movement(current_pos, direction, game_map)
-                    moved_Creatures.append(Creature)'''
+                    moved_Creatures.append(Creature)
                     
 #helper funtion to check if the creature can detect the player
 def is_player_avalible(player_pos, Player, Creature):
-    Light = get_object_by_class(game_map[player_pos[0]][player_pos[1]], "Light")
-    #if the Player's current position have 0 light level, The creature can't detect The player
+    Light = None
+    for objects in game_map[player_pos[0]][player_pos[1]]:
+        if objects.name == "Light":
+            Light = objects
+            break
+    #if the Player's current position have 0 light intensity, The creature can't detect The player
     
     if Light:
-        if Light.level == 0:
+        if Light.intensity == 0:
             return False
 
         #if the Player's stealth skills is greater than the Creature's perception * Light lvel, Creature can't detect The player
-        if Creature.perception * Light.level < Player.Skills[19]:
+        
+        if Creature.perception * Light.intensity < Player.skills[19]:
             return False
 
     #otherwise, creature can detect the player
@@ -242,11 +247,17 @@ def get_map_subset(player_pos, game_map, fov_radius):
             if i < 0 or i >= x_max or j < 0  or j >= y_max:
                 row_subset.append(blank_tile)
             else:
-                
+                bottomTexture = 0
+                for objects in game_map[i][j]:
+                    if objects.name == "Bottom":
+                        bottomTexture = objects.textureIndex
+                        del objects
+                        break;
                 internalGrid = {gameObject.__class__.__base__.__name__.capitalize(): gameObject.__dict__ for gameObject in game_map[i][j]}
                 if (internalGrid.get('Gameobject') is not None):
-                    internalGrid['Bottom'] = internalGrid['Gameobject']
+                    internalGrid['Light'] = internalGrid['Gameobject']
                     del internalGrid['Gameobject']
+                    internalGrid['Bottom'] = {"textureIndex":bottomTexture}
 
                 
                 
@@ -311,9 +322,12 @@ def get_map_subset(player_pos, game_map, fov_radius):
                                 if (hasattr(internalGrid['Creature']['drop_table'][k], 'status_effect')):
                                     
                                     internalGrid['Creature']['drop_table'][k].status_effect = internalGrid['Creature']['drop_table'][k].status_effect.__dict__
-                                #print(internalGrid['Creature']['drop_table'][k])
-                                internalGrid['Creature']['drop_table'][k] = internalGrid['Creature']['drop_table'][k].__dict__
-                        
+                                if (type(internalGrid['Creature']['drop_table'][k]) == type([])):
+                                    for drop in range(len(internalGrid['Creature']['drop_table'][k])):
+                                        if type(internalGrid['Creature']['drop_table'][k][drop]) != type(.7):
+                                            internalGrid['Creature']['drop_table'][k][drop] = internalGrid['Creature']['drop_table'][k][drop].__dict__
+                                else:
+                                     internalGrid['Creature']['drop_table'][k] = internalGrid['Creature']['drop_table'][k].__dict__
                 row_subset.append(internalGrid)
         map_subset.append(row_subset)
     
@@ -356,7 +370,11 @@ def process_attack_to_terrain(attacker, terrain):
     
     global game_map
     beforeHp = terrain.hp
-    attacker.basic_attack(game_map, terrain)
+    #attacker.basic_attack(game_map, terrain)
+    terrain.hp -= 20 
+    #temp terrain interaction
+    
+    
     damage = beforeHp - terrain.hp
     # reduce terrain's hp
     if (damage > 0):
@@ -366,7 +384,7 @@ def process_attack_to_terrain(attacker, terrain):
         game_log += attacker.name +" @ "+str(((attacker.pos)))+" Attacked "+terrain.name +" @ "+str((terrain.pos))+" For "+str(damage)+"\n"
     
         #check did the creature dead
-        if target.hp <= 0:
+        if terrain.hp <= 0:
             #TODO, remove terrain from the spot
             return "terrain destoyed"     
         return "terrain hit"
