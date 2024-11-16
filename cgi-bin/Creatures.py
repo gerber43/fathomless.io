@@ -5,14 +5,15 @@ import random
 
 from GameObject import Creature, CreatureSegment, Boss, Gold, Unavailable
 from Items import *
-from StatusEffects import Poison, Flight
+from StatusEffects import Poison, Flight, Regeneration
 from ActiveAbilities import *
 from Enchantment import *
+from Terrain import Wall
 
 #Piercing, Slashing, Blunt, Fire, Lightning, Water, Cold, Acid, Light, Dark, Necrotic, Arcane, Existence
-basicDamageResistances = (0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0)
+basicDamageResistances = [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
 #Bleed, Stun, Burning, Suffocation, Frozen, Blindness, Rot, Manaburn, Nonexistence, Poison, Fear, Confusion, Mindbreak, Midas Curse, Bloodsiphon, Manadrain, Death
-basicStatusResistances = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+basicStatusResistances = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 #One-Handed Blades, One-Handed Axes, One-Handed Maces, Two-Handed Blades, Two-Handed Axes, Two-Handed Maces, Polearms, Slings, Bows, Elementalism, Cursing, Enhancement, Transmutation, Summoning, Dual-Wielding, Memory, Search, Hide, Lockpicking, Disarm Trap
 #Right Hand, Left Hand, Head, Torso, Legs, Feet, Hands, Neck, Right Finger, Left Finger
 
@@ -54,7 +55,7 @@ class Bandit(Creature):
 #cave
 class Ogre(Creature):
     def __init__(self, pos):
-        super().__init__("Ogre", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 50, 0, 1, [], 7, 0, 0, 0.0, 0.05, 10,
+        super().__init__("Ogre", "22", pos, [CreatureSegment(self, "22", (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, "22", (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, "22", (pos[0] + 1, pos[1] + 1), "Static")], 50, 0, 1, [], 7, 0, 0, 0, 0.05, 10,
                          (0, 0, 5, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
                          (WoodenGreatclub((-1, -1), None), None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, [], 50, 3)
@@ -170,19 +171,19 @@ class Drowned(Creature):
 # cove
 class DrownedSailor(Creature):
     def __init__(self, pos):
-        super().__init__("DrownedSailor", "22", pos, [], 100, 0, 1, [], 10, 0, 0, 1, 0.05, 10,
+        super().__init__("Drowned Sailor", "22", pos, [], 100, 0, 1, [], 10, 0, 0, 1, 0.05, 10,
                          (3, 3, 3, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
                          (IronHatchet([-1, -1], None), None, None, None, None, LeatherBoots([-1, -1], None), None, None, None, None), [], (0.0, 0.0, 0.0, -0.5, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, -0.5),
-                         (1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, -0.25, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0), [], 0, (), 25, 2)
+                         (1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, -0.25, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0), [], 0, [[Gold([-1, -1], 20), 0.3]], 25, 2)
 
 
 # cove
 class DrownedPirate(Creature):
     def __init__(self, pos):
-        super().__init__("DrownedSailor", "22", pos, [], 100, 0, 1, [], 10, 0, 0, 1, 0.05, 10,
+        super().__init__("Drowned Pirate", "22", pos, [], 100, 0, 1, [], 10, 0, 0, 1, 0.05, 10,
                          (3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0),
                          (IronShortsword([-1, -1], None), IronShortsword([-1, -1], None), None, None, None, LeatherBoots([-1, -1], None), None, None, None, None), [], (0.01, 0.02, 0.0, -0.5, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, -0.5),
-                         (1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, -0.25, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0), [], 0, (), 40, 3)
+                         (1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, -0.25, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0), [], 0, [[Gold([-1, -1], 50), 0.4]], 40, 3)
 
 
 # boss in cove 2
@@ -194,57 +195,71 @@ class DrownedCaptain(Boss):
                          (0.01, 0.02, 0.0, -0.5, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, -0.5),
                          (1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, -0.25, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0), [], 0, [SteelShortsword([-1, -1], Chilling()), SteelShortsword([-1, -1], Decay())], 200, 10)
 
+class IronPickaxe(Weapon):
+    def __init__(self, pos):
+        super().__init__("Iron Pickaxe", "17", pos, 1, 0, 0, "One-Handed Axe", 1, 2,
+                         [[lookup_damage_type_id("Piercing"), 5, 1]], [], None)
+
 # Mine and Corruptite Mine
 class GoblinMiner(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Goblin Miner", "32", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
+        super().__init__("Goblin Miner", "32", pos, [], 10, 0, 1, [], 1, 5, 0, 4, 0.5, 10,
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+                         (IronPickaxe([-1, -1]), None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
+                         basicStatusResistances, [], 0, [[Gold([-1, -1], 7), 0.7], [IronPickaxe([-1, -1]), 0.1]], 15, 1)
+
+class GoblinMinerAddict(Creature):
+    def __init__(self, pos):
+        super().__init__("Goblin Miner", "32", pos, [], 10, 0, 1, [], 1, 5, 0, 4, 0.5, 10,
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         (IronPickaxe([-1, -1]), None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
+                         basicStatusResistances, [Corruptite([-1, -1], 5)], 1, [[Gold([-1, -1], 7), 0.7], [IronPickaxe([-1, -1]), 0.1], [Corruptite([-1, -1], 2)], 0.2], 15, 1)
+
+class SteelPickaxe(Weapon):
+    def __init__(self, pos):
+        super().__init__("Steel Pickaxe", "17", pos, 1, 0, 0, "One-Handed Axe", 1, 2,
+                         [[lookup_damage_type_id("Piercing"), 10, 1]], [], None)
 
 # Mine and Corruptite Mine
 class HobgoblinMiner(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Hobgoblin Miner", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
+        super().__init__("Hobgoblin Miner", "22", pos, [], 30, 0, 1, [], 3, 5, 0, 4, 0.5, 10,
                          (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+                         (SteelPickaxe([-1, -1]), None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
+                         basicStatusResistances, [], 0, [[Gold([-1, -1], 12), 0.7], [SteelPickaxe([-1, -1]), 0.1]], 45, 3)
+
+class HobgoblinMinerAddict(Creature):
+    def __init__(self, pos):
+        super().__init__("Hobgoblin Miner", "22", pos, [], 30, 0, 1, [], 3, 5, 0, 4, 0.5, 10,
+                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         (SteelPickaxe([-1, -1]), None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
+                         basicStatusResistances, [Corruptite([-1, -1], 5)], 1, [[Gold([-1, -1], 12), 0.7], [SteelPickaxe([-1, -1]), 0.1], [[Corruptite([-1, -1], 2)], 0.2]], 45, 3)
+
+class RockwormJaws(Weapon):
+    def __init__(self, ):
+        super().__init__("Jaws", "33", [-1, -1], 0, 0, 0, "One-Handed Mace", 1, 1.25, [[lookup_damage_type_id("Piercing"), 10, 3], [lookup_damage_type_id("Blunt"), 10, 0]], [], None)
 
 # Mine and Corruptite Mine
 class RockWorm(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Tunneler", "33", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Tunneler", "33", pos, [CreatureSegment(self, "33", (pos[0] + 1, pos[1]), "Fluid"), CreatureSegment(self, "33", (pos[0], pos[1] + 1), "Fluid"), CreatureSegment(self, "33", (pos[0] + 1, pos[1] + 1), "Fluid")], 50, 0, 1, [], 5, 2, 0, 0, 0.2, 999,
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                         [RockwormJaws, None, None, None, None, None, None, None, None, None], [], [0.5, 0.9, 0.0, 0.7, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.3, 0.0, 0.0],
+                         [0.7, 0.9, 0.7, 1.0, 0.0, 1.0, 0.2, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0], [], 0, [], 50, 5)
+    def basic_attack(self, grid, target):
+        if isinstance(target, Wall):
+            grid[target.pos[0]][target.pos[1]].remove(target)
+            return
+        if self.basic_attack_hit_check(grid, 5, False, target):
+            self.basic_attack_damage(grid, RockwormJaws(), target, self.crit_check(grid))
 
 # Mine and Corruptite Mine
 class Troll(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Troll", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Troll", "22", pos, [CreatureSegment(self, "22", (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, "22", (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, "22", (pos[0] + 1, pos[1] + 1), "Static")], 75, 0, 1, [Regeneration(5, True)], 12, 0, 0, 0, 0.05, 10,
+                         [0, 0, 7, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                         (WoodenGreatclub((-1, -1), None), None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
+                         basicStatusResistances, [], 0, [], 80, 5)
 
 # Corruptite Mine
 class CorruptWorm(Creature):

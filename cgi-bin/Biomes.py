@@ -39,9 +39,9 @@ class Mine(Biome):
 class CorruptiteMine(Biome):
     def __init__(self):
         super().__init__("Cave&Complex", "Wall", "Stair",
-                         ["GoblinMiner", "HobgoblinMiner", "RockWorm", "Troll", "CorruptWorm", "CorruptTroll"],
+                         ["GoblinMinerAddict", "HobgoblinMinerAddict", "RockWorm", "Troll", "CorruptWorm", "CorruptTroll"],
                          [20, 10, 5, 5, 10, 10],
-                         ["Door", "Pit", "Rock", "Deposit", "Corruptite", "StandingTorch"],
+                         ["Door", "Pit", "Rock", "Deposit", "CorruptiteCluster", "StandingTorch"],
                          [20, 2, 10, 1, 1, 3],
                          2, [(2, "Mine", 4)],
                          "CorruptBehemoth", 2)
