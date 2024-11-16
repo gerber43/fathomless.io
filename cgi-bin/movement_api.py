@@ -123,14 +123,20 @@ def update_Creature_position(game_map, player_pos):
                         current_pos, message = process_Creature_movement(current_pos, direction, game_map)
                     moved_Creatures.append(Creature)
                     continue  # Move to the next creature
+                    
+                # Get creature and player attack ranges safely
+                
+                creature_range = getattr(Creature.equipment[0], 'range', 1)
+                player_range = getattr(player.equipment[0], 'range', 1)
                 
                 #if the creature's attack range is greater than player's, and the creature is in the player's attack range, it will move away from player
                 
-                if int((Creature.equipment[0]).range) > int((player.equipment[0]).range) and manhattan <= int((player.equipment[0]).range):
+                if creature_range > player_range and manhattan <= player_range:
                     current_pos = (x,y)
                     for move_num in range(Creature.speed):
                         direction = find_escape_direction((x, y), player_pos, game_map, Creature)
-                        current_pos, message = process_Creature_movement(current_pos, direction, game_map)
+                        if direction is not None:
+                            current_pos, message = process_Creature_movement(current_pos, direction, game_map)
                     moved_Creatures.append(Creature)
             
                 #if player is in the creature's attack range, creature will attack player
@@ -142,32 +148,35 @@ def update_Creature_position(game_map, player_pos):
                 elif manhattan <= check:
                     path_avoid_terrain = a_star((x, y), player_pos, game_map, Creature, False)
                     path_destruct_terrain = a_star((x, y), player_pos, game_map, Creature, True)
-                    #calculate how many turn will cost the creature to destroy all the terrain in path_destruct_terrain
+                    cost_avoid = len(path_avoid_terrain) - 1 if path_avoid_terrain else float('inf')
+                    cost_destruct = calculate_destruct_path_cost(path_destruct_terrain, Creature, game_map) if path_destruct_terrain else float('inf')
                     turn_needed = 0 
-                    for step in range(len(path_destruct_terrain) - 1):
-                        next_pos = path_destruct_terrain[step + 1]
-                        terrain = get_object_by_class(game_map[next_pos[0]][next_pos[1]], "Terrain")
-                        if terrain:
-                            damage = 1 #TODO, calculate the damage did on the terrain
-                            turn_needed += (terrain.hp / damage)
-                    if ((len(path_destruct_terrain) - 1) + turn_needed) * 2 < len(path_avoid_terrain) - 1:
+
+                    if cost_destruct < cost_avoid:
                         path = path_destruct_terrain
                     else:
                         path = path_avoid_terrain
                     
                     if not path or len(path) < 2:
                         continue
+                        
                     current_pos = (x, y)
-                    path_counter = min(Creature.speed, len(path) - 1)
-                    for move_num in range(min(Creature.speed, len(path) - 1)):
-                        next_pos = path[path_counter + 1]
+                    path_index = 1  # Start from the next position in the path
+                    moves_remaining = Creature.speed
+
+                    while moves_remaining > 0 and path_index < len(path):
+                        next_pos = path[path_index]
                         next_terrain = get_object_by_class(game_map[next_pos[0]][next_pos[1]], "Terrain")
                         if next_terrain and not next_terrain.passable:
                             process_attack_to_terrain(Creature, next_terrain)
+                            moves_remaining -= 1    # Spent a turn attacking
                         else:
-                            direction = get_direction_from_step(current_pos, next_pos)  # Get direction for the move
+                            direction = get_direction_from_step(current_pos, next_pos)
+                            if direction is not None:
                             current_pos, message = process_Creature_movement(current_pos, direction, game_map)
-                            path_counter += 1
+                            current_pos = next_pos  # Update current position
+                            path_index += 1
+                            moves_remaining -= 1
                     moved_Creatures.append(Creature)
                     
                   
@@ -178,6 +187,22 @@ def update_Creature_position(game_map, player_pos):
                         current_pos = (x, y)
                         current_pos, message = process_Creature_movement(current_pos, direction, game_map)
                     moved_Creatures.append(Creature)
+
+#helper funtion to caculate the the turn needed for path of destroying terrain
+def calculate_destruct_path_cost(path, creature, game_map):
+    total_cost = 0
+    for i in range(len(path) - 1):
+        next_pos = path[i + 1]
+        terrain = get_object_by_class(game_map[next_pos[0]][next_pos[1]], "Terrain")
+        if terrain and not terrain.passable:
+            damage = 1 #TODO, temporary damge, need to be implement later
+            if damage <= 0:
+                # Creature cannot damage the terrain
+                return float('inf')
+            turns_to_destroy = math.ceil(terrain.hp / damage)
+            total_cost += turns_to_destroy
+    total_cost += len(path) - 1
+    return total_cost
                     
 #helper funtion to check if the creature can detect the player
 def is_player_avalible(player_pos, Player, Creature):
@@ -385,8 +410,8 @@ def process_attack_to_terrain(attacker, terrain):
     
         #check did the creature dead
         if terrain.hp <= 0:
-            #TODO, remove terrain from the spot
-            return "terrain destoyed"     
+            game_map[terrain.pos[0]][terrain.pos[1]].remove(terrain)
+            return "terrain destoyed"
         return "terrain hit"
     else:
         return "terrain missed"
