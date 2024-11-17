@@ -69,7 +69,7 @@ def a_star(start, goal, game_map, creature, move_by_destruct_terrain):
                 heapq.heappush(open_set, (f_score[neighbor_position], neighbor_node))
             
     # no path found
-    return None
+    return []
 
 #default movement when the creature is not tracking the player
 def default_movement(creature_pos, game_map, creature):
