@@ -207,7 +207,7 @@ def place_staircase(grid, traversable_path,depth):
         stairs.hp = depth
         grid[y][x].append(stairs)
 
-def place_items(grid, num_items, depth):
+def place_items_with_biome(grid, biome, num_items):
     width = len(grid[0])
     height = len(grid)
     for _ in range(num_items):
@@ -215,8 +215,10 @@ def place_items(grid, num_items, depth):
             x = random.randint(0, width - 1)
             y = random.randint(0, height - 1)
             if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Item) for obj in grid[y][x]):
-                item = random_item((y, x), depth)
-                grid[y][x].append(item) 
+                # Use biome's random_other method to generate an item
+                item = biome.random_other((y, x))
+                if item and not isinstance(item, (Door, Pit)): 
+                    grid[y][x].append(item)
                 break
 
 def place_decor(grid, biome, width, height):
@@ -406,7 +408,7 @@ def generateMap(width, height, depth, num_creatures, player, num_items):
     
     place_staircase(final_grid, final_traversable_grid,depth)
     place_player(final_grid, player, final_traversable_grid)
-    place_items(final_grid, num_items, int(depths[0]))
+    place_items_with_biome(final_grid, current_biome, num_items)
     for i in range(len(final_grid)):
         for j in range(len(final_grid[i])):
             final_grid[i][j].append(Bottom("Bottom", 1,(j,i)))
