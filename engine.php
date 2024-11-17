@@ -700,13 +700,19 @@ if (file_exists("maps/Test.pkl")) {
                     document.getElementById(tileId).classList.add('inspecting');
                     var inspectButton = "<button onclick = 'inspectTile(activeTile);'>Inspect</button>";
                     var attackButton = "<button onclick = 'directionHandler([parseInt(activeTile.split(`,`)[0]),parseInt(activeTile.split(`,`)[1])]);toggleActions(activeTile);'>Attack</button>";
-                    var moveButton = "<button onclick = 'directionHandler([parseInt(activeTile.split(`,`)[0]),parseInt(activeTile.split(`,`)[1])]);toggleActions(activeTile);'>Move</button>";
-                    var interactButton = "<button onclick = 'directionHandler([parseInt(activeTile.split(`,`)[0]),parseInt(activeTile.split(`,`)[1])]);toggleActions(activeTile);'>Interact</button>";
+                    var moveButton = "<button onclick = 'directionHandler([parseInt(activeTile.split(`,`)[0]),parseInt(activeTile.split(`,`)[1])]);toggleActions(activeTile);'>"+((currentMap[coordinates[0]][coordinates[1]]['Terrain'])?"Destroy":"Move")+"</button>";
+                    var interactButton = "<button onclick = 'sendRequest(`?interact=`+(parseInt(activeTile.split(`,`)[0]))+`,`+(parseInt(activeTile.split(`,`)[1])));toggleActions(activeTile);'>Interact</button>";
+
                     if (currentMap[coordinates[0]][coordinates[1]]['Bottom']['textureIndex'] != 8) {
                     document.getElementById('action').innerHTML = inspectButton;
                         if (document.getElementById(tileId).dataset.manhattan == 1) {
                             document.getElementById('action').innerHTML += moveButton;
+                            if (currentMap[coordinates[0]][coordinates[1]]['Decor']) {
+                             document.getElementById('action').innerHTML += interactButton;
                         }
+                        }
+                        
+                       
                     }
 
                     activeTile = tileId;
@@ -850,7 +856,7 @@ confirmationCoordinates = coordinates;
                         
                         
                         
-                        if ((!target["Terrain"] && target["Bottom"]['textureIndex'] != "8") || (target["Terrain"] && target["Terrain"]["passable"]) || (target["Terrain"] && !target["Terrain"]["passable"] && target["Decor"])) {
+                        if ((!target["Terrain"] && target["Bottom"]['textureIndex'] != "8") || (target["Terrain"] && !target["Terrain"]["passable"] && target["Decor"]) || target["Terrain"]) {
                             return true
                         }
                     }
@@ -1207,7 +1213,7 @@ confirmationCoordinates = coordinates;
                 var gameOver = 0
 
                 response["turn_log"].forEach((update) => {
-                    if (update['type'] == "attack") {
+                    if (update['type'] == "attack" &&update['after'] && update['before']) {
                         applyEffects(document.getElementById((update['after'][0]+playerDirection[0])+","+(update['after'][1]+playerDirection[1])).querySelector(".Top"),"damaged",.2)
                         if (update['after'][0] == viewRadius && update['after'][1] == viewRadius) {
                             playerDamage -= update['amount'];
@@ -1353,7 +1359,7 @@ confirmationCoordinates = coordinates;
                                 player.style.backgroundImage = 'url("'+tileObjects[39]['icon']+'")';
                             }
                         playerDirection = [0,0]
-                        if (!currentMap[tileCoordinates[0]][tileCoordinates[1]]["Creature"] && ((currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"] && currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"]["passable"]) || !currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"])) {
+                        if (!currentMap[tileCoordinates[0]][tileCoordinates[1]]["Creature"] && (!currentMap[tileCoordinates[0]][tileCoordinates[1]]["Terrain"] || (currentMap[tileCoordinates[0]][tileCoordinates[1]]["Terrain"] && currentMap[tileCoordinates[0]][tileCoordinates[1]]["Terrain"]['passable'])) && (!currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"] || (currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"] && currentMap[tileCoordinates[0]][tileCoordinates[1]]["Decor"]["passable"]))) {
                             
                             
 
