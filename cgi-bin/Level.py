@@ -33,8 +33,8 @@ class Biome:
         creature_name = random.choices(self.creature_spawns, self.creature_weights)
         return eval(creature_name)(pos)
     def random_other(self, pos):
-        creature_name = random.choices(self.creature_spawns, self.creature_weights)
-        return eval(creature_name)(pos)
+        other_name = random.choices(self.other_spawns, self.other_weights)[0]
+        return eval(other_name)(pos)
 
 class Level:
     def __init__(self, depth, biome):
