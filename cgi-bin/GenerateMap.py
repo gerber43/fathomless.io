@@ -8,7 +8,6 @@ from Items import *
 from Biomes import *
 
 
-temp_biome = TempBiome()
 caves = Caves()
 cove = Cove()
 mine = Mine()
@@ -216,17 +215,21 @@ def place_items_with_biome(grid, biome, num_items):
             y = random.randint(0, height - 1)
             if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Item) for obj in grid[y][x]):
                 # Use biome's random_other method to generate an item
-                item = biome.random_other((y, x))
+                item = biome.random_other()
+                item = eval(item)((y,x))
                 if item and not isinstance(item, (Door, Pit)): 
                     grid[y][x].append(item)
                 break
 
 def place_decor(grid, biome, width, height):
-        decor_spawns = biome.decor_spawns
+        other_spawns = biome.other_spawns
+        other_weights = biome.other_weights
         for y in range(height):
             for x in range(width):
                 if any(isinstance(obj, EmptySpace) for obj in grid[y][x]):
-                    for decor_type, probability in decor_spawns.items():
+                    for i in range(len(other_spawns)):
+                        decor_type = other_spawns[i]
+                        probability = other_weights[i]
                         if random.random() < probability:
                             decor_class = globals().get(decor_type)  
                             if decor_class:
