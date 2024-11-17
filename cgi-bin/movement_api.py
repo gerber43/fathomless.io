@@ -52,6 +52,8 @@ def get_object_by_class(tile,className):
     
 # Function to process Creature's movement
 def process_Creature_movement(position, direction, game_map):
+    global turn_log 
+    global game_log 
     x, y = position
     if direction == 0:  # Move right
         new_x, new_y = x + 1, y
@@ -65,13 +67,26 @@ def process_Creature_movement(position, direction, game_map):
         return position, "Invalid direction"
     # Validate the new position
     if not is_valid_move(new_x, new_y, game_map):
+        if (get_object_by_class(game_map[new_x][new_y],"Terrain") and get_object_by_class(game_map[position[0]][position[1]],"Player")):
+            terrain = get_object_by_class(game_map[new_x][new_y],"Terrain")
+            attacker = get_object_by_class(game_map[position[0]][position[1]],"Player")
+            damage = terrain.hp
+            terrain.hp -= 20
+            damage = damage - terrain.hp
+            
+            turn_log.append({"type":"attack","before":get_relative_tile(attacker.pos),"after":get_relative_tile(terrain.pos),"amount":damage})
+            game_log += attacker.name +" @ "+str(((attacker.pos)))+" Attacked "+terrain.name +" @ "+str((terrain.pos))+" For "+str(damage)+"\n"
+            if terrain.hp <= 0:
+                game_map[terrain.pos[0]][terrain.pos[1]].remove(terrain)
+                game_log += attacker.name +" @ "+str(((attacker.pos)))+" Destroyed "+terrain.name +" @ "+str((terrain.pos))+"\n"
+
+                return position, "terrain destoyed"
+            return position, "terrain hit"
         return position, "You cannot move here"  # Invalid move
     
     # Update the Creature's position in the map
     
     message = "Creature has moved"
-    global turn_log
-    global game_log
     creatureType = "Creature"
     if (get_object_by_class(game_map[x][y],creatureType) == None):
         creatureType = "Player"
@@ -460,7 +475,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
       difficulty = HTTP_FIELDS.getvalue('difficulty') if (HTTP_FIELDS.getvalue('difficulty')) else "Easy"
       race = HTTP_FIELDS.getvalue('race') if (HTTP_FIELDS.getvalue('race')) else None
       name = HTTP_FIELDS.getvalue('name') if (HTTP_FIELDS.getvalue('name')) else "Name"
-
+      interact = HTTP_FIELDS.getvalue('interact') if (HTTP_FIELDS.getvalue('interact')) else None
 
 
       levelUp = HTTP_FIELDS.getvalue('levelUp') if (HTTP_FIELDS.getvalue('levelUp')) else None
@@ -491,7 +506,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
     # Process player's movement
       message = None
       player_pos = find_player_position(game_map)
-     
+      
       if (attack != None):
           target_coordinates = get_target_tile(attack)
           player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player")
@@ -505,7 +520,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
           elif (direction == 180):
              player.textureIndex = 39
           
-          if (not selected and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name != "Player"): #attack when the target is a creature but not player
+          if (not interact and not selected and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name != "Player"): #attack when the target is a creature but not player
               target_coordinates = get_target_tile(attack)
               target_creature = get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature")
               if (target_creature):
@@ -514,7 +529,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
               else:
                   message = "no target at this position"
               player.turns += 1
-          elif (not selected and  get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") == None): #move
+          elif (not interact and not selected and  get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") == None): #move
              
               if (abs(player_pos[0] - target_coordinates[0]) + abs(player_pos[1] - target_coordinates[1]) == 1):
                   
@@ -534,13 +549,15 @@ if (HTTP_FIELDS.getvalue('uuid')):
               else:
                   message = "Movement Out Of Range"
           
-          if (not selected and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor") and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Stairs" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Corpse"): #interact 
-              
+          if ((interact and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor")) or (message != "Creature has moved" and not selected and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor") and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Stairs" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Corpse")): #interact 
               get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").on_interact(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player"))
               
               message = "Creature has moved" if (message == "Creature has moved") else "interacted with"
               game_log += get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").name +" @ "+str(((get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").pos)))+" Interacted With "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name +" @ "+str(((get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").pos)))+"\n"
               player.turns += 1
+         
+         
+         
           if (selected):
               
               selected_method = selected.split(":")[0]
