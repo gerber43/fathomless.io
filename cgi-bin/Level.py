@@ -3,6 +3,7 @@ import random
 import sys
 import cgi
 
+
 class Biome:
     def __init__(self, generation_algorithm, default_terrain, exit_decor, creature_spawns, creature_weights, other_spawns, other_weights, num_levels, biome_connections, boss, boss_level):
         self.generation_algorithm = generation_algorithm
@@ -32,9 +33,10 @@ class Biome:
     def random_creature(self, pos):
         creature_name = random.choices(self.creature_spawns, self.creature_weights)
         return eval(creature_name)(pos)
-    def random_other(self, pos):
+    def random_other(self):
+        
         other_name = random.choices(self.other_spawns, self.other_weights)[0]
-        return eval(other_name)(pos)
+        return other_name
 
 class Level:
     def __init__(self, depth, biome):
