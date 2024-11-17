@@ -137,6 +137,8 @@ def update_Creature_position(game_map, player_pos):
                         direction = find_escape_direction((x, y), player_pos, game_map, Creature)
                         if direction is not None:
                             current_pos, message = process_Creature_movement(current_pos, direction, game_map)
+                        else:
+                            break  # No valid direction to move away
                     moved_Creatures.append(Creature)
             
                 #if player is in the creature's attack range, creature will attack player
@@ -173,10 +175,10 @@ def update_Creature_position(game_map, player_pos):
                         else:
                             direction = get_direction_from_step(current_pos, next_pos)
                             if direction is not None:
-                            current_pos, message = process_Creature_movement(current_pos, direction, game_map)
-                            current_pos = next_pos  # Update current position
-                            path_index += 1
-                            moves_remaining -= 1
+                                current_pos, message = process_Creature_movement(current_pos, direction, game_map)
+                                current_pos = next_pos  # Update current position
+                                path_index += 1
+                                moves_remaining -= 1
                     moved_Creatures.append(Creature)
                     
                   
