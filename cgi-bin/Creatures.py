@@ -353,67 +353,63 @@ class Frogman(Creature):
 #giant lobster-type creature that eats trash
 class TrashLobster(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Refuse Ravager", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Refuse Ravager", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 50, 0, 1, [], 5, 3, 0, 2, 0.2, 10,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (CrusherClaw(), PincerClaw(), None, None, None, None, None, None, None, None), [FetidBreath()], (0.6, 0.6, 0.6, 0.0, 0.0, 1.0, 0.5, 0.0, 1.0, 0.0, 0.3, 0.0, 0.0),
+                         (0.8, 0.4, 0.0, 0.7, 0.3, 0.0, 1.0, 0.0, 0.0, 0.4, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0), [], 0, [], 80, 5)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 3, False, target):
+            self.basic_attack_damage(grid, CrusherClaw(), target, self.crit_check(grid))
+        if self.basic_attack_hit_check(grid, 5, False, target):
+            self.basic_attack_damage(grid, PincerClaw(), target, self.crit_check(grid))
+
+class CrocJaws(Weapon):
+    def __init__(self, ):
+        super().__init__("Jaws", "33", [-1, -1], 0, 0, 0, "One-Handed Mace", 1, 1.5, [[lookup_damage_type_id("Piercing"), 10, 3], [lookup_damage_type_id("Blunt"), 10, 0]], [Bleed(5, False)], None)
 
 # sewer
 class SewerCroc(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Sewer Crocodile", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Sewer Crocodile", "22", pos, [], 40, 0, 1, [], 5, 5, 0, 3, 0.5, 15,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (CrocJaws(), None, None, None, None, None, None, None, None, None), [], [0.1, 0.3, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+                         [0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 0, [], 30, 3)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 20, False, target):
+            self.basic_attack_damage(grid, CrocJaws(), target, self.crit_check(grid))
+
+class FishJaws(Weapon):
+    def __init__(self, ):
+        super().__init__("Jaws", "33", [-1, -1], 0, 0, 0, "One-Handed Blade", 1, 2, [[lookup_damage_type_id("Piercing"), 30, 10]], [Bleed(10, False)], None)
 
 # sewer
 class Gorefish(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Gorefish", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Gorefish", "22", pos, [], 40, 0, 1, [], 5, 5, 0, 5, 0.25, 15,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (FishJaws(), None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
+                         [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 0, [], 40, 4)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 7, False, target):
+            self.basic_attack_damage(grid, FishJaws(), target, self.crit_check(grid))
 
 # sewer
 class Psyfish(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Psyfish", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Psyfish", "22", pos, [], 30, 100, 1, [], 1, 2, 7, 3, 0.1, 30,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10, 10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (None, None, None, None, None, None, None, None, None, None), [Confuse(), Overwhelm()], [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.75, 0.5],
+                         [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.75, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.0], [], 0, [], 50, 5)
+    def basic_attack(self, grid, target):
+        return False
 
 # sewer
 class MasterThief(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Master Thief", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Master Thief", "22", pos, [], 20, 0, 1, [], 2, 10, 0, 10, 0.75, 20,
+                         (15, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 5, 0, 7, 10),
+                         (SteelDagger([-1, -1], Enchantment("Poison", 5, 600, [], [Poison(6, False)])), SteelDagger([-1, -1], Enchantment("Poison", 5, 600, [], [Poison(6, False)])), None, None, None, None, None, None, None, None), [], basicDamageResistances,
+                         basicStatusResistances, [], 0, [[Gold([-1, -1], 75), 0.5], [MediumPoison([-1, -1], 1), 0.75]], 50, 5)
 
 
 # Shantytown

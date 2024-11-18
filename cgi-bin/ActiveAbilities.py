@@ -129,6 +129,13 @@ class ShardShot(ActiveAbility):
         target.hp -= 15*(1-target.resistances[lookup_damage_type_id("Dark")])
         super().use(grid, caster, target)
 
+class FetidBreath(ActiveAbility):
+    def __init__(self):
+        super().__init__("Fetid Breath", "1", 0, 4, 0, 3, "")
+    def use(self, grid, caster, target):
+        target.gain_status_effect(grid, "Rot", 10, False, True, None)
+        super().use(grid, caster, target)
+
 #enemy-only spells
 
 class ChokingDeep(Spell):
@@ -148,5 +155,19 @@ class TidalWave(Spell):
                 grid[target.pos[0] - i][target.pos[0] + j].append(DeepWater([target.pos[0] - i, target.pos[0] + j]))
                 grid[target.pos[0] + i][target.pos[0] - j].append(DeepWater([target.pos[0] + i, target.pos[0] - j]))
                 grid[target.pos[0] - i][target.pos[0] - j].append(DeepWater([target.pos[0] - i, target.pos[0] - j]))
+
+class Confuse(Spell):
+    def __init__(self):
+        super().__init__("Confuse", "45", 5, 10, 7, "Cursing")
+    def use(self, grid, caster, target):
+        target.gain_status_effect(grid, "Confusion", 5, False, True, None)
+        super().use(grid, caster, target)
+
+class Overwhelm(Spell):
+    def __init__(self):
+        super().__init__("Overwhelm", "45", 7, 15, 7, "Cursing")
+    def use(self, grid, caster, target):
+        target.gain_status_effect(grid, "Stun", 3, False, True, None)
+        super().use(grid, caster, target)
 
 #enemy-only techniques

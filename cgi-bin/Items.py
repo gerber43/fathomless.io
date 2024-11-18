@@ -527,7 +527,7 @@ class SkywoodLongbow(TwoHandedWeapon):
 
 class WoodenBuckler(Equippable):
     def __init__(self, pos, enchantment):
-        super().__init__("Wooden Buckler", "42", pos, 1, 5, 7, "Hands", enchantment)
+        super().__init__("Wooden Buckler", "42", pos, 1, 10, 3, "Hands", enchantment)
 
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -538,28 +538,28 @@ class WoodenBuckler(Equippable):
     def on_unequip(self, grid, equipped_creature):
         super().on_unequip(grid, equipped_creature)
         (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.02
-        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.04
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.04
 
 #level 2 armor
 
 class LeatherCuirass(Equippable):
     def __init__(self, pos, enchantment):
-        super().__init__("Leather Cuirass", "42", pos, 2, 15, 10, "Torso", enchantment)
+        super().__init__("Leather Cuirass", "42", pos, 2, 15, 7, "Torso", enchantment)
     def on_equip(self, grid, equipped_creature):
         
         super().on_equip(grid, equipped_creature)
         equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
-        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.025
-        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.05
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.3
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.07
     def on_unequip(self, grid, equipped_creature):
         super().on_unequip(grid, equipped_creature)
-        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.025
-        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.05
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.3
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.07
 
 
 class LeatherSkullcap(Equippable):
     def __init__(self, pos, enchantment):
-        super().__init__("Leather Skullcap", "42", pos, 2, 5, 3, "Head", enchantment)
+        super().__init__("Leather Skullcap", "42", pos, 2, 5, 2, "Head", enchantment)
 
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -570,11 +570,11 @@ class LeatherSkullcap(Equippable):
     def on_unequip(self, grid, equipped_creature):
         super().on_unequip(grid, equipped_creature)
         (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.01
-        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.02
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.02
 
 class LeatherBoots(Equippable):
     def __init__(self, pos, enchantment):
-        super().__init__("Leather Boots", "42", pos, 2, 5, 3, "Feet", enchantment)
+        super().__init__("Leather Boots", "42", pos, 2, 5, 2, "Feet", enchantment)
 
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -585,7 +585,256 @@ class LeatherBoots(Equippable):
     def on_unequip(self, grid, equipped_creature):
         super().on_unequip(grid, equipped_creature)
         (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.01
-        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.02
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.02
+
+#level 5 armor
+
+class SteelShield(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Steel Shield", "42", pos, 5, 100, 25, "Hands", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.075
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.1125
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.075
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.1125
+
+
+# level 7 armor
+
+class SteelBreastplate(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Steel Breastplate", "42", pos, 7, 150, 30, "Torso", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.15
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.175
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.15
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.175
+
+class SteelGreaves(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Steel Greaves", "42", pos, 7, 120, 25, "legs", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.075
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.1125
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.075
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.1125
+
+
+class SteelHelmet(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Steel Helmet", "42", pos, 7, 50, 15, "Head", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.05
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.075
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.05
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.075
+
+
+class SteelBoots(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Steel Boots", "42", pos, 7, 50, 15, "Feet", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.05
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.075
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.05
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.075
+
+
+# level 10 armor
+
+class MithrilShield(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Mithril Shield", "42", pos, 10, 1000, 25, "Hands", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.125
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.15
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.125
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.15
+
+
+# level 12 armor
+
+class MithrilBreastplate(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Mithril Breastplate", "42", pos, 12, 1500, 30, "Torso", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.2
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.25
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.2
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.25
+
+
+class MithrilGreaves(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Mithril Greaves", "42", pos, 12, 1200, 25, "legs", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.125
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.15
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.125
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.15
+
+
+class MithrilHelmet(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Mithril Helmet", "42", pos, 12, 500, 15, "Head", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.075
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.1
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.075
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.1
+
+
+class MithrilBoots(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Mithril Boots", "42", pos, 12, 500, 15, "Feet", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.075
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.1
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.075
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.1
+
+# level 15 armor
+
+class AdamantineShield(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Adamantine Shield", "42", pos, 15, 10000, 25, "Hands", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.175
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.2
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.175
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.2
+
+
+# level 17 armor
+
+class AdamantineBreastplate(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Adamantine Breastplate", "42", pos, 17, 15000, 30, "Torso", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.25
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.3
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.25
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.3
+
+
+class AdamantineGreaves(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Adamantine Greaves", "42", pos, 17, 12000, 25, "legs", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.175
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.2
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.175
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.2
+
+
+class AdamantineHelmet(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Adamantine Helmet", "42", pos, 17, 5000, 15, "Head", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.1
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.125
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.1
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.125
+
+
+class AdamantineBoots(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Adamantine Boots", "42", pos, 17, 5000, 15, "Feet", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.1
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.125
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.1
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.125
 
 #scrolls
 
@@ -609,24 +858,24 @@ class MinorPoison(Smear):
         super().__init__("Minor Poison", "17", pos, amount, 4, 2, 50, Poison(3, False))
 
 class MediumPoison(Smear):
-    def __init__(self, pos, amount, max_stack, level, price, status_effect):
+    def __init__(self, pos, amount):
         super().__init__("Poison", "17", pos, amount, 4, 6, 200, Poison(6, False))
 
 class DeadlyPoison(Smear):
-    def __init__(self, pos, amount, max_stack, level, price, status_effect):
+    def __init__(self, pos, amount):
         super().__init__("Deadly Poison", "17", pos, amount, 4, 12, 500, Poison(9, False))
 
 
 class SoftWhetstone(Smear):
-    def __init__(self, pos, amount, max_stack, level, price, status_effect):
+    def __init__(self, pos, amount):
         super().__init__("Soft Whetstone", "17", pos, amount, 2, 4, 70, Bleed(2, False))
 
 
 class Whetstone(Smear):
-    def __init__(self, pos, amount, max_stack, level, price, status_effect):
+    def __init__(self, pos, amount):
         super().__init__("Whetstone", "17", pos, amount, 2, 10, 250, Bleed(4, False))
 
 
 class HardWhetstone(Smear):
-    def __init__(self, pos, amount, max_stack, level, price, status_effect):
+    def __init__(self, pos, amount):
         super().__init__("Hard Whetstone", "17", pos, amount, 2, 15, 700, Bleed(6, False))
