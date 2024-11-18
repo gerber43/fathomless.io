@@ -166,9 +166,11 @@ def place_creatures(grid, num_creatures, depth):
                 y = random.randint(0, len(grid[0]) - 1)
                 if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
                     CreatureClass = random.choice(available_creatures)
-                    creature = CreatureClass((y, x))
+                    creature = CreatureClass((x, y))
                     creature.hp += current_biome  
                     grid[y][x].append(creature)
+                    for segment in creature.segments:
+                        grid[segment.pos[1]][segment.pos[0]].append(segment)
                     break
 
 def place_player(grid, player, traversable_path, times = 0):
@@ -245,8 +247,15 @@ def place_creatures_by_biome(grid, biome, num_creatures):
             x, y = random.randint(0, len(grid) - 1), random.randint(0, len(grid[0]) - 1)
             if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
                 creature = eval(creature_type)((y, x))
-                grid[y][x].append(creature)
-                break
+                placeCreature = True
+                for segment in creature.segments:
+                    if (0 > segment.pos[1] or segment.pos[1] >= len(grid) or 0 > segment.pos[0] or segment.pos[0] >= len(grid)):
+                        placeCreature = False
+                if placeCreature:
+                    grid[y][x].append(creature)
+                    for segment in creature.segments:
+                        grid[segment.pos[1]][segment.pos[0]].append(segment)
+                    break
 
 
 # Carve a guaranteed path between sides of the map
@@ -414,9 +423,9 @@ def generateMap(width, height, depth, num_creatures, player, num_items):
     place_items_with_biome(final_grid, current_biome, num_items)
     for i in range(len(final_grid)):
         for j in range(len(final_grid[i])):
-            final_grid[i][j].append(Bottom("Bottom", 1,(j,i)))
+            final_grid[i][j].append(Bottom("Bottom", 1,(i,j)))
             
-            final_grid[i][j].append(Light((j,i),.4))
+            final_grid[i][j].append(Light((i,j),.4))
             
             for k in range(len(final_grid[i][j])):
                 if k < len(final_grid[i][j]) and isinstance(final_grid[i][j][k], EmptySpace):
