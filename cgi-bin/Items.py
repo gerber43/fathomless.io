@@ -168,7 +168,7 @@ class WoodenClub(Weapon):
 
 class WoodenGreatclub(TwoHandedWeapon):
     def __init__(self, pos, enchantment):
-        super().__init__("Wooden Club", "17", pos, 1, 1, 20, "Two-Handed Mace", 1, 1.25,
+        super().__init__("Wooden Greatclub", "17", pos, 1, 1, 20, "Two-Handed Mace", 1, 1.25,
                          [(lookup_damage_type_id("Blunt"), 10, 0)], [], enchantment)
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -224,7 +224,7 @@ class OakLongbow(TwoHandedWeapon):
 
 class SteelDagger(Weapon):
     def __init__(self, pos, enchantment):
-        super().__init__("Iron Dagger", "17", pos, 5, 50, 1, "One-Handed Blade", 1, 3,
+        super().__init__("Steel Dagger", "17", pos, 5, 50, 1, "One-Handed Blade", 1, 3,
                          [(lookup_damage_type_id("Piercing"), 6, 1)], [], enchantment)
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -233,7 +233,7 @@ class SteelDagger(Weapon):
 
 class SteelShortsword(Weapon):
     def __init__(self, pos, enchantment):
-        super().__init__("Iron Shortsword", "17", pos, 5, 100, 3, "One-Handed Blade", 1, 1.5,
+        super().__init__("Steel Shortsword", "17", pos, 5, 100, 3, "One-Handed Blade", 1, 1.5,
                          [(lookup_damage_type_id("Slashing"), 10, 2)], [], enchantment)
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -242,7 +242,7 @@ class SteelShortsword(Weapon):
 
 class SteelGreatsword(TwoHandedWeapon):
     def __init__(self, pos, enchantment):
-        super().__init__("Iron Greatsword", "17", pos, 5, 300, 10, "Two-Handed Blade", 1, 2,
+        super().__init__("Steel Greatsword", "17", pos, 5, 300, 10, "Two-Handed Blade", 1, 2,
                          [(lookup_damage_type_id("Slashing"), 20, 4)], [], enchantment)
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -251,7 +251,7 @@ class SteelGreatsword(TwoHandedWeapon):
 
 class SteelAxe(Weapon):
     def __init__(self, pos, enchantment):
-        super().__init__("Iron Hatchet", "17", pos, 5, 100, 5, "One-Handed Axe", 1, 1.75,
+        super().__init__("Steel Hatchet", "17", pos, 5, 100, 5, "One-Handed Axe", 1, 1.75,
                          [(lookup_damage_type_id("Slashing"), 10, 4)], [], enchantment)
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -260,7 +260,7 @@ class SteelAxe(Weapon):
 
 class SteelGreataxe(TwoHandedWeapon):
     def __init__(self, pos, enchantment):
-        super().__init__("Iron Greataxe", "17", pos, 5, 300, 15, "Two-Handed Axe", 1, 2.25,
+        super().__init__("Steel Greataxe", "17", pos, 5, 300, 15, "Two-Handed Axe", 1, 2.25,
                          [(lookup_damage_type_id("Slashing"), 20, 8)], [], enchantment)
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -269,7 +269,7 @@ class SteelGreataxe(TwoHandedWeapon):
 
 class SteelMace(Weapon):
     def __init__(self, pos, enchantment):
-        super().__init__("Wooden Club", "43", pos, 5, 50, 15, "One-Handed Mace", 1, 1.5,
+        super().__init__("Steel Mace", "43", pos, 5, 50, 15, "One-Handed Mace", 1, 1.5,
                          [(lookup_damage_type_id("Blunt"), 10, 0)], [], enchantment)
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -278,7 +278,7 @@ class SteelMace(Weapon):
 
 class SteelGreatmaul(TwoHandedWeapon):
     def __init__(self, pos, enchantment):
-        super().__init__("Wooden Club", "17", pos, 5, 50, 20, "Two-Handed Mace", 1, 1.25,
+        super().__init__("Steel Greatmaul", "17", pos, 5, 50, 20, "Two-Handed Mace", 1, 1.25,
                          [(lookup_damage_type_id("Blunt"), 20, 0)], [], enchantment)
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -287,7 +287,7 @@ class SteelGreatmaul(TwoHandedWeapon):
 
 class SteelSpear(Weapon):
     def __init__(self, pos, enchantment):
-        super().__init__("Iron Spear", "17", pos, 5, 150, 5, "Polearm", 2, 1.25,
+        super().__init__("Steel Spear", "17", pos, 5, 150, 5, "Polearm", 2, 1.25,
                          [(lookup_damage_type_id("Piercing"), 6, 1)], [], enchantment)
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -296,7 +296,7 @@ class SteelSpear(Weapon):
 
 class SteelHalberd(TwoHandedWeapon):
     def __init__(self, pos, enchantment):
-        super().__init__("Iron Halberd", "17", pos, 5, 300, 15, "Polearm", 2, 1.25,
+        super().__init__("Steel Halberd", "17", pos, 5, 300, 15, "Polearm", 2, 1.25,
                          [(lookup_damage_type_id("Piercing"), 10, 1), (lookup_damage_type_id("Slashing"), 5, 4)], [], enchantment)
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -305,7 +305,7 @@ class SteelHalberd(TwoHandedWeapon):
 
 class YewShortbow(TwoHandedWeapon):
     def __init__(self, pos, enchantment):
-        super().__init__("Oak Shortbow", "17", pos, 5, 150, 3, "Bow", 5, 2,
+        super().__init__("Yew Shortbow", "17", pos, 5, 150, 3, "Bow", 5, 2,
                          [(lookup_damage_type_id("Piercing"), 10, 2)], [], enchantment)
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
@@ -314,8 +314,210 @@ class YewShortbow(TwoHandedWeapon):
 
 class YewLongbow(TwoHandedWeapon):
     def __init__(self, pos, enchantment):
-        super().__init__("Oak Longbow", "17", pos, 5, 300, 7, "Bow", 9, 2,
+        super().__init__("Yew Longbow", "17", pos, 5, 300, 7, "Bow", 9, 2,
                          [(lookup_damage_type_id("Piercing"), 10, 2)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+#Tier 3 Weapons
+
+class MithrilDagger(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Mithril Dagger", "17", pos, 10, 500, 1, "One-Handed Blade", 1, 3,
+                         [(lookup_damage_type_id("Piercing"), 9, 1)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class MithrilShortsword(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Mithril Shortsword", "17", pos, 10, 1000, 3, "One-Handed Blade", 1, 1.5,
+                         [(lookup_damage_type_id("Slashing"), 15, 2)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class MithrilGreatsword(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Mithril Greatsword", "17", pos, 10, 3000, 10, "Two-Handed Blade", 1, 2,
+                         [(lookup_damage_type_id("Slashing"), 30, 4)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class MithrillAxe(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Mithril Hatchet", "17", pos, 10, 1000, 5, "One-Handed Axe", 1, 1.75,
+                         [(lookup_damage_type_id("Slashing"), 15, 4)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class MithrilGreataxe(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Mithril Greataxe", "17", pos, 10, 3000, 15, "Two-Handed Axe", 1, 2.25,
+                         [(lookup_damage_type_id("Slashing"), 30, 8)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class MithrilMace(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Mithril Mace", "43", pos, 10, 500, 15, "One-Handed Mace", 1, 1.5,
+                         [(lookup_damage_type_id("Blunt"), 15, 0)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class MithrilGreatmaul(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Mithril Greatmaul", "17", pos, 10, 500, 20, "Two-Handed Mace", 1, 1.25,
+                         [(lookup_damage_type_id("Blunt"), 30, 0)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class MithrilSpear(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Mithril Spear", "17", pos, 10, 1500, 5, "Polearm", 2, 1.25,
+                         [(lookup_damage_type_id("Piercing"), 9, 1)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class MithrilHalberd(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Mithril Halberd", "17", pos, 10, 3000, 15, "Polearm", 2, 1.25,
+                         [(lookup_damage_type_id("Piercing"), 15, 1), (lookup_damage_type_id("Slashing"), 7, 4)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class SilverwoodShortbow(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Silverwood Shortbow", "17", pos, 10, 1500, 3, "Bow", 5, 2,
+                         [(lookup_damage_type_id("Piercing"), 15, 2)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class SilverwoodLongbow(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Silverwood Longbow", "17", pos, 10, 3000, 7, "Bow", 9, 2,
+                         [(lookup_damage_type_id("Piercing"), 15, 2)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+#Tier 4 Weapons
+
+class AdamantineDagger(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Adamantine Dagger", "17", pos, 15, 5000, 1, "One-Handed Blade", 1, 3,
+                         [(lookup_damage_type_id("Piercing"), 12, 1)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class AdamantineShortsword(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Adamantine Shortsword", "17", pos, 15, 10000, 3, "One-Handed Blade", 1, 1.5,
+                         [(lookup_damage_type_id("Slashing"), 20, 2)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class AdamantineGreatsword(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Adamantine Greatsword", "17", pos, 15, 30000, 10, "Two-Handed Blade", 1, 2,
+                         [(lookup_damage_type_id("Slashing"), 40, 4)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class AdamantineAxe(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Adamantine Hatchet", "17", pos, 15, 10000, 5, "One-Handed Axe", 1, 1.75,
+                         [(lookup_damage_type_id("Slashing"), 20, 4)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class AdamantineGreataxe(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Adamantine Greataxe", "17", pos, 15, 30000, 15, "Two-Handed Axe", 1, 2.25,
+                         [(lookup_damage_type_id("Slashing"), 40, 8)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class AdamantineMace(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Steel Mace", "43", pos, 15, 5000, 15, "One-Handed Mace", 1, 1.5,
+                         [(lookup_damage_type_id("Blunt"), 20, 0)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class AdamantineGreatmaul(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Adamantine Greatmaul", "17", pos, 15, 5000, 20, "Two-Handed Mace", 1, 1.25,
+                         [(lookup_damage_type_id("Blunt"), 40, 0)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class AdamantineSpear(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Adamantine Spear", "17", pos, 15, 15000, 5, "Polearm", 2, 1.25,
+                         [(lookup_damage_type_id("Piercing"), 12, 1)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class AdamantineHalberd(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Adamantine Halberd", "17", pos, 15, 30000, 15, "Polearm", 2, 1.25,
+                         [(lookup_damage_type_id("Piercing"), 20, 1), (lookup_damage_type_id("Slashing"), 10, 4)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class SkywoodShortbow(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Skywood Shortbow", "17", pos, 15, 15000, 3, "Bow", 5, 2,
+                         [(lookup_damage_type_id("Piercing"), 20, 2)], [], enchantment)
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+
+class SkywoodLongbow(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Skywood Longbow", "17", pos, 15, 30000, 7, "Bow", 9, 2,
+                         [(lookup_damage_type_id("Piercing"), 20, 2)], [], enchantment)
     def on_equip(self, grid, equipped_creature):
         super().on_equip(grid, equipped_creature)
     def on_unequip(self, grid, equipped_creature):

@@ -5,6 +5,11 @@ import cgi
 import math
 from abc import abstractmethod
 
+#Piercing, Slashing, Blunt, Fire, Lightning, Water, Cold, Acid, Light, Dark, Necrotic, Arcane, Existence
+#Bleed, Stun, Burning, Suffocation, Frozen, Blindness, Rot, Manaburn, Nonexistence, Poison, Fear, Confusion, Mindbreak, Midas Curse, Bloodsiphon, Manadrain, Death
+#One-Handed Blades, One-Handed Axes, One-Handed Maces, Two-Handed Blades, Two-Handed Axes, Two-Handed Maces, Polearms, Slings, Bows, Elementalism, Cursing, Enhancement, Transmutation, Summoning, Dual-Wielding, Memory, Search, Hide, Lockpicking, Disarm Trap
+#Right Hand, Left Hand, Head, Torso, Legs, Feet, Hands, Neck, Right Finger, Left Finger
+
 damageTypes = ["Piercing","PRC","Slashing","SLH","Blunt","BLT","Fire","FR","Lightning","LTG","Water","WTR","Cold","CL","Acid","AD","Light","LT","Dark","DK","Necrotic","NCT","Arcane","AC","Existence","EXS"]
 statusEffects = ["Bleed","Stun","Burning","Suffocation","Frozen","Blindness","Rot","Manaburn","Nonexistence","Poison","Fear","Confusion","Mindbreak","Midas Curse","Bloodsiphon","Manadrain","Death"]
 critStatusEffects = ["Bleed","Bleed","Stun","Burning","Burning","Suffocation","Frozen","Blindness","Blindness","Rot","Manaburn","Nonexistence"]

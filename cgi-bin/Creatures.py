@@ -261,71 +261,93 @@ class Troll(Creature):
                          (WoodenGreatclub((-1, -1), None), None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, [], 80, 5)
 
-# Corruptite Mine
+class CorruptJaws(Weapon):
+    def __init__(self, ):
+        super().__init__("Jaws", "33", [-1, -1], 0, 0, 0, "One-Handed Mace", 1, 2, [[lookup_damage_type_id("Piercing"), 10, 3], [lookup_damage_type_id("Blunt"), 10, 0], [lookup_damage_type_id("Dark"), 5, 3]], [Bleed(5, False)], None)
+
+
+#Corruptite Mine
 class CorruptWorm(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Corrupted Tunneler", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Corrupted Tunneler", "22", pos, [CreatureSegment(self, "33", (pos[0] + 1, pos[1]), "Fluid"), CreatureSegment(self, "33", (pos[0], pos[1] + 1), "Fluid"), CreatureSegment(self, "33", (pos[0] + 1, pos[1] + 1), "Fluid")], 100, 0, 1, [], 7, 2, 0, 0, 0.3, 999,
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                         [CorruptJaws, None, None, None, None, None, None, None, None, None], [], [0.5, 0.9, 0.0, 0.7, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0, 0.0],
+                         [0.7, 0.9, 0.7, 1.0, 0.0, 1.0, 0.2, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0], [], 0, [[[Corruptite([-1, -1], 2)], 1.0]], 70, 7)
+    def basic_attack(self, grid, target):
+        if isinstance(target, Wall):
+            grid[target.pos[0]][target.pos[1]].remove(target)
+            return
+        if self.basic_attack_hit_check(grid, 5, False, target):
+            self.basic_attack_damage(grid, CorruptJaws(), target, self.crit_check(grid))
 
-# Corruptite Mine
+# Mine and Corruptite Mine
 class CorruptTroll(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Corrupted Troll", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Corrupt Troll", "22", pos, [CreatureSegment(self, "22", (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, "22", (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, "22", (pos[0] + 1, pos[1] + 1), "Static")], 125, 0, 1, [Regeneration(10, True)], 15, 0, 0, 0, 0.1, 10,
+                         [0, 0, 7, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                         (WoodenGreatclub((-1, -1), None), None, None, None, None, None, None, None, None, None), [BloodBurst()], [0.7, 0.5, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0],
+                         basicStatusResistances, [], 0, [[[Corruptite([-1, -1], 2)], 1.0]], 90, 7)
+
+class BehemothSlam(Weapon):
+    def __init__(self, ):
+        super().__init__("Slam", "33", [-1, -1], 0, 0, 0, "One-Handed Mace", 1, 2, [[lookup_damage_type_id("Piercing"), 5, 3], [lookup_damage_type_id("Blunt"), 20, 0], [lookup_damage_type_id("Dark"), 10, 5]], [Bleed(7, False)], None)
 
 
 # boss in Corruptite Mine 2
 class CorruptBehemoth(Boss):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Corrupted Behemoth", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
-                         (weapon, None, None, None, None, None, None, None, None, None),
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
-                         basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Corrupted Behemoth", "22", pos, [CreatureSegment(self, "22", [pos[0] + 1, pos[1]],  "Static"), CreatureSegment(self, "22", [pos[0] + 2, pos[1]],  "Static"), CreatureSegment(self, "22", [pos[0], pos[1] + 1], "Static"), CreatureSegment(self, "22", [pos[0] + 1, pos[1] + 1], "Static"), CreatureSegment(self, "22", [pos[0] + 2, pos[1] + 1],  "Static"), CreatureSegment(self, "22", [pos[0], pos[1] + 2], "Static"), CreatureSegment(self, "22", [pos[0] + 1, pos[1] + 2], "Static"), CreatureSegment(self, "22", [pos[0] + 2, pos[1] + 2],  "Static")], 250, 0, 1, [], 20, 0, 0, 0, 0.2,
+                         (BehemothSlam(), None, None, None, None, None, None, None, None, None),
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), [ShardShot()],
+                         [0.5, 0.9, 0.0, 0.7, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0, 0.0], [0.7, 0.9, 0.7, 0.0, 0.0, 1.0, 0.2, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0], [], 0, [[[Corruptite([-1, -1], 5)], 1.0]], 200, 10)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 10, False, target):
+            self.basic_attack_damage(grid, BehemothSlam(), target, self.crit_check(grid))
+
+class Dissolve(Weapon):
+    def __init__(self, ):
+        super().__init__("Slam", "33", [-1, -1], 0, 0, 0, "One-Handed Mace", 1, 1.25, [[lookup_damage_type_id("Acid"), 7, 3]], [], None)
 
 # sewer
 class GiantSlime(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Giant Slime", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Giant Slime", "22", pos, [CreatureSegment(self, "22", (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, "22", (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, "22", (pos[0] + 1, pos[1] + 1), "Static")], 40, 0, 1, [], 4, 0, 0, 2, 0.1, 10,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (Dissolve(), None, None, None, None, None, None, None, None, None), [], [1.0, 0.7, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0],
+                         [1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0], [], 0, [], 30, 3)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 5, False, target):
+            self.basic_attack_damage(grid, Dissolve(), target, self.crit_check(grid))
+    def die(self, grid, player, corpse):
+        grid[self.pos[0]][self.pos[1]].append(Slime(self.pos))
+        grid[self.pos[0] + 1][self.pos[1]].append(Slime([self.pos[0] + 1, self.pos[1]]))
+        grid[self.pos[0]][self.pos[1] + 1].append(Slime([self.pos[0], self.pos[1] + 1]))
+        grid[self.pos[0] + 1][self.pos[1] + 1].append(Slime([self.pos[0] + 1, self.pos[1] + 1]))
+        super().die(grid, player, corpse)
+
+
+class Slime(Creature):
+    def __init__(self, pos):
+        super().__init__("Slime", "22", pos, [], 10, 0, 1, [], 2, 0, 0, 3, 0.1, 10,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (Dissolve(), None, None, None, None, None, None, None, None, None), [], [1.0, 0.7, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0],
+                         [1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0], [], 0, [], 10, 1)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 3, False, target):
+            self.basic_attack_damage(grid, Dissolve(), target, self.crit_check(grid))
 
 # sewer
 class Frogman(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
+            weapon = SteelSpear((-1, -1), None)
         else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Frogman", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+            weapon = Sling((-1, -1), None)
+        super().__init__("Frogman", "22", pos, [], 20, 0, 1, [], 3, 3, 0, 3, 0.3, 10,
+                         (7, 7, 7, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 5, 5, 5, 5),
+                         (weapon, None, None, None, None, None, None, None, None, None), [], [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.25, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 1.0, 0.25, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [Pebble([-1, -1], 16)], 1, [[Gold((-1, -1), 7), 0.7]], 20, 2)
 
 # sewer
 #giant lobster-type creature that eats trash

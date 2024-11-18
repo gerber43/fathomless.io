@@ -73,23 +73,21 @@ class Blink(ActiveAbility):
         grid[target[0]][target[1]].append(caster)
         grid[caster.pos[0]][caster.pos[1]].remove(caster)
         caster.pos = target
-        super().use(self, grid, caster, target)
+        super().use(grid, caster, target)
 
 class Berserking(ActiveAbility):
     def __init__(self):
         super().__init__("Berserking", "1", 0, 50, 0, 0, "")
-    #target in this case is a grid location
     def use(self, grid, caster, target):
         caster.gain_status_effect(grid, "Berserk", 20, False, False, None)
-        super().use(self, grid, caster, target)
+        super().use(grid, caster, target)
 
 class Torture(ActiveAbility):
     def __init__(self):
         super().__init__("Torture", "1", 0, 30, 0, 3, "")
-    #target in this case is a grid location
     def use(self, grid, caster, target):
         target.gain_status_effect(grid, "Bleed", 3, False, True, None)
-        super().use(self, grid, caster, target)
+        super().use(grid, caster, target)
 
 
 #player-available spells
@@ -113,6 +111,23 @@ class HealingTouch(Spell):
 #prayers
 
 #enemy-only active abilities
+
+class BloodBurst(ActiveAbility):
+    def __init__(self):
+        super().__init__("Blood Burst", "1", 0, 2, 0, 4, "")
+    def use(self, grid, caster, target):
+        caster.hp -= 10
+        target.hp -= 15*(1-target.resistances[lookup_damage_type_id("Dark")])
+        target.gain_status_effect(grid, "Blindness", 3, False, True, None)
+        super().use(grid, caster, target)
+
+class ShardShot(ActiveAbility):
+    def __init__(self):
+        super().__init__("Corruptite Shard", "1", 0, 5, 0, 5, "")
+    def use(self, grid, caster, target):
+        target.hp -= 15*(1-target.resistances[lookup_damage_type_id("Piercing")])
+        target.hp -= 15*(1-target.resistances[lookup_damage_type_id("Dark")])
+        super().use(grid, caster, target)
 
 #enemy-only spells
 
