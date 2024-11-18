@@ -67,7 +67,7 @@ def process_Creature_movement(position, direction, game_map):
         return position, "Invalid direction"
     # Validate the new position
     if not is_valid_move(new_x, new_y, game_map):
-        if (get_object_by_class(game_map[new_x][new_y],"Terrain") and get_object_by_class(game_map[position[0]][position[1]],"Player")):
+        if (len(game_map) > new_x and len(game_map) > new_y and get_object_by_class(game_map[new_x][new_y],"Terrain") and get_object_by_class(game_map[position[0]][position[1]],"Player")):
             terrain = get_object_by_class(game_map[new_x][new_y],"Terrain")
             attacker = get_object_by_class(game_map[position[0]][position[1]],"Player")
             damage = terrain.hp
@@ -245,19 +245,20 @@ def is_player_avalible(player_pos, Player, Creature):
     
 # Helper function to get direction between two points
 def get_direction_from_step(current_pos, next_pos):
-    dx = next_pos[0] - current_pos[0]
-    dy = next_pos[1] - current_pos[1]
-
-    if dx == 1 and dy == 0:
-        return 0  # Right
-    elif dx == -1 and dy == 0:
-        return 180  # Left
-    elif dx == 0 and dy == 1:
-        return 90  # Down
-    elif dx == 0 and dy == -1:
-        return 270  # Up
-    else:
-        return None  # No valid direction
+    if next_pos:
+        dx = next_pos[0] - current_pos[0]
+        dy = next_pos[1] - current_pos[1]
+    
+        if dx == 1 and dy == 0:
+            return 0  # Right
+        elif dx == -1 and dy == 0:
+            return 180  # Left
+        elif dx == 0 and dy == 1:
+            return 90  # Down
+        elif dx == 0 and dy == -1:
+            return 270  # Up
+    return None  # No valid direction
+    
 
 # Function to validate the movement
 def is_valid_move(x, y, game_map):
@@ -290,18 +291,25 @@ def get_map_subset(player_pos, game_map, fov_radius):
                 row_subset.append(blank_tile)
             else:
                 bottomTexture = 0
+                segment = None
+                for objects in game_map[i][j]:
+                    if objects.name == "Segment":
+                        segment = objects.creature
+                        break
                 for objects in game_map[i][j]:
                     if objects.name == "Bottom":
                         bottomTexture = objects.textureIndex
                         del objects
                         break;
                 internalGrid = {gameObject.__class__.__base__.__name__.capitalize(): gameObject.__dict__ for gameObject in game_map[i][j]}
+                
                 if (internalGrid.get('Gameobject') is not None):
                     internalGrid['Light'] = internalGrid['Gameobject']
                     del internalGrid['Gameobject']
                     internalGrid['Bottom'] = {"textureIndex":bottomTexture}
 
-                
+                if segment and type(segment) != type([]):
+                    internalGrid['Creature'] = {"textureIndex":segment.textureIndex,'hp':segment.hp}
                 
                 
 
@@ -338,10 +346,14 @@ def get_map_subset(player_pos, game_map, fov_radius):
                 if (internalGrid.get('Equippable') is not None):
                     #internalGrid['Weapon']['enchantment'] = internalGrid['Weapon']['enchantment'].name;
                     internalGrid['Item'] = internalGrid['Equippable']
+                    
 
                 
-                if (internalGrid.get('Creature') is not None):
-                     
+                if (internalGrid.get('Creature') is not None and not segment):
+                    for segment in range(len(internalGrid['Creature']['segments'])):
+                        internalGrid['Creature']['segments'][segment].creature = internalGrid['Creature']['segments'][segment].creature.pos
+                        internalGrid['Creature']['segments'][segment] = internalGrid['Creature']['segments'][segment].__dict__
+
                     for a in range(len(internalGrid['Creature']['equipment'])):
                         if hasattr(internalGrid['Creature']['equipment'][a], 'statuses'):
                             for b in range(len(internalGrid['Creature']['equipment'][a].statuses)):
@@ -358,18 +370,8 @@ def get_map_subset(player_pos, game_map, fov_radius):
                    '''
                     internalGrid['Creature']['inventory'] = [inventory.__dict__ for inventory in internalGrid['Creature']['inventory'] if inventory]
                     if (internalGrid['Creature'].get('drop_table') is not None):
-                        internalGrid['Creature']['drop_table'] = list(internalGrid['Creature']['drop_table'])
-                        for k in range(len(internalGrid['Creature']['drop_table'])):
-                            if type(internalGrid['Creature']['drop_table'][k]) != type(0.7):
-                                if (hasattr(internalGrid['Creature']['drop_table'][k], 'status_effect')):
-                                    
-                                    internalGrid['Creature']['drop_table'][k].status_effect = internalGrid['Creature']['drop_table'][k].status_effect.__dict__
-                                if (type(internalGrid['Creature']['drop_table'][k]) == type([])):
-                                    for drop in range(len(internalGrid['Creature']['drop_table'][k])):
-                                        if type(internalGrid['Creature']['drop_table'][k][drop]) != type(.7):
-                                            internalGrid['Creature']['drop_table'][k][drop] = internalGrid['Creature']['drop_table'][k][drop].__dict__
-                                else:
-                                     internalGrid['Creature']['drop_table'][k] = internalGrid['Creature']['drop_table'][k].__dict__
+                        del internalGrid['Creature']['drop_table']
+                
                 row_subset.append(internalGrid)
         map_subset.append(row_subset)
     
@@ -519,8 +521,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
              player.textureIndex = 38
           elif (direction == 180):
              player.textureIndex = 39
-          
-          if (not interact and not selected and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name != "Player"): #attack when the target is a creature but not player
+          if (not interact and not selected and target_coordinates and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name != "Player"): #attack when the target is a creature but not player
               target_coordinates = get_target_tile(attack)
               target_creature = get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature")
               if (target_creature):
@@ -529,7 +530,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
               else:
                   message = "no target at this position"
               player.turns += 1
-          elif (not interact and not selected and  get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") == None): #move
+          elif (not interact and not selected and target_coordinates and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") == None): #move
              
               if (abs(player_pos[0] - target_coordinates[0]) + abs(player_pos[1] - target_coordinates[1]) == 1):
                   
@@ -549,7 +550,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
               else:
                   message = "Movement Out Of Range"
           
-          if ((interact and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor")) or (message != "Creature has moved" and not selected and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor") and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Stairs" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Corpse")): #interact 
+          if (target_coordinates and ((interact and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor")) or (message != "Creature has moved" and not selected and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor") and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Stairs" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Corpse"))): #interact 
               get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").on_interact(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player"))
               
               message = "Creature has moved" if (message == "Creature has moved") else "interacted with"
