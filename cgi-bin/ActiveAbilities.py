@@ -136,6 +136,21 @@ class FetidBreath(ActiveAbility):
         target.gain_status_effect(grid, "Rot", 10, False, True, None)
         super().use(grid, caster, target)
 
+class Retch(ActiveAbility):
+    def __init__(self):
+        super().__init__("Fetid Breath", "1", 0, 4, 0, 3, "")
+    def use(self, grid, caster, target):
+        target.gain_status_effect(grid, "Poison", 10, False, True, None)
+        target.gain_status_effect(grid, "Rot", 10, False, True, None)
+        super().use(grid, caster, target)
+
+class Buzz(ActiveAbility):
+    def __init__(self):
+        super().__init__("Buzz", "1", 0, 10, 0, 10, "")
+    def use(self, grid, caster, target):
+        target.gain_status_effect(grid, "Confusion", 3, False, True, None)
+        super().use(grid, caster, target)
+
 #enemy-only spells
 
 class ChokingDeep(Spell):

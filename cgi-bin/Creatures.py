@@ -415,54 +415,95 @@ class MasterThief(Creature):
 # Shantytown
 class DiseasedScavenger(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
+        weapon_choice_one = random.randint(0, 5)
+        if weapon_choice_one == 0:
+            weapon_one = IronDagger((-1, -1), None)
+        elif weapon_choice_one == 1:
+            weapon_one = IronShortsword((-1, -1), None)
+        elif weapon_choice_one == 2:
+            weapon_one = IronHatchet((-1, -1), None)
+        elif weapon_choice_one == 3:
+            weapon_one = WoodenClub((-1, -1), None)
+        elif weapon_choice_one == 4:
+            weapon_one = IronSpear((-1, -1), None)
         else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Diseased Scavenger", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+            weapon_one = Sling((-1, -1), None)
+        weapon_choice_two = random.randint(0, 6)
+        if weapon_choice_two == 0:
+            weapon_two = IronDagger((-1, -1), None)
+        elif weapon_choice_two == 1:
+            weapon_two = IronShortsword((-1, -1), None)
+        elif weapon_choice_two == 2:
+            weapon_two = IronHatchet((-1, -1), None)
+        elif weapon_choice_two == 3:
+            weapon_two = WoodenClub((-1, -1), None)
+        elif weapon_choice_two == 4:
+            weapon_two = IronSpear((-1, -1), None)
+        elif weapon_choice_two == 5:
+            weapon_two = Sling((-1, -1), None)
+        else:
+            weapon_two = WoodenBuckler((-1, -1), None)
+        super().__init__("Diseased Scavenger", "22", pos, [], 20, 0, 1, [], 3, 7, 0, 7, 0.25, 30,
+                         (7, 7, 7, 0, 0, 0, 7, 7, 0, 0, 0, 0, 0, 0, 10, 0, 10, 0, 10, 10, 10, 10),
+                         (weapon_one, weapon_two, None, None, None, None, None, None, None, None), [], [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [Pebble([-1, -1], 16)], 1, [[Gold([-1, -1], 30), 0.5], [Antidote([-1, -1], 1), 0.75]], 20, 2)
 
 # Shantytown
 class BloatedGuard(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
+            weapon = SteelShortsword((-1, -1), None)
         else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Bloated Guard", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+            weapon = SteelSpear((-1, -1), None)
+        super().__init__("Bloated Guard", "22", pos, [], 75, 0, 1, [], 7, 2, 0, 1, 0.2, 10,
+                         (10, 10, 10, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (weapon, SteelShield([-1, -1], False), SteelHelmet([-1, -1], False), None, None, SteelBoots([-1, -1], False), None, None, None, None), [Retch()], [0.175, 0.2625, 0.2, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 0, [[Gold([-1, -1], 20), 0.75], [weapon, 0.75]], 40, 5)
+
+class FlyJaws(Weapon):
+    def __init__(self, enchantment):
+        super().__init__("Jaws", "33", [-1, -1], 0, 0, 0, "One-Handed Blade", 1, 2, [[lookup_damage_type_id("Piercing"), 5, 2]], [Poison(15, False)], enchantment)
 
 # Shantytown
 class Stinkfly(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Stinkfly", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Stinkfly", "22", pos, [], 15, 0, 1, [], 3, 8, 0, 8, 0.25, 15,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (FlyJaws(None), None, None, None, None, None, None, None, None, None), [Retch(), Buzz()], [0.0, 0.25, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 0, [], 30, 3)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 5, False, target):
+            self.basic_attack_damage(grid, FlyJaws(), target, self.crit_check(grid))
+
+class Maggot(Creature):
+    def __init__(self, pos):
+        weapon_choice = random.randint(0, 1)
+        super().__init__("Maggot", "22", pos, [], 10, 0, 1, [], 3, 0, 0, 1, 0.25, 5,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (FlyJaws(None), None, None, None, None, None, None, None, None, None), [], [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 0, [], 0, 0)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 4, False, target):
+            self.basic_attack_damage(grid, FlyJaws(), target, self.crit_check(grid))
+
+#target must be tile where it is valid to place a new creature
+class BirthMaggot(ActiveAbility):
+    def __init__(self):
+        super().__init__("Birth", "1", 0, 5, 0, 1, "")
+    def use(self, grid, caster, target):
+        target.append(Maggot)
+        super().use(grid, caster, target)
 
 # Shantytown 2 boss
 class Rotmother(Boss):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Rotmother", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
-                         (weapon, None, None, None, None, None, None, None, None, None),
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
-                         basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Rotmother", "22", pos, [CreatureSegment(self, "22", [pos[0] + 1, pos[1]],  "Static"), CreatureSegment(self, "22", [pos[0] + 2, pos[1]],  "Static"), CreatureSegment(self, "22", [pos[0], pos[1] + 1], "Static"), CreatureSegment(self, "22", [pos[0] + 1, pos[1] + 1], "Static"), CreatureSegment(self, "22", [pos[0] + 2, pos[1] + 1],  "Static"), CreatureSegment(self, "22", [pos[0], pos[1] + 2], "Static"), CreatureSegment(self, "22", [pos[0] + 1, pos[1] + 2], "Static"), CreatureSegment(self, "22", [pos[0] + 2, pos[1] + 2],  "Static")], 300, 0, 1, [], 10, 0, 0, 0, 0.75,
+                         (FlyJaws(Decay()), None, None, None, None, None, None, None, None, None),
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), [BirthMaggot(), Retch()],
+                         [0.0, 0.25, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 0, [], 200, 10)
 
 
 # magma Core
