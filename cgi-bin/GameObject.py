@@ -91,7 +91,8 @@ class Creature(GameObject):
                 #game_object.on_step(grid, self)
         for segment in self.segments:
             if hasattr(segment,"type") and segment.type == "Static":
-                previous_movement = segment.move(grid, (self.pos[0] + diff[0], self.pos[1] + diff[1]))
+                previous_movement = segment.move(grid, (segment.pos[0] + diff[0], segment.pos[1] + diff[1]))
+
             if hasattr(segment,"type") and segment.type == "Fluid":
                 previous_movement = segment.move(grid, previous_movement)
     def gain_status_effect(self, grid, status_type, stacks, infinite, negative, applicator):
@@ -546,35 +547,38 @@ class Light(GameObject):
         self.intensity = intensity
         self.textureIndex = "8"
 
-def spread_light(grid, pos, level, touched_tiles):
-    if level == 0:
+def spread_light(grid, pos, intensity, touched_tiles):
+    if intensity == 0:
         return
     for tile in touched_tiles:
         if pos == tile[0]:
             return
     light_pointer = None
     light_blocked = False
-    for game_object in grid[pos[0]][pos[1]]:
-        if isinstance(game_object, Light):
-            light_pointer = game_object
-        if isinstance(game_object, Terrain) or isinstance(game_object, Decor):
-            if game_object.block_sight:
-                light_blocked = True
+    if 0 <= pos[0] and pos[0] < len(grid) and 0 <= pos[1] and pos[1] < len(grid[0]):
+        for game_object in grid[pos[0]][pos[1]]:
+            if isinstance(game_object, Light):
+                light_pointer = game_object
+            if isinstance(game_object, Terrain) or isinstance(game_object, Decor):
+                if game_object.block_sight:
+                    light_blocked = True
     if not touched_tiles:
-        true_level = level
+        true_intensity = intensity
     else:
-        true_level = int(touched_tiles[0][1]*(0.5**manhattan(pos, touched_tiles[0][0])))
-    touched_tiles.append((pos, true_level))
+        true_intensity = int(touched_tiles[0][1]*(0.5**manhattan(pos, touched_tiles[0][0])))
+    touched_tiles.append((pos, true_intensity))
     if light_pointer is None:
-        grid[pos[0]][pos[1]].append(Light(pos, true_level))
+        if 0 <= pos[0] and pos[0] < len(grid) and 0 <= pos[1] and pos[1] < len(grid[0]):
+            grid[pos[0]][pos[1]].append(Light(pos, true_intensity))
     else:
-        light_pointer.level += level
+        light_pointer.intensity += intensity
     if light_blocked:
         return
-    spread_light(grid, (pos[0]+1, pos[1]), level/2, touched_tiles)
-    spread_light(grid, (pos[0]-1, pos[1]), level/2, touched_tiles)
-    spread_light(grid, (pos[0], pos[1]+1), level/2, touched_tiles)
-    spread_light(grid, (pos[0], pos[1]-1), level/2, touched_tiles)
+    if intensity/2 > .1:
+        spread_light(grid, (pos[0]+1, pos[1]), intensity/2, touched_tiles)
+        spread_light(grid, (pos[0]-1, pos[1]), intensity/2, touched_tiles)
+        spread_light(grid, (pos[0], pos[1]+1), intensity/2, touched_tiles)
+        spread_light(grid, (pos[0], pos[1]-1), intensity/2, touched_tiles)
     return touched_tiles
 
 def remove_light(grid, touched_tiles):
