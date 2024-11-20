@@ -154,24 +154,6 @@ def place_doors(grid, width, height, door_probability=0.6):
                         #grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, Wall)]  # Remove the wall
                         grid[y][x].append(Door((y, x)))
 
-def place_creatures(grid, num_creatures, depth):
-    current_biome = int(depth.split(",")[0])
-
-    if current_biome in biomes:
-        available_creatures = biomes[current_biome]['Creature']
-        
-        for _ in range(num_creatures):
-            while True:
-                x = random.randint(0, len(grid) - 1)
-                y = random.randint(0, len(grid[0]) - 1)
-                if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
-                    CreatureClass = random.choice(available_creatures)
-                    creature = CreatureClass((x, y))
-                    creature.hp += current_biome  
-                    grid[y][x].append(creature)
-                    for segment in creature.segments:
-                        grid[segment.pos[1]][segment.pos[0]].append(segment)
-                    break
 
 def place_player(grid, player, traversable_path, times = 0):
     y, x = random.choice(list(traversable_path))
@@ -243,20 +225,31 @@ def place_decor(grid, biome, width, height):
 def place_creatures_by_biome(grid, biome, num_creatures):
     for _ in range(num_creatures):
         creature_type = random.choices(biome.creature_spawns, biome.creature_weights)[0]
+        counter = 0
         while True:
             x, y = random.randint(0, len(grid) - 1), random.randint(0, len(grid[0]) - 1)
-            if any(isinstance(obj, EmptySpace) for obj in grid[y][x]) and not any(isinstance(obj, Creature) for obj in grid[y][x]):
+            forceCreature = False
+            if counter > len(grid)*len(grid[0]) and not any(isinstance(obj, Stairs) for obj in grid[y][x]):
+                forceCreature = True
+            if len(grid[y][x]) != 0:
                 creature = eval(creature_type)((y, x))
                 placeCreature = True
                 for segment in creature.segments:
-                    if (0 > segment.pos[1] or segment.pos[1] >= len(grid) or 0 > segment.pos[0] or segment.pos[0] >= len(grid)):
+                    if (0 > segment.pos[1] or segment.pos[1] >= len(grid) or 0 > segment.pos[0] or segment.pos[0] >= len(grid)) or len(grid[segment.pos[1]][segment.pos[0]]) != 0:
                         placeCreature = False
-                if placeCreature:
+                        if forceCreature and any(isinstance(obj, Stairs) for obj in grid[y][x]):
+                            forceCreature = False
+                if placeCreature or forceCreature:
+                    if forceCreature:
+                        grid[y][x] = []
                     grid[y][x].append(creature)
                     for segment in creature.segments:
-                        grid[segment.pos[1]][segment.pos[0]].append(segment)
+                        grid[segment.pos[0]][segment.pos[1]] = [segment]
+                        segment.creature = creature
                     break
-
+            counter += 1
+            
+                
 
 # Carve a guaranteed path between sides of the map
 def carve_path(grid, start, end):
@@ -414,13 +407,14 @@ def generateMap(width, height, depth, num_creatures, player, num_items):
         
 
     place_decor(terrain_grid, current_biome, width, height)
-    place_creatures_by_biome(terrain_grid, current_biome, num_creatures)
+    
     place_doors(terrain_grid, width, height)
     final_grid, final_traversable_grid = carve_guaranteed_paths(terrain_grid, width, height)
     
     place_staircase(final_grid, final_traversable_grid,depth)
     place_player(final_grid, player, final_traversable_grid)
     place_items_with_biome(final_grid, current_biome, num_items)
+    place_creatures_by_biome(terrain_grid, current_biome, num_creatures)
     for i in range(len(final_grid)):
         for j in range(len(final_grid[i])):
             final_grid[i][j].append(Bottom("Bottom", 1,(i,j)))
