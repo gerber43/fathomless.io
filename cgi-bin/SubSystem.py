@@ -5,6 +5,8 @@ import cgi
 import math
 from abc import abstractmethod
 
+from defer import return_value
+
 #Piercing, Slashing, Blunt, Fire, Lightning, Water, Cold, Acid, Light, Dark, Necrotic, Arcane, Existence
 #Bleed, Stun, Burning, Suffocation, Frozen, Blindness, Rot, Manaburn, Nonexistence, Poison, Fear, Confusion, Mindbreak, Midas Curse, Bloodsiphon, Manadrain, Death
 #One-Handed Blades, One-Handed Axes, One-Handed Maces, Two-Handed Blades, Two-Handed Axes, Two-Handed Maces, Polearms, Slings, Bows, Elementalism, Cursing, Enhancement, Transmutation, Summoning, Dual-Wielding, Memory, Search, Hide, Lockpicking, Disarm Trap
@@ -14,7 +16,7 @@ damageTypes = ["Piercing","PRC","Slashing","SLH","Blunt","BLT","Fire","FR","Ligh
 statusEffects = ["Bleed","Stun","Burning","Suffocation","Frozen","Blindness","Rot","Manaburn","Nonexistence","Poison","Fear","Confusion","Mindbreak","Midas Curse","Bloodsiphon","Manadrain","Death"]
 critStatusEffects = ["Bleed","Bleed","Stun","Burning","Burning","Suffocation","Frozen","Blindness","Blindness","Rot","Manaburn","Nonexistence"]
 skillIds = ["One-Handed Blades","One-Handed Blade","One-Handed Axes","One-Handed Axe","One-Handed Maces","One-Handed Mace","Two-Handed Blades","Two-Handed Blade","Two-Handed Axes","Two-Handed Axe","Two-Handed Maces","Two-Handed Mace","Polearms","Polearm","Slings","Sling","Bows","Bow","Elementalism","Elemental","Cursing","Curse","Enhancement","Enhancement","Transmutation","Transmute","Summoning","Summon","Dual-Wielding","Dual-Wielding","Memory","Memory","Search","Search","Hide","Hide","Lockpicking","Lockpick","Disarm Trap","Disarm"]
-equipmentSlots = ["Right Hand","Left Hand","Head","Torso","Legs","Feet","Hands","Neck","Right Finger","Left Finger"]
+equipmentSlots = ["Right Hand","Left Hand","Head","Torso","Legs","Feet","Neck","Right Finger","Left Finger"]
 #damage type and resistance subsystem, resistances are represented by a tuple of floats, use the following methods to figure out the indexes of specific  damage types and resistances
 def lookup_damage_type_id(damage_type):
     if damage_type in damageTypes:
@@ -73,3 +75,16 @@ def lookup_equipment_slot(slot):
 #range-checking subsystem
 def manhattan(pos1, pos2):
     return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos1[1])
+
+#acid subsystem
+def acid_destroy(grid, creature, amount):
+    destruction_roll = random.randint(0, 99)
+    if amount < destruction_roll:
+        return
+    destruction_candidates = []
+    for item in creature.equipment:
+        if item is not None:
+            destruction_candidates.append(item)
+    destruction_index = random.randint(0, len(destruction_candidates) - 1)
+    destruction_candidates[destruction_index].on_unequip(grid, creature)
+    creature.equipment.remove(destruction_candidates[destruction_index])

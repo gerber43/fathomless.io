@@ -212,6 +212,7 @@ class Creature(GameObject):
                         total = total*(1+(1.0-(self.hp/self.max_hp)))
             total = int(total * (1.0-target.damage_resistances[damage[0]]))
             target.hp -= total
+            acid_destroy(grid, target, total)
             if crit:
                 target.gain_status_effect(grid, lookup_crit_status_effect(damage[0]), total // 10, False, True, self)
         for status in weapon.statuses:
@@ -232,7 +233,7 @@ class Creature(GameObject):
 
     def pickup_item(self, grid, target):
         grid[target.pos[0]][target.pos[1]].remove(target)
-        
+        self.xp += target.price * target.amount
         for item in self.inventory:
             if target.name == item.name and item.amount + target.amount <= target.max_stack:
                 item.amount += target.amount
@@ -291,7 +292,7 @@ class Player(Creature):
         super().__init__(name, textureIndex, pos, [], fitness * 10, magic * 10, 1, [], fitness, cunning, magic,
                          cunning * 2, (float(cunning) ** (2.0 / 3.0)) / 10.0, perception,
                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                         [weapon, None, None, None, None, None, None, None, None, None], abilities, damage_resistances,
+                         [weapon, None, None, None, None, None, None, None, None], abilities, damage_resistances,
                          status_resistances, [], 20, None, 0, 1)
     def check_level(self, grid):
         if self.xp >= 20*self.level:
@@ -615,9 +616,6 @@ class LightDecor(Decor):
         super().__init__(name, textureIndex, pos, hp, resistances, passable, False, warn, warning)
         self.intensity = intensity
         self.lit = lit
-        if lit:
-            pass
-           #spread_light(grid, pos, intensity, [])
     def on_interact(self, grid, creature):
         if self.lit:
             self.lit = False
@@ -630,12 +628,10 @@ class LightDecor(Decor):
         pass
 
 class LightTerrain(Terrain):
-    def __init__(self, grid, name, textureIndex, pos, hp, resistances, passable, warn_flying, warning, intensity, lit):
+    def __init__(self, name, textureIndex, pos, hp, resistances, passable, warn_flying, warning, intensity, lit):
         super().__init__(name, textureIndex, pos, hp, resistances, passable, False, warn_flying, warning)
         self.intensity = intensity
         self.lit = lit
-        if lit:
-           spread_light(grid, pos, intensity, [])
     @abstractmethod
     def on_creation(self, grid):
         pass

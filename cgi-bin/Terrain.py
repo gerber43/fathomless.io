@@ -20,7 +20,7 @@ class Pit(Terrain):
             if status.status_type == "Flight":
                 not_flying = False
         if not_flying:
-            creature.hp -= 1*(1.0-creature.damage_resistances[lookup_damage_type_id("BLT")])
+            creature.hp -= int((1.0-creature.damage_resistances[lookup_damage_type_id("BLT")]))
             #load new level
 #cave, mine, corruptite mine, deep cavern: uncommonly
 #cove, sewer: very commonly
@@ -31,7 +31,7 @@ class Water(Terrain):
         for status in creature.status_effects:
             if status.status_type == "Flight":
                 return
-        creature.hp -= 5*(1.0-creature.damage_resistances[lookup_damage_type_id("WTR")])
+        creature.hp -= int(5*(1.0-creature.damage_resistances[lookup_damage_type_id("WTR")]))
         for status in creature.status_effects:
             if status.status_type == "Burning":
                 creature.status_effects.remove(status)
@@ -41,7 +41,7 @@ class LightBeam(LightTerrain):
     def __init__(self, grid, pos):
         super().__init__(grid, "Light Beam", "23", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "", 8, True)
     def on_step(self, grid, creature):
-        creature.hp -= 50*(1.0-creature.damage_resistances[lookup_damage_type_id("LT")])
+        creature.hp -= int(50*(1.0-creature.damage_resistances[lookup_damage_type_id("LT")]))
 
 #cove, sewer
 class DeepWater(Terrain):
@@ -51,7 +51,7 @@ class DeepWater(Terrain):
         for status in creature.status_effects:
             if status.status_type == "Flight":
                 return
-        creature.hp -= 5*(1.0-creature.damage_resistances[lookup_damage_type_id("WTR")])
+        creature.hp -= int(5*(1.0-creature.damage_resistances[lookup_damage_type_id("WTR")]))
         creature.gain_status_effect(grid,grid, lookup_status_resistance_id("Suffocation"), 5*(1-creature.damage_resistances[lookup_status_resistance_id("Suffocation")]), False)
         for status in creature.status_effects:
             if status.status_type == "Burning":
@@ -65,7 +65,7 @@ class Fire(Terrain):
         for status in creature.status_effects:
             if status.status_type == "Flight":
                 return
-        creature.hp -= 10*(1.0-creature.damage_resistances[lookup_damage_type_id("Fire")])
+        creature.hp -= int(10*(1.0-creature.damage_resistances[lookup_damage_type_id("Fire")]))
         creature.gain_status_effect(grid, "Burning", 5*(1-creature.status_resistances[lookup_status_resistance_id("Burning")]), False, True, None)
 
     
@@ -77,7 +77,7 @@ class Lava(LightTerrain):
         for status in creature.status_effects:
             if status.status_type == "Flight":
                 return
-        creature.hp -= 100*(1.0-creature.damage_resistances[lookup_damage_type_id("Fire")])
+        creature.hp -= int(100*(1.0-creature.damage_resistances[lookup_damage_type_id("Fire")]))
         creature.gain_status_effect(grid, "Burning", 50*(1-creature.status_resistances[lookup_status_resistance_id("Burning")]), False, True, None)
 
 #temple of the old ones, uncommon
@@ -88,7 +88,7 @@ class Spikes(Terrain):
         for status in creature.status_effects:
             if status.status_type == "Flight":
                 return
-        creature.hp -= 20*(1.0-creature.damage_resistances[lookup_damage_type_id("Piercing")])
+        creature.hp -= int(20*(1.0-creature.damage_resistances[lookup_damage_type_id("Piercing")]))
 
 #carrion: common
 class Blood(Terrain):
@@ -98,7 +98,7 @@ class Blood(Terrain):
         for status in creature.status_effects:
             if status.status_type == "Flight":
                 return
-        creature.hp -= 5*(1.0-creature.damage_resistances[lookup_damage_type_id("WTR")])
+        creature.hp -= int(5*(1.0-creature.damage_resistances[lookup_damage_type_id("WTR")]))
 
 #worldeater's gut: common
 class WorldeaterBile(Terrain):
@@ -108,7 +108,8 @@ class WorldeaterBile(Terrain):
         for status in creature.status_effects:
             if status.status_type == "Flight":
                 return
-        creature.hp -= 100*(1.0-creature.damage_resistances[lookup_damage_type_id("AD")])
+        creature.hp -= int(50*(1.0-creature.damage_resistances[lookup_damage_type_id("AD")]))
+        acid_destroy(grid, creature, int(50*(1.0-creature.damage_resistances[lookup_damage_type_id("AD")])))
 
 #main tile of ancient city
 class MysticMist(LightTerrain):

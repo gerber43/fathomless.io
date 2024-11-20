@@ -4,7 +4,7 @@ import sys
 import cgi
 from GameObject import Item, Consumable, Equippable, Weapon, TwoHandedWeapon, Smear, LightSourceItem
 from SubSystem import lookup_damage_type_id, lookup_skill_id
-from ActiveAbilities import Spell, Technique, HealingTouch
+from ActiveAbilities import Spell, Technique, HealingTouch, CreateWater
 from StatusEffects import Bleed, Poison
 from Enchantment import random_enchantment
 
@@ -41,6 +41,10 @@ class Pebble(Item):
 class Arrow(Item):
     def __init__(self, pos, amount):
         super().__init__("Arrow", "17", pos, amount, 16, 2, 5)
+
+class Torch(LightSourceItem):
+    def __init__(self, pos):
+        super().__init__("Torch", 17, pos, 1, 30, "Hands", 32)
 
 class LesserHealth(Consumable):
     def __init__(self, pos, amount):
@@ -842,7 +846,6 @@ class HealingTouchScroll(Consumable):
     def __init__(self, pos, amount):
         super().__init__("Scroll of Healing Touch", "41", pos, amount, 1, 3, 300)
     def use_effect(self, grid, target):
-        target.abilities.append(HealingTouch())
         total_spells_techniques = 0
         for active_ability in target.abilities:
             if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
@@ -850,6 +853,18 @@ class HealingTouchScroll(Consumable):
         if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
             return -1
         target.abilities.append(HealingTouch())
+
+class CreateWaterScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Create Water", "41", pos, amount, 1, 6, 600)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(CreateWater())
 
 #smears
 
