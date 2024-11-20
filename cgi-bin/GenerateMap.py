@@ -432,5 +432,9 @@ def generateMap(width, height, depth, num_creatures, player, num_items):
                     del final_grid[i][j][k]
 
                 
-    
+    for i in range(len(final_grid)):
+        for j in range(len(final_grid[i])):
+            for k in range(len(final_grid[i][j])):
+                if hasattr(final_grid[i][j][k], "intensity") and not isinstance(final_grid[i][j][k],Light):
+                    spread_light(final_grid, [i,j], final_grid[i][j][k].intensity, [])
     return final_grid
