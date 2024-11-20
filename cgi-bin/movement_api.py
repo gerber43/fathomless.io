@@ -66,7 +66,14 @@ def process_Creature_movement(position, direction, game_map):
     else:
         return position, "Invalid direction"
     # Validate the new position
+    creature = get_object_by_class(game_map[position[0]][position[1]],"Creature")
+    if creature and len(creature.segments) > 0:
+        for segment in creature.segments:
+            if not is_valid_move(segment.pos[0] + new_x - x, segment.pos[1] + new_y - y, game_map, True):
+                return position, "cannot fit"
+                    
     if not is_valid_move(new_x, new_y, game_map):
+        
         if (len(game_map) > new_x and len(game_map) > new_y and get_object_by_class(game_map[new_x][new_y],"Terrain") and get_object_by_class(game_map[position[0]][position[1]],"Player")):
             terrain = get_object_by_class(game_map[new_x][new_y],"Terrain")
             attacker = get_object_by_class(game_map[position[0]][position[1]],"Player")
@@ -261,10 +268,10 @@ def get_direction_from_step(current_pos, next_pos):
     
 
 # Function to validate the movement
-def is_valid_move(x, y, game_map):
+def is_valid_move(x, y, game_map, isMultiTile = False):
     if x < 0 or y < 0 or x >= len(game_map) or y >= len(game_map[0]): #out of bounds
         return False
-    if get_object_by_class(game_map[x][y],"Creature"):
+    if get_object_by_class(game_map[x][y],"Creature") and not isMultiTile:
         return False
     if (get_object_by_class(game_map[x][y],"Terrain") and not get_object_by_class(game_map[x][y],"Terrain").passable and (get_object_by_class(game_map[x][y],"Decor") and get_object_by_class(game_map[x][y],"Decor").passable)):
         return True #if non passable terrain but passable decor 
@@ -272,6 +279,7 @@ def is_valid_move(x, y, game_map):
         return False
     if ((get_object_by_class(game_map[x][y],"Decor") and not get_object_by_class(game_map[x][y],"Decor").passable)):
         return False
+    
     return True
 #Function to create the subset of map
 def get_map_subset(player_pos, game_map, fov_radius):
@@ -294,7 +302,8 @@ def get_map_subset(player_pos, game_map, fov_radius):
                 segment = None
                 for objects in game_map[i][j]:
                     if objects.name == "Segment":
-                        segment = objects.creature
+                        segment = {"textureIndex":objects.creature.textureIndex,'hp':objects.creature.hp,'creature':objects.creature.pos}
+                        game_map[i][j].remove(objects)
                         break
                 for objects in game_map[i][j]:
                     if objects.name == "Bottom":
@@ -302,14 +311,14 @@ def get_map_subset(player_pos, game_map, fov_radius):
                         del objects
                         break;
                 internalGrid = {gameObject.__class__.__base__.__name__.capitalize(): gameObject.__dict__ for gameObject in game_map[i][j]}
-                
                 if (internalGrid.get('Gameobject') is not None):
                     internalGrid['Light'] = internalGrid['Gameobject']
                     del internalGrid['Gameobject']
                     internalGrid['Bottom'] = {"textureIndex":bottomTexture}
 
-                if segment and type(segment) != type([]):
-                    internalGrid['Creature'] = {"textureIndex":segment.textureIndex,'hp':segment.hp}
+                if segment:
+                   
+                    internalGrid['Creature'] = segment
                 
                 
 
@@ -350,9 +359,11 @@ def get_map_subset(player_pos, game_map, fov_radius):
 
                 
                 if (internalGrid.get('Creature') is not None and not segment):
-                    for segment in range(len(internalGrid['Creature']['segments'])):
-                        internalGrid['Creature']['segments'][segment].creature = internalGrid['Creature']['segments'][segment].creature.pos
-                        internalGrid['Creature']['segments'][segment] = internalGrid['Creature']['segments'][segment].__dict__
+                    del internalGrid['Creature']['segments']
+                    #for segment in range(len(internalGrid['Creature']['segments'])):
+                        #internalGrid['Creature']['segments'] = "Segments Present"
+                        #internalGrid['Creature']['segments'][segment].creature = internalGrid['Creature']['segments'][segment].creature.pos
+                        #internalGrid['Creature']['segments'][segment] = internalGrid['Creature']['segments'][segment].__dict__
 
                     for a in range(len(internalGrid['Creature']['equipment'])):
                         if hasattr(internalGrid['Creature']['equipment'][a], 'statuses'):
@@ -361,8 +372,10 @@ def get_map_subset(player_pos, game_map, fov_radius):
                     
                     internalGrid['Creature']['status_effects'] = [status_effects.__dict__ for status_effects in internalGrid['Creature']['status_effects'] if status_effects]
                     internalGrid['Creature']['equipment'] = [equipment.__dict__ for equipment in internalGrid['Creature']['equipment'] if equipment]
+                    
                     internalGrid['Creature']['abilities'] = [abilities.__dict__ for abilities in internalGrid['Creature']['abilities'] if abilities]
                     
+                        
                     '''
                     for i in range(len(internalGrid['Creature']['inventory'])):
                         if hasattr(internalGrid['Creature']['inventory'][i], 'enchantment'):
@@ -462,7 +475,14 @@ def process_attack(attacker, target):
         return "target hit"
     else:
         return "target missed"
-    
+
+def is_jsonable(x):
+    try:
+        json.dumps(x)
+        return True
+    except:
+        return False    
+        
 def find_current_level(game_map):
     for x, row in enumerate(game_map):
         for y, tile in enumerate(row):
@@ -636,7 +656,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
       if player.xp >= 20*player.level:
           points = 5 if player.__class__.__name__ != "Human" else 6
           turn_log.append({"level_up_menu":{"level":player.level + 1,"points":points}})
-
+      #print(((player.equipment[0].statuses)))
     # Save the updated map back to the file
       save_map(file_path, game_map)
       
@@ -658,11 +678,22 @@ if (HTTP_FIELDS.getvalue('uuid')):
          import urllib.parse
          full_game_log = urllib.request.urlopen('https://fathomless.io/gameOver/?uuid='+urllib.parse.quote_plus(uuid))
          turn_log.append({"type":"game_over","game_log":(full_game_log.read().decode("utf-8"))}) #end the game if the turn_log contain game_over
-
+      for i in range(len(map_subset)):
+          for j in range(len(map_subset[i])):
+              objectKeys = list(map_subset[i][j].keys())
+              for k in range(len(objectKeys)):
+                  if not is_jsonable(map_subset[i][j][objectKeys[k]]):
+                      map_subset[i][j][objectKeys[k]]['status_effects'] = "None"
+                      map_subset[i][j][objectKeys[k]]['equipment'] = "None"
+                      #print(map_subset[i][j][objectKeys[k]])
       response = {
           "message": message if message else "",
           "map_subset": map_subset,
           "turn_log": turn_log
       }
+      
+      
+      
+      
       sys.stdout.write(json.dumps(response))
       
