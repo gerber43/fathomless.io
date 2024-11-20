@@ -91,6 +91,7 @@ class Creature(GameObject):
                 #game_object.on_step(grid, self)
         for segment in self.segments:
             if hasattr(segment,"type") and segment.type == "Static":
+                #print(segment.pos)
                 previous_movement = segment.move(grid, (segment.pos[0] + diff[0], segment.pos[1] + diff[1]))
 
             if hasattr(segment,"type") and segment.type == "Fluid":
@@ -310,8 +311,8 @@ class CreatureSegment(GameObject):
         self.creature = creature
     def move(self, grid, new_pos):
         old_pos = self.pos
-        #grid[new_pos[0]][new_pos[1]].append(self)
-        #grid[self.pos[0]][self.pos[1]].remove(self)
+        grid[new_pos[0]][new_pos[1]].append(self)
+        grid[self.pos[0]][self.pos[1]].remove(self)
         self.pos = new_pos
         return old_pos
 
