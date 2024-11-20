@@ -7,8 +7,8 @@ from abc import abstractmethod
 from GameObject import Weapon, Equippable
 from SubSystem import *
 from Terrain import Water, DeepWater, Fire
-from Decor import Corpse
-from Enchantment import random_enchantment
+#from Decor import Corpse
+#from Enchantment import random_enchantment
 
 #Active ability base classes
 class ActiveAbility:
