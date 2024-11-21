@@ -38,8 +38,8 @@ class Water(Terrain):
 
 #cave, cove: commonly
 class LightBeam(LightTerrain):
-    def __init__(self, grid, pos):
-        super().__init__(grid, "Light Beam", "23", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "", 8, True)
+    def __init__(self, pos):
+        super().__init__("Light Beam", "23", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "", 8, True)
     def on_step(self, grid, creature):
         creature.hp -= int(50*(1.0-creature.damage_resistances[lookup_damage_type_id("LT")]))
 
@@ -58,9 +58,9 @@ class DeepWater(Terrain):
                 creature.status_effects.remove(status)
 
 #magma core, underworld: common
-class Fire(Terrain):
+class Fire(LightTerrain):
     def __init__(self, pos):
-        super().__init__("Fire", "51", pos, 10, (1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, True, False, "Step into the flames?")
+        super().__init__("Fire", "51", pos, 10, (1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "Step into the flames?", 32, True)
     def on_step(self, grid, creature):
         for status in creature.status_effects:
             if status.status_type == "Flight":
@@ -71,8 +71,8 @@ class Fire(Terrain):
     
 #magma core, underworld: very common
 class Lava(LightTerrain):
-    def __init__(self, grid, pos):
-        super().__init__(grid, "Lava", "20", pos, 100, (1.0, 1.0, 1.0, 1.0, 1.0, 0.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "Swim in the lava?", 32, True)
+    def __init__(self, pos):
+        super().__init__("Lava", "20", pos, 100, (1.0, 1.0, 1.0, 1.0, 1.0, 0.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, False, "Swim in the lava?", 32, True)
     def on_step(self, grid, creature):
         for status in creature.status_effects:
             if status.status_type == "Flight":
@@ -113,8 +113,8 @@ class WorldeaterBile(Terrain):
 
 #main tile of ancient city
 class MysticMist(LightTerrain):
-    def __init__(self, grid, pos):
-        super().__init__(grid, "Mist", "20", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, False, "", 128, True)
+    def __init__(self, pos):
+        super().__init__("Mist", "20", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), False, False, "", 128, True)
 
 #only tile of cosmic void, everything in cosmic void must have an AbsoluteNothingness Terrain
 class AbsoluteNothingness(Terrain):
