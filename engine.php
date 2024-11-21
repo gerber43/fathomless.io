@@ -388,6 +388,23 @@ if (file_exists("maps/Test.pkl")) {
         #modal {
             text-align:center;
         }
+        #modal .x {
+            position:absolute;
+            top:0;
+           right:0;
+           width:fit-content;
+            background:none;
+            padding:0;
+            border:0;
+            margin:0;
+        }
+        .modal .shop span{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            width:100%;
+            
+        }
         .modal div .close button{
                 padding:20px;
                 height:20px;
@@ -414,6 +431,12 @@ if (file_exists("maps/Test.pkl")) {
             gap:20px;
             border:rgb(212,175,55) 2px solid;
             height:fit-content;
+
+        }
+        .modal > div img {
+            width:50px;
+           position:absolute;
+           right:0;
 
         }
         .modal > div .log {
@@ -561,6 +584,9 @@ if (file_exists("maps/Test.pkl")) {
             padding:0;
             box-sizing: border-box;
             }
+            #action {
+                border:none;
+            }
             #action button {
                 transition:.75s;
             background: none;
@@ -696,6 +722,7 @@ if (file_exists("maps/Test.pkl")) {
                 if ((!isAction || tileId != activeTile) && currentMap[coordinates[0]][coordinates[1]]['Bottom']['textureIndex'] != 8 && (Object.keys(currentMap[coordinates[0]][coordinates[1]]).length > 2)) {
                     document.getElementById("action").style.height = "100px";
                      document.getElementById("action").style.fontSize = "20px";
+                     document.getElementById("action").style.border = "rgb(212,175,55) 2px solid";
                     var selectedTile = currentMap[coordinates[0]][coordinates[1]];
                     document.getElementById(tileId).classList.add('inspecting');
                     var inspectButton = "<button onclick = 'inspectTile(activeTile);'>Inspect</button>";
@@ -724,6 +751,7 @@ if (file_exists("maps/Test.pkl")) {
                 } else {
                     document.getElementById("action").style.height = "0px";
                     document.getElementById("action").style.fontSize = "0px";
+                    document.getElementById('action').style.border = "";
                      document.getElementById('action').innerHTML = "";
                     activeTile = 0;
                     isAction = false;
@@ -1194,7 +1222,7 @@ confirmationCoordinates = coordinates;
                 }
             }
                             var statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
-
+            var race = "";
             function updateLevelUp(status, direction) {
                     var pointsUsed = statusPoints['cunning'] + statusPoints["fitness"] + statusPoints["magic"];
 
@@ -1226,11 +1254,29 @@ confirmationCoordinates = coordinates;
                 var gameOver = 0
 
                 response["turn_log"].forEach((update) => {
+                    if (update['buy']) {
+                        console.log(update['buy'])
+                    }
                     if (update['type'] == "attack" &&update['after'] && update['before']) {
                         applyEffects(document.getElementById((update['after'][0]+playerDirection[0])+","+(update['after'][1]+playerDirection[1])).querySelector(".Top"),"damaged",.2)
                         if (update['after'][0] == viewRadius && update['after'][1] == viewRadius) {
                             playerDamage -= update['amount'];
                         }
+                    }
+                    if (update['race']) {
+                        if (race != update['race']) {
+                            race = update['race'];
+                        }
+                    }
+                   
+                    if (update['shop']) {
+                        var shopContents = "";
+                        var contents = currentMap[viewRadius][viewRadius]['Decor']['inventory'];
+                        for (var i = 0; i < contents.length; i++) {
+                            var item = contents[i];
+                            shopContents += "<div><span><p>"+item['name']+"</p><img src = '"+tileObjects[item['textureIndex']]['icon']+"'></span><span><p>Cost: "+item['price']+"</p></span><button onclick = 'sendRequest(`?buy="+i+"`)'>Buy</button></div>"
+                        }
+                        createModal("<p>"+currentMap[viewRadius][viewRadius]['Decor']['name']+"</p><div class = 'shop'>"+shopContents+"</div><button class = 'x' onclick = 'document.getElementById(`modal`).remove();'>X</button>");
                     }
                     if (update['level_up_menu']) {statusPoints
                         statusPoints['total'] = update['level_up_menu']['points'];
