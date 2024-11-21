@@ -80,6 +80,7 @@ def process_Creature_movement(position, direction, game_map):
             attacker = get_object_by_class(game_map[position[0]][position[1]],"Player")
             damage = terrain.hp
             terrain.hp -= 20
+            terrain.damaged = True
             damage = damage - terrain.hp
             
             turn_log.append({"type":"attack","before":get_relative_tile(attacker.pos),"after":get_relative_tile(terrain.pos),"amount":damage})
@@ -326,7 +327,13 @@ def get_map_subset(player_pos, game_map, fov_radius):
                    
                     internalGrid['Creature'] = segment
                 
-                
+                if (internalGrid.get('Shop') is not None):
+                    internalGrid['Decor'] = internalGrid['Shop']
+                    for inventory in range(len(internalGrid['Decor']['inventory'])):
+                        if isinstance(internalGrid['Decor']['inventory'][inventory],GameObject):
+                            internalGrid['Decor']['inventory'][inventory] = internalGrid['Decor']['inventory'][inventory].__dict__
+                    del internalGrid['Shop']
+                    
 
                 if (internalGrid.get('Weapon') is not None):
                     internalGrid['Item'] = internalGrid['Weapon']
@@ -435,6 +442,7 @@ def process_attack_to_terrain(attacker, terrain):
     beforeHp = terrain.hp
     #attacker.basic_attack(game_map, terrain)
     terrain.hp -= 20 
+    terrain.damaged = True
     #temp terrain interaction
     
     
@@ -534,7 +542,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
     # Process player's movement
       message = None
       player_pos = find_player_position(game_map)
-      
+
       if (attack != None):
           target_coordinates = get_target_tile(attack)
           player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player")
@@ -576,7 +584,14 @@ if (HTTP_FIELDS.getvalue('uuid')):
               else:
                   message = "Movement Out Of Range"
           
+          
+          if (target_coordinates and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Shop")):
+              message = get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Shop").dialogue
+              turn_log.append({"shop":"interacted"})
+          
+          
           if (target_coordinates and ((interact and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor")) or (message != "Creature has moved" and not selected and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor") and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Stairs" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Corpse"))): #interact 
+             
               get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").on_interact(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player"))
               
               message = "Creature has moved" if (message == "Creature has moved") else "interacted with"
@@ -636,6 +651,8 @@ if (HTTP_FIELDS.getvalue('uuid')):
               player_pos = find_player_position(game_map)
               game_log += "New Level Generated "+depth+"\n"
       player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player")
+      turn_log.append({"race":player.race})
+
       points = 5 if player.__class__.__name__ != "Human" else 6
       
       if (levelUp != None and player.xp >= 20*player.level and (fitness + cunning + magic) == points):
