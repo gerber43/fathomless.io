@@ -356,7 +356,7 @@ if (file_exists("maps/Test.pkl")) {
             animation-name: inspectionLoad;
             animation-duration: 1s;
             }
-            .Creature {
+            .Creature, .Terrain, .Decor {
                 text-align:center;
                 font-size:10px;
                 color:white;
@@ -1008,6 +1008,7 @@ confirmationCoordinates = coordinates;
                 if (type == "Light") {
                     createLight(tileId,object['intensity'])
                 }
+                
                 if (!isLowResolution) {
                     selectedElement.style.background = "";
                     selectedElement.style.borderRadius = "";
@@ -1020,6 +1021,18 @@ confirmationCoordinates = coordinates;
                 } 
                 if (type == "Creature" && object['textureIndex'] != "8") {
                     selectedElement.innerHTML = currentMap[tileId.split(",")[0]][tileId.split(",")[1]]['Creature']['hp'];
+                }
+                if (type == "Terrain" && object['textureIndex'] != "8" && currentMap[tileId.split(",")[0]][tileId.split(",")[1]]['Terrain']['damaged']) {
+                    selectedElement.innerHTML = currentMap[tileId.split(",")[0]][tileId.split(",")[1]]['Terrain']['hp'];
+                }
+                if (type == "Decor" && object['textureIndex'] != "8") {
+                    var decor = currentMap[tileId.split(",")[0]][tileId.split(",")[1]]['Decor'];
+                    if ((decor['name']).includes("Shop")) {
+                    selectedElement.innerHTML = decor['hp'];
+                    }
+                    if (typeof(decor['hp']) == typeof("") && decor['hp'].includes(",") && currentLevel == 0){
+                        selectedElement.innerHTML = currentMap[tileId.split(",")[0]][tileId.split(",")[1]]['Decor']['hp'].split(",")[1];
+                    }
                 }
             }
             function scaleTextures() {
