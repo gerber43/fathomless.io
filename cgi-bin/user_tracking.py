@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import heapq
+import copy
 
 class Node:
     def __init__(self, position, parent=None):
@@ -115,7 +116,7 @@ def is_valid_move(x, y, game_map, creature, move_by_destruct_terrain):
             return False
     if ((get_object_by_class(game_map[x][y],"Decor") and not get_object_by_class(game_map[x][y],"Decor").passable)):
         return False
-    #craeture will avoid lava if can't fly
+    #craeture will avoid harmful terrain if can't fly
     terrain = get_object_by_class(game_map[x][y], "Terrain")
     is_flying = False
     if creature.status_effects:
@@ -123,9 +124,8 @@ def is_valid_move(x, y, game_map, creature, move_by_destruct_terrain):
             if effect.status_type and effect.status_type == "Flying":
                 is_flying = True
         if not is_flying:
-            if terrain and (terrain.name == "Fire" or terrain.name == "Spikes" or terrain.name == "Lava"):
+            if is_harmful(game_map, terrain, creature):
                 return False
-            
     return True
 
 def is_destructible(terrain, game_map):
@@ -169,3 +169,21 @@ def find_escape_direction(creature_pos, player_pos, game_map, creature):
                 best_direction = direction
 
     return best_direction
+
+def is_harmful(game_map, terrain, creature):
+    # Create a copy of the creature
+    creature_copy = copy.deepcopy(creature)
+
+    # Record the initial state of the creature
+    initial_hp = creature_copy.hp
+    initial_status_effects_length = len(creature_copy.status_effects)
+    
+    # Let the creature step onto the terrain (simulate the step)
+    terrain.on_step(game_map, creature_copy)
+
+    # Check if the creature was harmed
+    hp_decreased = creature_copy.hp < initial_hp
+    status_effects_increased = len(creature_copy.status_effects) > initial_status_effects_length
+    if (hp_decresed or status_effect_increased):
+        return True
+    return False
