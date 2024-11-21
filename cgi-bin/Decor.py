@@ -90,28 +90,28 @@ class Urn(Decor):
 #mine, corruptite mine, sewer, shantytown, ziggurat: common
 class StandingTorch(LightDecor):
     def __init__(self, pos):
-        super().__init__( "Torch", "50", pos, 5, (0.7, 0.7, 0.3, -1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, "NO", "", 32, True)
+        super().__init__( "Torch", "50", pos, 5, (0.7, 0.7, 0.3, -1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, "NO", "", .7, True)
 
 #embers: common
 class Ember(LightDecor):
     def __init__(self, pos):
-        super().__init__( "Ember", "51", pos, 5, (0.7, 0.9, 1.0, 1.0, 0.7, 0.0, -1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, "NO", "", 16, True)
+        super().__init__( "Ember", "51", pos, 5, (0.7, 0.9, 1.0, 1.0, 0.7, 0.0, -1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0), False, "NO", "", .6, True)
 
 #carrion, worldeater's gut: common
 class LightGrowth(LightDecor):
     def __init__(self, pos):
-        super().__init__( "Growth", "52", pos, 60, (0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0), False, "NO", "", 32, True)
+        super().__init__( "Growth", "52", pos, 60, (0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0), False, "NO", "", .7, True)
 
 
 #columbarium, catacombs, necropolis: common
 class SpiritLight(LightDecor):
     def __init__(self, pos):
-        super().__init__( "Spirit Light", "53", pos, 5, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0), True, "NO", "", 16, True)
+        super().__init__( "Spirit Light", "53", pos, 5, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0), True, "NO", "", .6, True)
 
 #cosmic void: common
 class Energy(LightDecor):
     def __init__(self, pos):
-        super().__init__( "Energy", "54", pos, 200, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0), True, "NO", "", 128, True)
+        super().__init__( "Energy", "54", pos, 200, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0), True, "NO", "", 1, True)
 
 levelzero_dialogue = ["Are you sure you want to enter the caverns?"]
 cave_dialogue = ["Hi"]
@@ -210,13 +210,16 @@ class LevelZeroWeaponShop(Shop):
     def __init__(self, pos):
         inventory = [IronDagger((-1, -1), None), IronSpear((-1, -1), None), WoodenClub((-1, -1), None)]
         super().__init__("Weapon Shop", pos, inventory, levelzero_dialogue)
+        self.hp = "Weapons"
 
 class LevelZeroArmorShop(Shop):
     def __init__(self, pos):
         inventory = [LeatherCuirass((-1, -1), None)]
         super().__init__("Armor Shop", pos, inventory, levelzero_dialogue)
+        self.hp = "Armor"
 
 class LevelZeroScrollShop(Shop):
     def __init__(self, pos):
         inventory = []
         super().__init__("Scroll Shop", pos, inventory, levelzero_dialogue)
+        self.hp = "Scrolls"
