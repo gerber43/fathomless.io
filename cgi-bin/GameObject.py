@@ -263,17 +263,17 @@ class Creature(GameObject):
             return
         if (len([gameObject for gameObject in grid[self.pos[0]][self.pos[1]] if gameObject.__class__.__base__.__name__ == "Decor"]) == 0):
             grid[self.pos[0]][self.pos[1]].append(corpse)
-        for i in range(int(len(self.drop_table)/2)):
+        for i in range(int(len(self.drop_table)//2) - 1):
             drop_item = self.drop_table[i]
-            drop_item.pos = corpse.pos
-            probability = self.drop_table[i + 1]
+            #drop_item.pos = corpse.pos
+            probability = drop_item[1]
             for status in player.status_effects:
                 if status.status_type == "Luck":
                     probability = probability*1.2
                     break
             roll = random.random()
             if probability >= roll:
-                grid[self.pos[0]][self.pos[1]].append(drop_item)
+                grid[self.pos[0]][self.pos[1]].append(drop_item[0])
         player.xp += self.xp
         player.score += self.xp
         grid[self.pos[0]][self.pos[1]].remove(self)
@@ -398,7 +398,8 @@ class Equippable(Item):
             self.equipped = chosen_slot
             equipped_creature.equipment = list(equipped_creature.equipment)
             equipped_creature.equipment[lookup_equipment_slot(chosen_slot)] = self
-            equipped_creature.inventory.remove(self)
+            if self in quipped_creature.inventory:
+                equipped_creature.inventory.remove(self)
             if self.enchantment is not None:
                 self.enchantment.on_equip(grid)
             return chosen_slot
@@ -567,7 +568,7 @@ def spread_light(grid, pos, intensity, touched_tiles):
     if not touched_tiles:
         true_intensity = intensity
     else:
-        true_intensity = int(touched_tiles[0][1]*(0.5**manhattan(pos, touched_tiles[0][0])))
+        true_intensity = int(touched_tiles[0][1]*(manhattan(pos, touched_tiles[0][0])))
     touched_tiles.append((pos, true_intensity))
     if light_pointer is None:
         if 0 <= pos[0] and pos[0] < len(grid) and 0 <= pos[1] and pos[1] < len(grid[0]):
@@ -576,11 +577,11 @@ def spread_light(grid, pos, intensity, touched_tiles):
         light_pointer.intensity += intensity
     if light_blocked:
         return
-    if intensity/2 > .1:
-        spread_light(grid, (pos[0]+1, pos[1]), intensity/2, touched_tiles)
-        spread_light(grid, (pos[0]-1, pos[1]), intensity/2, touched_tiles)
-        spread_light(grid, (pos[0], pos[1]+1), intensity/2, touched_tiles)
-        spread_light(grid, (pos[0], pos[1]-1), intensity/2, touched_tiles)
+    if intensity/1.5 > .1:
+        spread_light(grid, (pos[0]+1, pos[1]), intensity/1.5, touched_tiles)
+        spread_light(grid, (pos[0]-1, pos[1]), intensity/1.5, touched_tiles)
+        spread_light(grid, (pos[0], pos[1]+1), intensity/1.5, touched_tiles)
+        spread_light(grid, (pos[0], pos[1]-1), intensity/1.5, touched_tiles)
     return touched_tiles
 
 def remove_light(grid, touched_tiles):
