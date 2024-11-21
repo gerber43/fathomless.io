@@ -596,9 +596,9 @@ class UlnSlam(Weapon):
 class Uln(Creature):
     def __init__(self, pos):
         super().__init__("Uln", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 100, 50, 1, [], 5, 0, 5, 2, 0.1, 999,
-                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-                         (UlnSlam(), None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [FireBolt(), LightningBolt(), IceBolt(), AcidBolt(), ArcaneBolt()], 0, [], 90, 9)
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (UlnSlam(), None, None, None, None, None, None, None, None), [], [0.0, 0.0, 0.5, 0.0, 0.0, 1.0, 0.7, 0.0, 1.0, 1.0, 0.0, 0.8, 0.5],
+                         [0.0, 0.0, 0.0, 1.0, 0.5, 1.0, 0.0, 0.5, 0.3, 0.3, 0.0, 0.0, 0.0, -1.0, 0.0, 0.5, 0.0], [FireBolt(), LightningBolt(), IceBolt(), AcidBolt(), ArcaneBolt()], 0, [], 90, 9)
     def basic_attack(self, grid, target):
         if self.basic_attack_hit_check(grid, 7, False, target):
             self.basic_attack_damage(grid, UlnSlam(), target, self.crit_check(grid))
@@ -607,54 +607,46 @@ class Uln(Creature):
 #giant blind salamander, strong magic abilities
 class ElderUln(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Elder Uln", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 999,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Elder Uln", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 100, 200, 1, [], 5, 0, 12, 2, 0.1, 999,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 15, 15, 15, 15, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (UlnSlam(), None, None, None, None, None, None, None, None), [], [0.0, 0.0, 0.5, 0.0, 0.0, 1.0, 0.7, 0.0, 1.0, 1.0, 0.0, 0.9, 0.6],
+                         [0.0, 0.0, 0.0, 1.0, 0.5, 1.0, 0.0, 0.5, 0.3, 0.3, 0.0, 0.0, 0.0, -1.0, 0.0, 0.5, 0.0], [Fireball(), TidalWave(), Freeze(), PoisonCloud()], 0, [], 90, 9)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 7, False, target):
+            self.basic_attack_damage(grid, UlnSlam(), target, self.crit_check(grid))
+
+class ToadTounge(Weapon):
+    def __init__(self, ):
+        super().__init__("Slam", "33", [-1, -1], 0, 0, 0, "One-Handed Mace", 5, 1.25, [[lookup_damage_type_id("Blunt"), 10, 0]], [],None)
 
 # Deep Cave
 class CaveToad(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Cave Toad", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 999,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Cave Toad", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 80, 0, 1, [], 8, 1, 0, 1, 0.1, 999,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (ToadTounge(), None, None, None, None, None, None, None, None), [], [0.3, 0.5, 0.5, 0.0, 0.0, 1.0, 0.0, 0.3, 1.0, 1.0, 0.0, 0.0, 0.0],
+                         [0.3, 0.5, 0.0, 1.0, 0.0, 1.0, 0.5, 0.5, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0], [], 0, [], 50, 5)
+
+class GiantSpiderFangs(Weapon):
+    def __init__(self):
+        super().__init__("Fang", "17", (-1, -1), 0, 0, 0, "One-Handed Blade", 1, 1.5,
+                         [(lookup_damage_type_id("Piercing"), 15, 1)], [Poison(7, False)], None)
 
 # Deep Cave
 class GiantSpider(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Giant Spider", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 999,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Giant Spider", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 60, 0, 1, [], 4, 3, 0, 0.3, 0.5, 999,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (GiantSpiderFangs(), None, None, None, None, None, None, None, None), [], [0.5, 0.7, 0.3, 0.0, 0.0, 0.0, 0.0, 0.4, 1.0, 1.0, 0.2, 0.0, 0.0],
+                         [0.7, 0.5, 0.0, 0.0, 0.0, 1.0, 0.1, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0], [], 0, [], 80, 8)
 
 # Deep Cave
 class CaveGiant(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Cave Giant", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 999,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Cave Giant", "22", pos, [CreatureSegment(self, "22", [pos[0] + 1, pos[1]],  "Static"), CreatureSegment(self, "22", [pos[0] + 2, pos[1]],  "Static"), CreatureSegment(self, "22", [pos[0], pos[1] + 1], "Static"), CreatureSegment(self, "22", [pos[0] + 1, pos[1] + 1], "Static"), CreatureSegment(self, "22", [pos[0] + 2, pos[1] + 1],  "Static"), CreatureSegment(self, "22", [pos[0], pos[1] + 2], "Static"), CreatureSegment(self, "22", [pos[0] + 1, pos[1] + 2], "Static"), CreatureSegment(self, "22", [pos[0] + 2, pos[1] + 2],  "Static")], 200, 0, 1, [], 30, 3, 0, 0, 0.1, 999,
+                         (0, 0, 15, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (WoodenGreatclub([-1, -1]), None, None, None, None, None, None, None, None), [], basicDamageResistances,
+                         basicStatusResistances, [], 0, [[Gold([-1, -1], 20), 0.2], [WoodenGreatclub([-1, -1], None), 0.5],], 100, 10)
 
 
 # Ziggurat

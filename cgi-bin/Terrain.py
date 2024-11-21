@@ -133,3 +133,11 @@ class EmptySpace(Terrain):
         pass
     def on_step(self, grid, creature):
         pass
+
+#spells only
+
+class PoisonFog(Terrain):
+    def __init__(self, pos):
+        super().__init__("Poison Fog", "2", pos, 1, (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0), True, True, True, "Enter the Poison Fog?")
+    def on_step(self, grid, creature):
+        creature.gain_status_effect(grid, "Poison", 5, False, True, None)
