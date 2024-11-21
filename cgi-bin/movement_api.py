@@ -14,6 +14,7 @@ from Decor import Corpse
 from Races import *
 import Enchantment
 import cgitb
+import copy
 cgitb.enable()
 
 print('Content-type: application/json\n')
@@ -218,8 +219,14 @@ def calculate_destruct_path_cost(path, creature, game_map):
     for i in range(len(path) - 1):
         next_pos = path[i + 1]
         terrain = get_object_by_class(game_map[next_pos[0]][next_pos[1]], "Terrain")
-        if terrain and not terrain.passable:
-            damage = 1 #TODO, temporary damge, need to be implement later
+    if terrain and not terrain.passable and is_destructible(terrain_copy, game_map):
+            terrain_copy = copy.deepcopy(terrain)
+            while (terrain_copy.hp > 0):
+                #creature.bassic_attack(game_map, terrain_copy)
+                terrain_copy.hp -= 20
+                total_cost += 1
+                
+            #damage = 1 #TODO, temporary damge, need to be implement later
             if damage <= 0:
                 # Creature cannot damage the terrain
                 return float('inf')
