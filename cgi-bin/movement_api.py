@@ -153,7 +153,6 @@ def update_Creature_position(game_map, player_pos):
                 player_range = getattr(player.equipment[0], 'range', 1)
                 
                 #if the creature's attack range is greater than player's, and the creature is in the player's attack range, it will move away from player
-                
                 if creature_range > player_range and manhattan <= player_range:
                     current_pos = (x,y)
                     for move_num in range(Creature.speed):
@@ -165,7 +164,7 @@ def update_Creature_position(game_map, player_pos):
                     moved_Creatures.append(Creature)
             
                 #if player is in the creature's attack range, creature will attack player
-                elif manhattan <= int((Creature.equipment[0]).range):
+                elif hasattr(Creature.equipment[0],"range") and manhattan <= int((Creature.equipment[0]).range):
                     process_attack(Creature, player)
                     moved_Creatures.append(Creature)
                 
@@ -343,7 +342,7 @@ def get_map_subset(player_pos, game_map, fov_radius):
                     
                 if (internalGrid.get('Lightterrain') is not None):
                     internalGrid['Terrain'] = internalGrid['Lightterrain']
-                    del internalGrid['LightTerrain']
+                    #del internalGrid['LightTerrain']
                 if (internalGrid.get('Lightdecor') is not None):
                     internalGrid['Decor'] = internalGrid['Lightdecor']
                     del internalGrid['Lightdecor']
