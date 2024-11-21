@@ -1,7 +1,7 @@
 <?php include("session.php");
 session_required();
  if (isset($_REQUEST['submit'])) {
-     file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=".urlencode($_SESSION['uuid'])."&difficulty=".urlencode($_REQUEST['difficulty'])."&race=".urlencode($_REQUEST['race'])."&name=".urlencode($_REQUEST['name']));
+     file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=".urlencode($_SESSION['uuid'])."&difficulty=difficulty&race=".urlencode($_REQUEST['race'])."&name=".urlencode($_REQUEST['name']));
 
     }
 
@@ -118,9 +118,7 @@ if (file_exists("maps/".$_SESSION['uuid'].".pkl")) {
             <input type = "text" name = "name" placeholder = "Enter Character Name">
             
             
-            <p id = "difficulty">Choose Your Difficulty</p>
 
-            <span><input type="radio" id  = "easy" name="difficulty" value="easy" checked><label for="easy">Easy</label><input type="radio" id  = "medium" name="difficulty" value="medium"><label for="medium">Medium</label><input type="radio" id  = "hard" name="difficulty" value="hard"><label for="hard">Hard</label></span>
     <p id = "race">Choose Your Character</p>
 
                 <span><input type="radio" id  = "human" name="race" value="Human" checked><label for="human">Human</label>
@@ -153,20 +151,7 @@ if (file_exists("maps/".$_SESSION['uuid'].".pkl")) {
         
             function hintUpdate(name, selected) {
                 var hintBox = document.getElementById(name);
-                if (name == "difficulty") {
                 
-                var mobSpawns = "x1";
-                var itemSpawns = "x1";
-                if (selected == "medium") {
-                    mobSpawns = "x2";
-                    itemSpawns = "x0.5";
-                }
-                if (selected == "hard") {
-                    mobSpawns = "x3";
-                    itemSpawns = "x0.3";
-                }
-                hintBox.innerHTML = mobSpawns+" as many Creatures will spawn | "+itemSpawns+" as many Creatures will appear";
-                }
                 if (name == "race") {
                     hintBox.innerHTML = "Selected Race: "+selected;
 
