@@ -171,19 +171,22 @@ def find_escape_direction(creature_pos, player_pos, game_map, creature):
     return best_direction
 
 def is_harmful(game_map, terrain, creature):
-    # Create a copy of the creature
-    creature_copy = copy.deepcopy(creature)
-
-    # Record the initial state of the creature
-    initial_hp = creature_copy.hp
-    initial_status_effects_length = len(creature_copy.status_effects)
+    if terrain:
+        # Create a copy of the creature
+        creature_copy = copy.deepcopy(creature)
     
-    # Let the creature step onto the terrain (simulate the step)
-    terrain.on_step(game_map, creature_copy)
-
-    # Check if the creature was harmed
-    hp_decreased = creature_copy.hp < initial_hp
-    status_effects_increased = len(creature_copy.status_effects) > initial_status_effects_length
-    if (hp_decresed or status_effect_increased):
-        return True
-    return False
+        # Record the initial state of the creature
+        initial_hp = creature_copy.hp
+        initial_status_effects_length = len(creature_copy.status_effects)
+        
+        # Let the creature step onto the terrain (simulate the step)
+        
+        terrain.on_step(game_map, creature_copy)
+    
+        # Check if the creature was harmed
+        hp_decreased = creature_copy.hp < initial_hp
+        status_effects_increased = len(creature_copy.status_effects) > initial_status_effects_length
+        if (hp_decreased or status_effects_increased):
+            return True
+        return False
+    return True
