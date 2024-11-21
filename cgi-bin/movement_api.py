@@ -326,7 +326,7 @@ def get_map_subset(player_pos, game_map, fov_radius):
                 if segment:
                    
                     internalGrid['Creature'] = segment
-                
+
                 if (internalGrid.get('Shop') is not None):
                     internalGrid['Decor'] = internalGrid['Shop']
                     for inventory in range(len(internalGrid['Decor']['inventory'])):
@@ -465,6 +465,8 @@ def process_attack_to_terrain(attacker, terrain):
 
 #funtion to process the acttack action to a creature
 def process_attack(attacker, target):
+    if isinstance(target,CreatureSegment):
+        target = target.creature
     
     global game_map
     beforeHp = target.hp
@@ -504,6 +506,7 @@ def find_current_level(game_map):
                 if gameObject.name == "Stairs":
                     return gameObject.hp
     return None  # If player is not found
+
 if (HTTP_FIELDS.getvalue('uuid')):
       uuid = HTTP_FIELDS.getvalue('uuid')
       direction = None
@@ -512,7 +515,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
       race = HTTP_FIELDS.getvalue('race') if (HTTP_FIELDS.getvalue('race')) else None
       name = HTTP_FIELDS.getvalue('name') if (HTTP_FIELDS.getvalue('name')) else "Name"
       interact = HTTP_FIELDS.getvalue('interact') if (HTTP_FIELDS.getvalue('interact')) else None
-
+      buy = (HTTP_FIELDS.getvalue('buy')) if (HTTP_FIELDS.getvalue('buy')) else None
 
       levelUp = HTTP_FIELDS.getvalue('levelUp') if (HTTP_FIELDS.getvalue('levelUp')) else None
       fitness = int(HTTP_FIELDS.getvalue('fitness')) if (HTTP_FIELDS.getvalue('fitness')) else 0
@@ -542,7 +545,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
     # Process player's movement
       message = None
       player_pos = find_player_position(game_map)
-
+     
       if (attack != None):
           target_coordinates = get_target_tile(attack)
           player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player")
@@ -555,16 +558,18 @@ if (HTTP_FIELDS.getvalue('uuid')):
              player.textureIndex = 38
           elif (direction == 180):
              player.textureIndex = 39
-          if (not interact and not selected and target_coordinates and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") != None and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature").name != "Player"): #attack when the target is a creature but not player
-              target_coordinates = get_target_tile(attack)
-              target_creature = get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature")
-              if (target_creature):
-                  message = process_attack(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player"), target_creature)
-                  update_Creature_position(game_map, player_pos)
-              else:
-                  message = "no target at this position"
+          target_creature = get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature")
+          for objects in game_map[target_coordinates[0]][target_coordinates[1]]:
+              if isinstance(objects,CreatureSegment):
+                  target_creature = objects
+          
+          if (not interact and not selected and target_coordinates and target_creature): #attack when the target is a creature but not player
+              
+              message = process_attack(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player"), target_creature)
+              update_Creature_position(game_map, player_pos)
+              
               player.turns += 1
-          elif (not interact and not selected and target_coordinates and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") == None): #move
+          elif (not interact and not selected and target_coordinates and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Creature") == None and target_creature == None): #move
              
               if (abs(player_pos[0] - target_coordinates[0]) + abs(player_pos[1] - target_coordinates[1]) == 1):
                   
@@ -590,7 +595,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
               turn_log.append({"shop":"interacted"})
           
           
-          if (target_coordinates and ((interact and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor")) or (message != "Creature has moved" and not selected and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor") and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Stairs" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Corpse"))): #interact 
+          if (target_coordinates and not target_creature and ((interact and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor")) or (message != "Creature has moved" and not selected and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor") and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Stairs" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").name != "Corpse"))): #interact 
              
               get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],"Decor").on_interact(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player"))
               
@@ -651,6 +656,16 @@ if (HTTP_FIELDS.getvalue('uuid')):
               player_pos = find_player_position(game_map)
               game_log += "New Level Generated "+depth+"\n"
       player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player")
+      
+      if buy != None:
+          shop = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Shop")
+          if shop:
+              if shop.buy(game_map, player, shop.inventory[int(buy)]):
+                  turn_log.append({"buy":"bought:"+buy})
+                  message = "Item Bought"
+              else:
+                  turn_log.append({"buy":"failed:"+buy})
+                  message = "Not enough gold"
       turn_log.append({"race":player.race})
 
       points = 5 if player.__class__.__name__ != "Human" else 6
@@ -706,9 +721,8 @@ if (HTTP_FIELDS.getvalue('uuid')):
               objectKeys = list(map_subset[i][j].keys())
               for k in range(len(objectKeys)):
                   if not is_jsonable(map_subset[i][j][objectKeys[k]]):
-                      map_subset[i][j][objectKeys[k]]['status_effects'] = "None"
-                      map_subset[i][j][objectKeys[k]]['equipment'] = "None"
-                      #print(map_subset[i][j][objectKeys[k]])
+                      
+                      map_subset[i][j][objectKeys[k]]['creature'] = "BAD"
       response = {
           "message": message if message else "",
           "map_subset": map_subset,
