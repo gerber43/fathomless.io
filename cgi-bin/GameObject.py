@@ -82,7 +82,8 @@ class Creature(GameObject):
             #if item is not None:
                 #item.on_move(self, new_pos)
         grid[new_pos[0]][new_pos[1]].append(self)
-        grid[self.pos[0]][self.pos[1]].remove(self)
+        if self in grid[self.pos[0]][self.pos[1]]:
+            grid[self.pos[0]][self.pos[1]].remove(self)
         self.pos = new_pos
         
         #for game_object in grid[new_pos[0]][new_pos[1]]:
@@ -140,7 +141,7 @@ class Creature(GameObject):
                 if item.name == "Pebble":
                     found_ammo = True
                     item.amount = item.amount - 1
-                    if item.amound <= 0:
+                    if item.amount <= 0:
                         self.inventory.remove(item)
             if not found_ammo:
                 return False
@@ -276,7 +277,8 @@ class Creature(GameObject):
                 grid[self.pos[0]][self.pos[1]].append(drop_item[0])
         player.xp += self.xp
         player.score += self.xp
-        grid[self.pos[0]][self.pos[1]].remove(self)
+        if self in grid[self.pos[0]][self.pos[1]]:
+            grid[self.pos[0]][self.pos[1]].remove(self)
 
 class Player(Creature):
     def __init__(self, race, name, textureIndex, pos, fitness, cunning, magic, perception, abilities, damage_resistances, status_resistances):
@@ -313,14 +315,15 @@ class CreatureSegment(GameObject):
     def move(self, grid, new_pos):
         old_pos = self.pos
         grid[new_pos[0]][new_pos[1]].append(self)
-        grid[self.pos[0]][self.pos[1]].remove(self)
+        if self in grid[self.pos[0]][self.pos[1]]:
+            grid[self.pos[0]][self.pos[1]].remove(self)
         self.pos = new_pos
         return old_pos
 
         # for game_object in grid[new_pos[0]][new_pos[1]]:
             # if isinstance(game_object, Terrain):
                 # game_object.on_step(grid, self)
-
+    
 
 class Boss(Creature):
     def __init__(self, name, textureIndex, pos, segments, hp, mp, speed, status_effects, fitness, cunning, magic, dodge,
@@ -337,7 +340,8 @@ class Boss(Creature):
         drop_index = random.randint(0, len(self.drop_table) - 1)
         grid[self.pos[0]][self.pos[1]].append(self.drop_table[drop_index])
         player.xp += self.xp
-        grid[self.pos[0]][self.pos[1]].remove(self)
+        if self in grid[self.pos[0]][self.pos[1]]:
+            grid[self.pos[0]][self.pos[1]].remove(self)
 
 
 class Consumable(Item):
@@ -540,7 +544,8 @@ class Decor(GameObject):
     def on_interact(self, grid, creature):
         pass
     def on_destroy(self, grid):
-        grid[self.pos[0]][self.pos[1]].remove(self)
+        if self in grid[self.pos[0]][self.pos[1]]:
+            grid[self.pos[0]][self.pos[1]].remove(self)
     def passive_behavior(self, grid):
         pass
 
