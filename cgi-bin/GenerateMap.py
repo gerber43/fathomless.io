@@ -431,4 +431,21 @@ def generateMap(width, height, depth, num_creatures, player, num_items):
             for k in range(len(final_grid[i][j])):
                 if hasattr(final_grid[i][j][k], "intensity") and not isinstance(final_grid[i][j][k],Light):
                     spread_light(final_grid, [i,j], final_grid[i][j][k].intensity, [])
+    max_light = 0
+    for i in range(len(final_grid)):
+        for j in range(len(final_grid[i])):
+            for k in range(len(final_grid[i][j])):
+                if hasattr(final_grid[i][j][k], "intensity") and isinstance(final_grid[i][j][k],Light) and final_grid[i][j][k].intensity > max_light:
+                    max_light = final_grid[i][j][k].intensity
+    if (max_light > .8):
+         for i in range(len(final_grid)):
+            for j in range(len(final_grid[i])):
+                for k in range(len(final_grid[i][j])):
+                    if hasattr(final_grid[i][j][k], "intensity") and isinstance(final_grid[i][j][k],Light):
+                        if (final_grid[i][j][k].intensity/max_light > .2):
+                            final_grid[i][j][k].intensity = final_grid[i][j][k].intensity/max_light
+                        else:
+                            final_grid[i][j][k].intensity = .2
+        
+        
     return final_grid
