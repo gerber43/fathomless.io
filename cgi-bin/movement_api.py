@@ -70,9 +70,10 @@ def process_Creature_movement(position, direction, game_map):
     creature = get_object_by_class(game_map[position[0]][position[1]],"Creature")
     if creature and len(creature.segments) > 0:
         for segment in creature.segments:
-            if not is_valid_move(segment.pos[0] + new_x - x, segment.pos[1] + new_y - y, game_map, True):
+
+            if not is_valid_move(segment.pos[0] - x + new_x, segment.pos[1] - y + new_y, game_map, True):
                 return position, "cannot fit"
-                    
+    
     if not is_valid_move(new_x, new_y, game_map):
         
         if (len(game_map) > new_x and len(game_map) > new_y and get_object_by_class(game_map[new_x][new_y],"Terrain") and get_object_by_class(game_map[position[0]][position[1]],"Player")):
@@ -277,6 +278,10 @@ def is_valid_move(x, y, game_map, isMultiTile = False):
         return False
     if get_object_by_class(game_map[x][y],"Creature") and not isMultiTile:
         return False
+    if get_object_by_class(game_map[x][y],"CreatureSegment") and not isMultiTile:
+        return False
+    if get_object_by_class(game_map[x][y],"Player"):
+        return False
     if (get_object_by_class(game_map[x][y],"Terrain") and not get_object_by_class(game_map[x][y],"Terrain").passable and (get_object_by_class(game_map[x][y],"Decor") and get_object_by_class(game_map[x][y],"Decor").passable)):
         return True #if non passable terrain but passable decor 
     if (get_object_by_class(game_map[x][y],"Terrain") and not get_object_by_class(game_map[x][y],"Terrain").passable):
@@ -346,7 +351,7 @@ def get_map_subset(player_pos, game_map, fov_radius):
                     
                 if (internalGrid.get('Lightterrain') is not None):
                     internalGrid['Terrain'] = internalGrid['Lightterrain']
-                    #del internalGrid['LightTerrain']
+                    del internalGrid['Lightterrain']
                 if (internalGrid.get('Lightdecor') is not None):
                     internalGrid['Decor'] = internalGrid['Lightdecor']
                     del internalGrid['Lightdecor']
@@ -369,6 +374,7 @@ def get_map_subset(player_pos, game_map, fov_radius):
 
                 
                 if (internalGrid.get('Creature') is not None and not segment):
+                    
                     
                     if (internalGrid['Creature'].get('turns')):
                         internalGrid['Creature']['score'] = internalGrid['Creature']['score'] - internalGrid['Creature']['turns']
@@ -399,6 +405,7 @@ def get_map_subset(player_pos, game_map, fov_radius):
                             internalGrid['Creature']['inventory'][i].enchantment = internalGrid['Creature']['inventory'][i].enchantment.name
                    '''
                     internalGrid['Creature']['inventory'] = [inventory.__dict__ for inventory in internalGrid['Creature']['inventory'] if inventory]
+                   
                     if (internalGrid['Creature'].get('drop_table') is not None):
                         del internalGrid['Creature']['drop_table']
                 
@@ -513,6 +520,32 @@ def find_current_level(game_map):
 def jsonify(array):
     if (isinstance(array,GameObject)):
         print(dir(array))
+biomes_dict = {
+    0: 'Caves: Opening',
+    1: 'Caves: Middle Ground',            
+    2: 'Caves: Deepest Layer',            
+    3: 'Cove',             
+    4: 'Mine',            
+    5: 'Corruptite Mine',  
+    6: 'Sewer: Access A',            
+    7: 'Sewer Access B',            
+    8: 'Shanty Town',       
+    9: 'Magma Core',       
+    10: 'Deep Cavern',     
+    11: 'Ziggurat',        
+    12: 'Embers',          
+    13: 'Columbarium',     
+    14: 'Catacomb',        
+    15: 'Carrion',         
+    16: 'Worldeaters Gut', 
+    17: 'Necropolis',      
+    18: 'Underworld',     
+    19: 'Ancient City',    
+    20: 'Old Temple',      
+    21: 'Cosmic Void',     
+    22: 'World Heart',
+    23: 'World Heart'  
+}
     
 if (HTTP_FIELDS.getvalue('uuid')):
       uuid = HTTP_FIELDS.getvalue('uuid')
@@ -549,6 +582,8 @@ if (HTTP_FIELDS.getvalue('uuid')):
           game_map = generateMap(0, level+","+difficulty,player)
           turn_log.append({"level":level+","+difficulty})
           game_log += "New Level Generated "+level+","+difficulty+"\n"
+          message = "Welcome To The Caverns"
+          
           if (int(level) == 23):
               gameOver = True
       else:
@@ -653,10 +688,13 @@ if (HTTP_FIELDS.getvalue('uuid')):
                   targetAbility = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").abilities[selected_index]
                   game_log += targetAbility.name+" Used On "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).pos)
                   message = targetAbility.name+" Used On "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).pos)
-                      
+                  
+                  turn_log.append({"type":"ability","before":get_relative_tile(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").pos),"after":get_relative_tile(target_coordinates)})
+
       else:
           turn_log.append({"level":find_current_level(game_map)})
-          message = "map loaded"
+          message = "Welcome To The "+biomes_dict[int(find_current_level(game_map).split(",")[0])]
+
     #update the Creature's position
       if (message == "Creature has moved"):
           player_pos = find_player_position(game_map)
@@ -676,7 +714,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
               
               game_map = generateMap(0, depth,player)
               turn_log.append({"level":depth})
-              message = "New Map: Level "+str(depth)
+              message = "Welcome To The "+biomes_dict[int(depth.split(",")[0])]
               player_pos = find_player_position(game_map)
               game_log += "New Level Generated "+depth+"\n"
       player = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player")
@@ -772,6 +810,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
                   if not is_jsonable(map_subset[i][j][objectKeys[k]]):
                       print("here")
                       jsonify(map_subset[i][j][objectKeys[k]])
+                      
                       map_subset[i][j][objectKeys[k]]['creature'] = "BAD"
       response = {
           "message": message if message else "",
