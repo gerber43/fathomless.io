@@ -11,6 +11,8 @@ if (isset($_REQUEST['test'])) {
 if (file_exists("maps/Test.pkl")) {
     unlink("maps/Test.pkl");
 }
+file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&difficulty=difficulty&race=Human&name=Test");
+
 } else {
     session_required();
     if (!file_exists("maps/".$_SESSION['uuid'].".pkl")) {
@@ -681,7 +683,9 @@ if (file_exists("maps/Test.pkl")) {
             var inspectingPlayer = activeTile = isAction = songPosition = sfxVolume = musicVolume = currentLevel = playerDirection = viewRadius = keyBindOpened = inspecting = music = playMusic = sfx = isLowResolution = start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter  = inventoryOpened = asciiMode= 0;
             var objectTypes = ["Bottom","Terrain","Item","Decor","Creature","Light","Top"];
             var keyBinds = (!localStorage.getItem("keyBinds"))?{"Inventory":"KeyE","Select":"Enter","Settings":"Escape","Attack":"Space","Movement":["ArrowRight","ArrowDown","ArrowLeft","ArrowUp","KeyD","KeyS","KeyA","KeyW"]}:(JSON.parse(localStorage.getItem("keyBinds")));
-            var fov = 11;
+            var fov = (localStorage.getItem("fov"))?localStorage.getItem("fov"):11;
+            document.getElementById('fovLevel').innerHTML = "Current Fov: "+fov;
+            document.getElementById('fovSlider').value = fov;
             if (localStorage.getItem("soundSettings")) {
                 var soundSettings = JSON.parse(localStorage.getItem("soundSettings"));
             playMusic = soundSettings[0];
@@ -1221,6 +1225,11 @@ confirmationCoordinates = coordinates;
                 if (type == "damaged") {
                     target.style.backgroundImage = "url('https://8bitdogsol.dog/images/f121eab4be5ed47f5a67b9ee8ba2c7ca.gif')";
                 }
+                
+                if (type == "ability") {
+                    
+                    target.style.backgroundImage = "url('https://fathomless.io/assets/images/ability.gif')";
+                }
             }
             function loadTrack() {
                 if (playMusic) {
@@ -1298,8 +1307,9 @@ statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
                 var gameOver = 0
 
                 response["turn_log"].forEach((update) => {
-                    if (update['buy']) {
-                        console.log(update['buy'])
+                    
+                    if (update['type'] && update['type'] == "ability" && update['after'] && update['before']) {
+                        applyEffects(document.getElementById((update['after'][0]+playerDirection[0])+","+(update['after'][1]+playerDirection[1])).querySelector(".Top"),"ability",.2)
                     }
                     if (update['type'] == "attack" &&update['after'] && update['before']) {
                         applyEffects(document.getElementById((update['after'][0]+playerDirection[0])+","+(update['after'][1]+playerDirection[1])).querySelector(".Top"),"damaged",.2)
@@ -1628,6 +1638,7 @@ statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
                             fov = Item.value;
                             document.getElementById('fovLevel').innerHTML = "Current Fov: "+fov;
                             sendRequest();
+                            localStorage.setItem("fov", fov)
                         }
                     }
                     
