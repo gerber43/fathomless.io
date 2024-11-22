@@ -291,7 +291,7 @@ class Player(Creature):
                          cunning * 2, (float(cunning) ** (2.0 / 3.0)) / 10.0, perception,
                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          [None, None, None, None, None, None, None, None, None], abilities, damage_resistances,
-                         status_resistances, [Gold([-1, -1], 100)], 20, None, 0, 1)
+                         status_resistances, [Gold([-1, -1], 105)], 20, None, 0, 1)
     def check_level(self, grid):
         if self.xp >= 20*self.level:
             #TODO: display levelup screen, where player chooses to place their stat point in fitness, cunning, or magic and allocates their 5 (6 in case of human) skill points among their skills
