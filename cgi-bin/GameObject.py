@@ -94,6 +94,9 @@ class Creature(GameObject):
             if hasattr(segment,"type") and segment.type == "Static":
                 #print(segment.pos)
                 previous_movement = segment.move(grid, (segment.pos[0] + diff[0], segment.pos[1] + diff[1]))
+                for objects in grid[segment.pos[0]][segment.pos[1]]:
+                    if isinstance(objects,Terrain):
+                        objects.on_step(grid, segment.creature)
 
             if hasattr(segment,"type") and segment.type == "Fluid":
                 previous_movement = segment.move(grid, previous_movement)
