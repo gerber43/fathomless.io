@@ -413,7 +413,7 @@ def generateMap(width, height, depth, num_creatures, player, num_items):
     place_creatures_by_biome(terrain_grid, current_biome, num_creatures)
     for i in range(len(final_grid)):
         for j in range(len(final_grid[i])):
-            final_grid[i][j].append(Bottom("Bottom", 1,(i,j)))
+            final_grid[i][j].append(Bottom("Bottom", current_biome.floorTexture,(i,j)))
             
             final_grid[i][j].append(Light((i,j),.4))
             
