@@ -523,7 +523,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
       name = HTTP_FIELDS.getvalue('name') if (HTTP_FIELDS.getvalue('name')) else "Name"
       interact = HTTP_FIELDS.getvalue('interact') if (HTTP_FIELDS.getvalue('interact')) else None
       buy = (HTTP_FIELDS.getvalue('buy')) if (HTTP_FIELDS.getvalue('buy')) else None
-
+      skills = (HTTP_FIELDS.getvalue('skills')) if (HTTP_FIELDS.getvalue('skills')) else None
       levelUp = HTTP_FIELDS.getvalue('levelUp') if (HTTP_FIELDS.getvalue('levelUp')) else None
       fitness = int(HTTP_FIELDS.getvalue('fitness')) if (HTTP_FIELDS.getvalue('fitness')) else 0
       magic = int(HTTP_FIELDS.getvalue('magic')) if (HTTP_FIELDS.getvalue('magic')) else 0
@@ -671,39 +671,59 @@ if (HTTP_FIELDS.getvalue('uuid')):
           if shop:
               if shop.buy(game_map, player, shop.inventory[int(buy)]):
                   turn_log.append({"buy":"bought:"+buy})
+                  turn_log.append({"shop":"interacted"})
                   message = "Item Bought"
               else:
                   turn_log.append({"buy":"failed:"+buy})
+                  turn_log.append({"shop":"interacted"})
                   message = "Not enough gold"
       turn_log.append({"race":player.race})
 
       points = 5 if player.__class__.__name__ != "Human" else 6
-      
-      if (levelUp != None and player.xp >= 20*player.level and (fitness + cunning + magic) == points):
+      totalSkills = 0
+      if skills:
+          skills = skills.split(",")
+          for i in range(len(skills)):
+              skills[i] = int(skills[i])
+              totalSkills += skills[i]
+      if (levelUp != None and player.xp >= 20*player.level and (fitness + cunning + magic) == 1 and totalSkills == points):
           
 
           player.fitness += fitness
           player.cunning += cunning
           player.magic += magic
-          #TODO: display levelup screen, where player chooses to place their stat point in fitness, cunning, or magic and allocates their 5 (6 in case of human) skill points among their skills
           player.xp -= 20*player.level
           player.level += 1   
-          #TODO: display levelup screen, where player chooses to place their stat point in fitness, cunning, or magic and allocates their 5 (6 in case of human) skill points among their skills
           player.max_hp += player.fitness*10
           player.max_mp += player.magic*10
           player.dodge += player.cunning*2
           player.crit_chance += (float(player.cunning) ** (2.0/3.0))/10.0
+          
+          
+          for i in range(len(skills)):
+              player.skills[i] += skills[i]
+          
+          
           turn_log.append({"level_up":player.level})
           message = "Leveled Up To Level "+str(player.level)
           game_log += "Leveled Up To Level "+str(player.level)+"\n"
-      if (levelUp != None and player.xp >= 20*player.level and (fitness + cunning + magic) != points):   
+      if (levelUp != None and player.xp >= 20*player.level and (fitness + cunning + magic) != 1 and totalSkills == points):   
           turn_log.append({"level_up_menu":{"level":player.level + 1,"points":points}})
-          message = "Please spend "+str(points - (fitness + cunning + magic))+" more points"
+          message = "Please increase Fitness, Cunning or Magic"
+      if (levelUp != None and player.xp >= 20*player.level and (fitness + cunning + magic) == 1 and totalSkills != points):   
+          turn_log.append({"level_up_menu":{"level":player.level + 1,"points":points}})
+          message = "Please spend "+str(points - totalSkills)+" more points"
+      if (levelUp != None and player.xp >= 20*player.level and (fitness + cunning + magic) != 1 and totalSkills != points):   
+          turn_log.append({"level_up_menu":{"level":player.level + 1,"points":points}})
+          message = "Please spend "+str(points - totalSkills)+" more points and choose Fitness, Cunning or Magic"
+
+
 
       if player.xp >= 20*player.level:
           points = 5 if player.__class__.__name__ != "Human" else 6
           turn_log.append({"level_up_menu":{"level":player.level + 1,"points":points}})
-      #print(((player.equipment[0].statuses)))
+
+
     # Save the updated map back to the file
       save_map(file_path, game_map)
       
