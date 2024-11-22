@@ -4,7 +4,7 @@ import cgi
 import math
 import random
 from abc import abstractmethod
-from GameObject import Weapon, Equippable, CreatureSegment
+from GameObject import Weapon, Equippable, CreatureSegment, Light
 from SubSystem import *
 from Terrain import Water, DeepWater, Fire, PoisonFog
 
@@ -228,6 +228,31 @@ class PoisonCloud(Spell):
                 if i == 0 and j == 0:
                     grid[target.pos[0] + i][target.pos[1] + j].append(PoisonFog([target.pos[0] + i, target.pos[1] + j]))
 
+class DarkShroud(Spell):
+    def __init__(self):
+        super().__init__("Dark Shroud", "45", 9, 25, 5, "Elementalism")
+    def use(self, grid, caster, target):
+        if super().use(grid, caster, target) is None:
+            return False
+        target = caster
+        for i in range(-1, 1):
+            for j in range(-1, 1):
+                if i == 0 and j == 0:
+                    for game_object in grid[target.pos[0] + i][target.pos[1] + j]:
+                        if isinstance(game_object, Light):
+                            game_object.intensity = 0
+
+class WickedRend(Spell):
+    def __init__(self):
+        super().__init__("Wicked Rend", "45", 9, 25, 5, "Cursing")
+    def use(self, grid, caster, target):
+        target = super().use(grid, caster, target)
+        if target is None:
+            return False
+        target.hp -= int(20 * target.resistances(lookup_damage_type_id("Dark")))
+        target.gain_status_effect(grid, "Bleed", 5, False, True, None)
+
+
 class ChaosStorm(Spell):
     def __init__(self):
         super().__init__("Chaos Storm", "45", 15, 150, 5, "Elementalism")
@@ -242,7 +267,7 @@ class ChaosStorm(Spell):
 
 class Flay(Spell):
     def __init__(self):
-        super().__init__("Curse of Decay", "45", 2, 10, 5, "Cursing")
+        super().__init__("Flay", "45", 2, 10, 5, "Cursing")
     def use(self, grid, caster, target):
         target = super().use(grid, caster, target)
         if target is None:

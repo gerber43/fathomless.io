@@ -4,7 +4,7 @@ import sys
 import cgi
 from GameObject import Item, Consumable, Equippable, Weapon, TwoHandedWeapon, Smear, LightSourceItem
 from SubSystem import lookup_damage_type_id, lookup_skill_id
-from ActiveAbilities import Spell, Technique, HealingTouch, CreateWater, Flay, FireBolt
+from ActiveAbilities import Spell, Technique, HealingTouch, CreateWater, Flay, FireBolt, DarkShroud, WickedRend
 from StatusEffects import Bleed, Poison, Burning, Rot, Manaburn
 from Enchantment import random_enchantment
 
@@ -903,6 +903,30 @@ class CreateWaterScroll(Consumable):
         if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
             return -1
         target.abilities.append(CreateWater())
+
+class DarkShroudScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Create Water", "41", pos, amount, 1, 9, 900)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(DarkShroud())
+
+class WickedRendScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Wicked Rend", "41", pos, amount, 1, 9, 900)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(WickedRend())
 
 #smears
 

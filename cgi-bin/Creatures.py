@@ -774,36 +774,26 @@ class XotilHighPriest(Boss):
 # Undercity
 class DarkElfSorceress(Creature):
     def __init__(self, pos):
-        super().__init__("Dark Elf Sorceress", "22", pos, [], 70, 0, 1, [], 1, 5, 15, 5, 0.3, 999,
+        super().__init__("Dark Elf Sorceress", "22", pos, [], 70, 200, 1, [], 1, 5, 15, 5, 0.3, 999,
                          (0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 15, 15, 15, 15, 0, 0, 0, 0, 0, 0, 2, 0),
-                         (WoodenClub([-1, -1], None), None, None, None, None, None, None, None, None), [], [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.7, 0.5],
-                         basicStatusResistances, [], 0, [[Gold([-1, -1], 60), 0.7]], 110, 11)
+                         (WoodenClub([-1, -1], None), None, None, None, None, None, None, None, None), [DarkShroud(), WickedRend()], [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.7, 0.5],
+                         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 0, [[Gold([-1, -1], 60), 0.7], [DarkShroudScroll([-1, -1], 1), 0.1]], 110, 11)
 
 # Undercity
 class Drider(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Drider", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Drider", "22", pos, [], 150, 0, 1, [], 10, 10, 10, 3, 0.3, 999,
+                         [0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 2, 0],
+                         (MithrilHalberd([-1, -1], Darkness()), Unavailable(), None, None, None, None, None, None, None), [], [0.5, 0.7, 0.8, 0.0, 0.3, 1.0, 0.3, 0.0, 0.0, 1.0, 0.0, 0.7, 0.5],
+                         [0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Boss of Undercity
 class DarkElfQueen(Boss):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Dark Elf Queen", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
-                         (weapon, None, None, None, None, None, None, None, None),
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
-                         basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Dark Elf Queen", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 300, 300, 1, [], 30, 5, 30, 3, 0.2,
+                         (MithrilShortsword([-1, -1], Evil()), MithrilShortsword([-1, -1], Evil()), None, None, None, None, None, None, None),
+                         [20, 0, 0, 0, 0, 0, 0, 0, 0, 20, 20, 20, 20, 20, 10, 0, 0, 0, 2, 0], [DarkShroud(), WickedRend(), Freeze()],
+                         [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.7, 0.5], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 0, [MithrilShortsword([-1, -1], Evil()), WickedRendScroll([-1, -1], 1)], 200, 20)
 
 
 # Embers and Columbarium
@@ -815,7 +805,7 @@ class AshGolem(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Ash Golem", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -828,7 +818,7 @@ class ObsidianGolem(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Obsidian Golem", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -842,7 +832,7 @@ class AshColossus(Boss):
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Obsidian Golem", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None),
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [],
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 
@@ -855,7 +845,7 @@ class AshGhoul(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("AshGhoul", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -868,7 +858,7 @@ class AshWight(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("AshWight", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -881,7 +871,7 @@ class Ghost(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("AshGhoul", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -894,7 +884,7 @@ class Wraith(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Wraith", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -909,7 +899,7 @@ class Skeleton(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Skeleton", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -922,7 +912,7 @@ class Zombie(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Zombie", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -936,7 +926,7 @@ class Ghoul(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Ghoul", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -949,7 +939,7 @@ class Ghast(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Ghast", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -962,7 +952,7 @@ class Wight(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Wight", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -976,7 +966,7 @@ class Necromancer(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Necromancer", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -989,7 +979,7 @@ class Vampire(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Vampire", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1003,7 +993,7 @@ class FleshAmalgam(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Flesh Amalgam", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1016,7 +1006,7 @@ class Polyp(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Polyp", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1030,7 +1020,7 @@ class Blank(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Blank", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1044,7 +1034,7 @@ class Unfinished(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Unfinished", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1058,7 +1048,7 @@ class Parasite(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Parasite", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1071,7 +1061,7 @@ class BloodCrawler(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Bloodcrawler", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1084,7 +1074,7 @@ class Devourer(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Devourer", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1098,7 +1088,7 @@ class WorldeaterHeart(Boss):
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Worldeater's Heart", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None),
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [],
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Necropolis
@@ -1110,7 +1100,7 @@ class Lich(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Lich", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1123,7 +1113,7 @@ class DeathKnight(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Death Knight", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1136,7 +1126,7 @@ class WraithLord(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Wraith Lord", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1150,7 +1140,7 @@ class DeadKing(Boss):
             weapon = WoodenClub((-1, -1), None)
         super().__init__("King of the Dead", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None),
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [],
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 
@@ -1163,7 +1153,7 @@ class Imp(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Imp", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1176,7 +1166,7 @@ class Demon(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Demon", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1189,7 +1179,7 @@ class Hellhound(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Hellhound", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1202,7 +1192,7 @@ class Hellbat(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Hellbat", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1215,7 +1205,7 @@ class TricksterImp(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Trickster Imp", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1228,7 +1218,7 @@ class ConfusedSoul(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Confused Soul", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1242,7 +1232,7 @@ class DeceitDemon(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Demon of Deceit", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1256,7 +1246,7 @@ class DeceitArchdemon(Boss):
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Archdemon of Deceit", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None),
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [],
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Underworld 2
@@ -1268,7 +1258,7 @@ class AngryImp(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Angry Imp", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1281,7 +1271,7 @@ class RageDemon(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Demon of Rage", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1295,7 +1285,7 @@ class RageArchdemon(Boss):
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Archdemon of Rage", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None),
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [],
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Underworld 3
@@ -1307,7 +1297,7 @@ class CovetousImp(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Covetous Imp", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1320,7 +1310,7 @@ class CharitableSoul(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Charitable Soul", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1333,7 +1323,7 @@ class GreedDemon(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Demon of Greed", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1347,7 +1337,7 @@ class GreedArchdemon(Boss):
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Archdemon of Greed", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None),
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [],
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Underworld 4
@@ -1359,7 +1349,7 @@ class SadImp(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Sad Imp", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1372,7 +1362,7 @@ class LostSoul(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Lost Soul", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1385,7 +1375,7 @@ class DepressedDemon(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Demon of Depression", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1399,7 +1389,7 @@ class HopelessArchdemon(Boss):
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Archdemon of Hopelessness", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None),
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [],
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Underworld 5
@@ -1411,7 +1401,7 @@ class PeacefulSoul(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Peaceful Soul", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1424,7 +1414,7 @@ class FateDemon(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Demon of Fate", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1438,7 +1428,7 @@ class FinalDemon(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Demon of Finality", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1452,7 +1442,7 @@ class DoomArchdemon(Boss):
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Archdemon of Doom", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
                          (weapon, None, None, None, None, None, None, None, None),
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [],
                          basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Ancient City
@@ -1465,7 +1455,7 @@ class AncientServant(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Ancient Servant", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1478,7 +1468,7 @@ class Apparition(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Apparition", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1491,7 +1481,7 @@ class Memory(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Memory of the Past", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1506,7 +1496,7 @@ class Cultist(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Cultist", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1519,7 +1509,7 @@ class Shambler(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Shambler", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1532,7 +1522,7 @@ class WrithingOne(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Writhing One", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1546,7 +1536,7 @@ class DeepLord(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Lord of the Deep", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1560,7 +1550,7 @@ class Mother(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("The Mother", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1574,7 +1564,7 @@ class Destroyer(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("The Destroyer", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1588,7 +1578,7 @@ class Scholar(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("The Scholar", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1602,7 +1592,7 @@ class Schemer(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("The Schemer", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1616,7 +1606,7 @@ class VoidBeast(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Void Beast", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1629,7 +1619,7 @@ class StarEater(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Star Eater", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
@@ -1642,21 +1632,22 @@ class Annihilator(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Void Beast", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Boss of Cosmic Void
-class GreatDreamer(Creature):
+class GreatDreamer(Boss):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
             weapon = IronDagger((-1, -1), None)
         else:
             weapon = WoodenClub((-1, -1), None)
-        super().__init__("Great Dreamer", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
+        super().__init__("Great Dreamer", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
+                         (weapon, None, None, None, None, None, None, None, None),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
 
 # Heart of the World , final boss
@@ -1668,6 +1659,6 @@ class AbyssDragon(Creature):
         else:
             weapon = WoodenClub((-1, -1), None)
         super().__init__("Abyssal Dragon", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
