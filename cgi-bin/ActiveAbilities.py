@@ -510,4 +510,22 @@ class Freeze(Spell):
             return False
         target.gain_status_effect(grid, "Frozen", 3, False, True, None)
 
+class Exsanguinate(Spell):
+    def __init__(self):
+        super().__init__("Exsanguinate", "45", 10, 30, 5, "Cursing")
+    def use(self, grid, caster, target):
+        target = super().use(grid, caster, target)
+        if target is None:
+            return False
+        target.gain_status_effect(grid, "Bleed", 15, False, True, None)
+
+class SiphonBlood(Spell):
+    def __init__(self):
+        super().__init__("Siphon Blood", "45", 10, 35, 5, "Cursing")
+    def use(self, grid, caster, target):
+        target = super().use(grid, caster, target)
+        if target is None:
+            return False
+        target.gain_status_effect(grid, "Bloodsiphon", 5, False, True, caster)
+
 #enemy-only techniques

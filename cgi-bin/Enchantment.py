@@ -155,11 +155,11 @@ class Magic(Enchantment):
 
 class Evil(Enchantment):
     def __init__(self,):
-        super().__init__("Magic", 13, 390, [(lookup_damage_type_id("Dark"), 10, 0), (lookup_damage_type_id("Arcane"), 5, 2)], [])
+        super().__init__("Evil", 13, 390, [(lookup_damage_type_id("Dark"), 10, 0), (lookup_damage_type_id("Arcane"), 5, 2)], [])
 
 class Wizardry(Enchantment):
     def __init__(self,):
-        super().__init__("Magic", 14, 420, [(lookup_damage_type_id("Arcane"), 10, 4)], [])
+        super().__init__("Wizardry", 14, 420, [(lookup_damage_type_id("Arcane"), 10, 4)], [])
 
 class Fading(Enchantment):
     def __init__(self,):
@@ -171,10 +171,8 @@ class Unraveling(Enchantment):
 
 class Annihilation(Enchantment):
     def __init__(self,):
-        super().__init__("Fading", 20, 600, [(lookup_damage_type_id("Existence"), 10, 0)], [])
+        super().__init__("Annihilation", 20, 600, [(lookup_damage_type_id("Existence"), 10, 0)], [])
 
-
-#other enchantment definitions
 
 #enchantments list ordered from highest level to lowest level
 weapon_enchantments = [Heat(), Chilling(), Fire(), Sparking(), Illumination(), Shadow(), Incineration(), Dissolving(), Decay(), Lightning(), Light(), Darkness(), Magic(), Hellfire(), HolyLightning(), Melting(), Death(), Fading(), Gravechill(), Electrocution(), Evil(), Wizardry(), Undeath(), Flux(), Unraveling(), Chaos(), Twilight(), Annihilation()]

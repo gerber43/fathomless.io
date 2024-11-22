@@ -2,6 +2,7 @@
 import sys
 import cgi
 import random
+from asyncio import start_unix_server
 
 from GameObject import Creature, CreatureSegment, Boss, Gold, Unavailable
 from Items import *
@@ -493,8 +494,8 @@ class BirthMaggot(ActiveAbility):
     def __init__(self):
         super().__init__("Birth", "1", 0, 5, 0, 1, "")
     def use(self, grid, caster, target):
-        target.append(Maggot)
         super().use(grid, caster, target)
+        grid[target.pos[0]][target.pos[1]].append(Maggot(target.pos))
 
 # Shantytown 2 boss
 class Rotmother(Boss):
@@ -637,7 +638,7 @@ class GiantSpider(Creature):
     def __init__(self, pos):
         super().__init__("Giant Spider", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 60, 0, 1, [], 4, 3, 0, 0.3, 0.5, 999,
                          (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-                         (GiantSpiderFangs(), None, None, None, None, None, None, None, None), [], [0.5, 0.7, 0.3, 0.0, 0.0, 0.0, 0.0, 0.4, 1.0, 1.0, 0.2, 0.0, 0.0],
+                         (GiantSpiderFangs(), None, None, None, None, None, None, None, None), [], [0.5, 0.7, 0.3, 0.0, 0.0, 1.0, 0.0, 0.4, 1.0, 1.0, 0.2, 0.0, 0.0],
                          [0.7, 0.5, 0.0, 0.0, 0.0, 1.0, 0.1, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0], [], 0, [], 80, 8)
 
 # Deep Cave
@@ -648,72 +649,127 @@ class CaveGiant(Creature):
                          (WoodenGreatclub([-1, -1]), None, None, None, None, None, None, None, None), [], basicDamageResistances,
                          basicStatusResistances, [], 0, [[Gold([-1, -1], 20), 0.2], [WoodenGreatclub([-1, -1], None), 0.5],], 100, 10)
 
+class Macuahuitl(Weapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Macuahuitl", "17", pos, 6, 50, 5, "One-Handed Blade", 1, 2.5,
+                         [[lookup_damage_type_id("Slashing"), 15, 8]], [Bleed(7, False)], enchantment)
+
+class LargeMacuahuitl(TwoHandedWeapon):
+    def __init__(self, pos, enchantment):
+        super().__init__("Large Macuahuitl", "17", pos, 6, 50, 20, "Two-Handed Blade", 1, 3,
+                         [[lookup_damage_type_id("Slashing"), 30, 10]], [Bleed(10, False)], enchantment)
+
+class HideShield(Equippable):
+    def __init__(self, pos, enchantment):
+        super().__init__("Hide Shield", "42", pos, 3, 30, 3, "Hands", enchantment)
+
+    def on_equip(self, grid, equipped_creature):
+        super().on_equip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] += 0.03
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] += 0.05
+
+    def on_unequip(self, grid, equipped_creature):
+        super().on_unequip(grid, equipped_creature)
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.03
+        (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.05
 
 # Ziggurat
 class XotilWarrior(Creature):
     def __init__(self, pos):
         weapon_choice = random.randint(0, 1)
         if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
+            weapon_one = Macuahuitl([-1, -1], Shadow())
+            weapon_two = HideShield([-1, -1], None)
+            pierce_resist = 0.03
+            slash_resist = 0.05
         else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Xotil Warrior", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+            weapon_one = LargeMacuahuitl([-1, -1], Darkness())
+            weapon_two = Unavailable()
+            pierce_resist = 0.0
+            slash_resist = 0.0
+        super().__init__("Xotil Warrior", "22", pos, [], 50, 0, 1, [], 5, 5, 0, 5, 0.5, 15,
+                         (0, 10, 0, 0, 10, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0),
+                         (weapon_one, weapon_two, None, None, None, None, None, None, None), [], [pierce_resist, slash_resist, 0.0, 0.1, 0.3, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0],
+                         [1.0, 0.5, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0], [], 0, [[Whetstone([-1, -1], 1), 0.7], [Macuahuitl([-1, -1], None), 0.05]], 80, 8)
+
+class AbominationSlam(Weapon):
+    def __init__(self, ):
+        super().__init__("Slam", "33", [-1, -1], 0, 0, 0, "One-Handed Mace", 1, 1.25, [[lookup_damage_type_id("Blunt"), 20, 0]], [Bleed(5, False)],None)
+
 
 # Ziggurat
 class XotilAbomination(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Xotil Abomination", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Xotil Abomination", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 200, 0, 1, [Regeneration(10, True)], 20, 3, 0, 2, 0.1, 10,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (AbominationSlam(), None, None, None, None, None, None, None, None), [], [0.5, 0.8, 0.9, 0.3, 0.6, 1.0, 0.0, 0.3, 1.0, 1.0, 0.5, 0.5, 0.0],
+                         [0.5, 0.5, 0.1, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.8, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0], [], 0, [], 100, 10)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 10, False, target):
+            self.basic_attack_damage(grid, AbominationSlam(), target, self.crit_check(grid))
 
  #Ziggurat
 class XotilPriest(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Xotil Priest", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Xotil Priest", "22", pos, [], 50, 200, 1, [], 1, 2, 15, 2, 0.1, 15,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 15, 15, 15, 15, 0, 0, 0, 0, 0, 0, 2, 0),
+                         (WoodenClub([-1, -1], None), None, None, None, None, None, None, None, None), [Exsanguinate(), SiphonBlood()], [0.0, 0.0, 0.0, 0.1, 0.3, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0],
+                         [1.0, 0.5, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0], [], 0, [[FlayScroll([-1, -1], 1), 0.2]], 100, 10)
+
+class SerpentFangs(Weapon):
+    def __init__(self, ):
+        super().__init__("Fangs", "33", [-1, -1], 0, 0, 0, "One-Handed Blade", 1, 2, [[lookup_damage_type_id("Piercing"), 15, 0]], [Bleed(10, False)],None)
 
 #Ziggurat
 #A ferocious serpent made out of obsidian and blood
 class DarkSerpent(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Dark Serpent", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Dark Serpent", "22", pos, [CreatureSegment(self, "33", (pos[0] + 1, pos[1]), "Fluid"), CreatureSegment(self, "33", (pos[0], pos[1] + 1), "Fluid"), CreatureSegment(self, "33", (pos[0] + 1, pos[1] + 1), "Fluid"), CreatureSegment(self, "33", (pos[0], pos[1] + 2), "Fluid"), CreatureSegment(self, "33", (pos[0] + 1, pos[1] + 2), "Fluid")], 30, 0, 1, [], 5, 5, 0, 5, 0.5, 10,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (SerpentFangs(), None, None, None, None, None, None, None, None), [], [0.9, 1.0, 0.7, 1.0, 1.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 0.0, 0.0],
+                         [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0], [], 0, [], 100, 10)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 15, False, target):
+            self.basic_attack_damage(grid, SerpentFangs(), target, self.crit_check(grid))
+
+class DarkRay(Weapon):
+    def __init__(self, ):
+        super().__init__("Ray", "33", [-1, -1], 0, 0, 0, "One-Handed Blade", 5, 2, [[lookup_damage_type_id("Dark"), 20, 0]], [],None)
+
+class DarkSun(Creature):
+    def __init__(self, pos):
+        super().__init__("Dark Sun", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 30, 0, 1, [], 0, 0, 0, 0, 0.25, 20,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (DarkRay(), None, None, None, None, None, None, None, None), [], [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                         [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], [], 0, [], 0, 0)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 20, False, target):
+            self.basic_attack_damage(grid, SerpentFangs(), target, self.crit_check(grid))
+
+class SummonDarkSun(Spell):
+    def __init__(self):
+        super().__init__("Dark Sun", "45", 20, 100, 5, "Summoning")
+    def use(self, grid, caster, target):
+        target = super().use(grid, caster, target)
+        if target is None:
+            return False
+        new_sun = DarkSun(target.pos)
+        grid[target.pos[0]][target.pos[1]].append(new_sun)
+        caster.suns.append(new_sun)
 
 # Boss of Ziggurat 3
 class XotilHighPriest(Boss):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Xotil High Priest", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
-                         (weapon, None, None, None, None, None, None, None, None),
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0), [],
-                         basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Xotil High Priest", "22", pos, [], 200, 500, 1, [], 1, 2, 30, 2, 0.1,
+                         (WoodenClub([-1, -1], None), None, None, None, None, None, None, None, None), (0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 20, 20, 20, 20, 0, 0, 0, 0, 0, 0, 2, 0), [SummonDarkSun(), Exsanguinate(), SiphonBlood()], [0.0, 0.0, 0.0, 0.1, 0.3, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0],
+                         [1.0, 0.5, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0], [], 0, [FlayScroll([-1, -1], 1)], 200, 20)
+        self.suns = []
+    def die(self, grid, player, corpse):
+        for sun in self.suns:
+            sun.die(grid, player, corpse)
+        super().die(grid, player, corpse)
+
 
 # Undercity
 class DarkElfSorceress(Creature):

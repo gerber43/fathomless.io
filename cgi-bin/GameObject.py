@@ -287,17 +287,11 @@ class Player(Creature):
         self.score = 0
         self.turns = 0
         self.race = race
-        from Items import IronDagger, WoodenClub
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
         super().__init__(name, textureIndex, pos, [], fitness * 10, magic * 10, 1, [], fitness, cunning, magic,
                          cunning * 2, (float(cunning) ** (2.0 / 3.0)) / 10.0, perception,
                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                         [weapon, None, None, None, None, None, None, None, None], abilities, damage_resistances,
-                         status_resistances, [], 20, None, 0, 1)
+                         [None, None, None, None, None, None, None, None, None], abilities, damage_resistances,
+                         status_resistances, [Gold([-1, -1], 100)], 20, None, 0, 1)
     def check_level(self, grid):
         if self.xp >= 20*self.level:
             #TODO: display levelup screen, where player chooses to place their stat point in fitness, cunning, or magic and allocates their 5 (6 in case of human) skill points among their skills

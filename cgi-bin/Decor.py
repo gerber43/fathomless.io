@@ -183,9 +183,9 @@ class Shop(Decor):
             return False
         shop_gold.amount -= item.price
         if buyer_gold is None:
-            self.inventory.append(Gold((-1, -1), item.price))
+            self.inventory.append(Gold((-1, -1), item.price//4))
         else:
-            buyer_gold.amount += item.price
+            buyer_gold.amount += item.price//4
         if shop_purchase is None:
             original_amount = item.amount
             item.amount = 1
@@ -208,18 +208,18 @@ class RandomShop(Shop):
 
 class LevelZeroWeaponShop(Shop):
     def __init__(self, pos):
-        inventory = [IronDagger((-1, -1), None), IronSpear((-1, -1), None), WoodenClub((-1, -1), None)]
+        inventory = [IronDagger((-1, -1), None), IronShortsword((-1, -1), None), IronGreatsword((-1, -1), None), IronHatchet((-1, -1), None), IronGreataxe((-1, -1), None), WoodenClub((-1, -1), None), WoodenGreatclub((-1, -1), None), IronSpear((-1, -1), None), IronHalberd((-1, -1), None), Sling((-1, -1), None), OakShortbow((-1, -1), None), OakLongbow((-1, -1), None), Pebble((-1, -1), 16), Arrow((-1, -1), 16)]
         super().__init__("Weapon Shop", pos, inventory, levelzero_dialogue)
         self.hp = "Weapons"
 
 class LevelZeroArmorShop(Shop):
     def __init__(self, pos):
-        inventory = [LeatherCuirass((-1, -1), None)]
+        inventory = [WoodenBuckler((-1, -1), None), LeatherSkullcap((-1, -1), None), LeatherCuirass((-1, -1), None), LeatherBoots((-1, -1), None),]
         super().__init__("Armor Shop", pos, inventory, levelzero_dialogue)
         self.hp = "Armor"
 
 class LevelZeroScrollShop(Shop):
     def __init__(self, pos):
-        inventory = []
+        inventory = [FireBoltScroll((-1, -1), 1), IceBoltScroll((-1, -1), 1)]
         super().__init__("Scroll Shop", pos, inventory, levelzero_dialogue)
         self.hp = "Scrolls"

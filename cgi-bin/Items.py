@@ -4,8 +4,8 @@ import sys
 import cgi
 from GameObject import Item, Consumable, Equippable, Weapon, TwoHandedWeapon, Smear, LightSourceItem
 from SubSystem import lookup_damage_type_id, lookup_skill_id
-from ActiveAbilities import Spell, Technique, HealingTouch, CreateWater
-from StatusEffects import Bleed, Poison
+from ActiveAbilities import Spell, Technique, HealingTouch, CreateWater, Flay, FireBolt
+from StatusEffects import Bleed, Poison, Burning, Rot, Manaburn
 from Enchantment import random_enchantment
 
 #list of spawnable items, the name, their level, and their type
@@ -844,6 +844,42 @@ class AdamantineBoots(Equippable):
 
 #scrolls
 
+class FireBoltScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Fire Bolt", "41", pos, amount, 1, 1, 100)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(FireBolt())
+
+class IceBoltScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Ice Bolt", "41", pos, amount, 1, 1, 100)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(FireBolt())
+
+class FlayScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Flay", "41", pos, amount, 1, 2, 200)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(Flay())
+
 class HealingTouchScroll(Consumable):
     def __init__(self, pos, amount):
         super().__init__("Scroll of Healing Touch", "41", pos, amount, 1, 3, 300)
@@ -882,17 +918,51 @@ class DeadlyPoison(Smear):
     def __init__(self, pos, amount):
         super().__init__("Deadly Poison", "17", pos, amount, 4, 12, 500, Poison(9, False))
 
-
 class SoftWhetstone(Smear):
     def __init__(self, pos, amount):
         super().__init__("Soft Whetstone", "17", pos, amount, 2, 4, 70, Bleed(2, False))
-
 
 class Whetstone(Smear):
     def __init__(self, pos, amount):
         super().__init__("Whetstone", "17", pos, amount, 2, 10, 250, Bleed(4, False))
 
-
 class HardWhetstone(Smear):
     def __init__(self, pos, amount):
         super().__init__("Hard Whetstone", "17", pos, amount, 2, 15, 700, Bleed(6, False))
+
+class DilutedOil(Smear):
+    def __init__(self, pos, amount):
+        super().__init__("Diluted Oil", "17", pos, amount, 2, 4, 70, Burning(2, False))
+
+
+class Oil(Smear):
+    def __init__(self, pos, amount):
+        super().__init__("Oil", "17", pos, amount, 2, 10, 250, Burning(4, False))
+
+class VolatileOil(Smear):
+    def __init__(self, pos, amount):
+        super().__init__("Volatile Oil", "17", pos, amount, 2, 15, 700, Burning(6, False))
+
+class DiseasedBlood(Smear):
+    def __init__(self, pos, amount):
+        super().__init__("Diseased Blood", "17", pos, amount, 2, 4, 70, Rot(2, False))
+
+class RottenBlood(Smear):
+    def __init__(self, pos, amount):
+        super().__init__("Rotten Blood", "17", pos, amount, 2, 10, 250, Rot(4, False))
+
+class UndeadEssence(Smear):
+    def __init__(self, pos, amount):
+        super().__init__("Essence of Undeath", "17", pos, amount, 2, 15, 700, Rot(6, False))
+
+class HungryFLuid(Smear):
+    def __init__(self, pos, amount):
+        super().__init__("Mana-Hungry Fluid", "17", pos, amount, 2, 4, 70, Manaburn(2, False))
+
+class RavenousFluid(Smear):
+    def __init__(self, pos, amount):
+        super().__init__("Mana-Ravenous Fluid", "17", pos, amount, 2, 10, 250, Manaburn(4, False))
+
+class AntiMana(Smear):
+    def __init__(self, pos, amount):
+        super().__init__("Anti-Mana", "17", pos, amount, 2, 15, 700, Manaburn(6, False))
