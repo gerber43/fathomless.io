@@ -24,7 +24,7 @@ else if (isset($_REQUEST['buy']) && isset($uuid)) {
     
 } 
 else if (isset($_REQUEST['levelUp']) && isset($uuid)) {
-    echo file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=".$uuid.(isset($_REQUEST['cunning'])?"&levelUp=levelUp&cunning=".urlencode($_REQUEST['cunning']):"").(isset($_REQUEST['magic'])?"&magic=".urlencode($_REQUEST['magic']):"").(isset($_REQUEST['fitness'])?"&fitness=".urlencode($_REQUEST['fitness']):""));
+    echo file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=".$uuid.(isset($_REQUEST['cunning'])?"&levelUp=levelUp&cunning=".urlencode($_REQUEST['cunning']):"").(isset($_REQUEST['magic'])?"&magic=".urlencode($_REQUEST['magic']):"").(isset($_REQUEST['fitness'])?"&fitness=".urlencode($_REQUEST['fitness']):"").(isset($_REQUEST['skills'])?"&skills=".urlencode($_REQUEST['skills']):""));
 
 }
 else if(!isset($_REQUEST['sendAttack']) && isset($uuid)) {
