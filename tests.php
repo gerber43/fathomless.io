@@ -14,6 +14,9 @@ html, body {
 </style>
 
 <?php 
+$startTime = time();
+
+/*
 ini_set('display_startup_errors', 1);
 ini_set('display_errors', 1);
 error_reporting(-1);
@@ -59,6 +62,7 @@ across 13 URLS, with 1089 HTTP requests</p><embed style = "width:100vw;height:50
 
 
 echo '<p>The First Row Is The Spawn List For Each Level</p>';
+*/
 function generateMap($level = 0) {
 if (file_exists("logs/Test.txt")) {
     unlink("logs/Test.txt");
@@ -66,7 +70,7 @@ if (file_exists("logs/Test.txt")) {
 if (file_exists("maps/Test.pkl")) {
     unlink("maps/Test.pkl");
 }
-return file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&level=".$level);
+return file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&level=".$level."&race=Human");
 }
 
 
@@ -98,18 +102,25 @@ $biomes = [
 ];
 $levels = [];
 $allCreatures = [];
-array_push($allCreatures, $biomes);
+$times = [];
+$objects = json_decode(file_get_contents("https://fathomless.io/json/objects.json"),true);
 for ($i = 0;$i<4;$i++) {
     $levelSet = [];
     $creatures = array_fill(0, 24, []);
 
     for ($j = 0; $j < 24; $j++) {
-        $map = json_decode((generateMap($j)),true)['map_subset']; 
+        $start = floor(microtime(true) * 1000);
+        $map = json_decode((generateMap($j)),true)['map_subset'];
+        $time = floor(microtime(true) * 1000) - $start;
+        array_push($creatures[$j],$time." ms");
+        array_push($times,$time);
         foreach ($map as $row) {
             foreach ($row as $tile) {
                 if (isset($tile['Creature'])) {
                     if (!in_array($tile['Creature']['name'],$creatures[$j]) && $tile['Creature']['name'] != "Player") {
-                        array_push($creatures[$j],$tile['Creature']['name']);
+                        if ($tile['Creature']['name'] != "Name") {
+                        array_push($creatures[$j],"<span>".$tile['Creature']['name']."<img style = 'width:100px;' src = '".$objects[$tile['Creature']['textureIndex']]['icon']."'>".'</span>');
+                        }
                     }
                 }
             }
@@ -121,6 +132,7 @@ for ($i = 0;$i<4;$i++) {
     array_push($allCreatures,$creatures);
      
 }
+
 echo '<table><tr>';
  for ($i = 0; $i < 24; $i++) {
      echo '<th>Level '.$i.'</th>';
@@ -138,4 +150,9 @@ echo '<table><tr>';
  echo '</tr>';
  }
  echo '</table>';
+ echo '<p>Total Page Time: '.(time()  - $startTime).'s</p>';
+ echo "<p>Average Response Time: ".(array_sum($times)/count($times))."ms</p><p>All Times:</p>";
+foreach ($times as $time) {
+    echo $time.'ms ';
+}
 ?>
