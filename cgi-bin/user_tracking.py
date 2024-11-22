@@ -121,7 +121,7 @@ def is_valid_move(x, y, game_map, creature, move_by_destruct_terrain):
     is_flying = False
     if creature.status_effects:
         for effect in creature.status_effects:
-            if effect.status_type and effect.status_type == "Flying":
+            if effect.status_type and effect.status_type == "Flight":
                 is_flying = True
         if not is_flying:
             if is_harmful(game_map, terrain, creature):
