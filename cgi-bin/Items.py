@@ -573,6 +573,7 @@ class LeatherSkullcap(Equippable):
 
     def on_unequip(self, grid, equipped_creature):
         super().on_unequip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
         (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.01
         (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.02
 
@@ -588,6 +589,7 @@ class LeatherBoots(Equippable):
 
     def on_unequip(self, grid, equipped_creature):
         super().on_unequip(grid, equipped_creature)
+        equipped_creature.damage_resistances = list(equipped_creature.damage_resistances)
         (equipped_creature.damage_resistances)[lookup_damage_type_id("PRC")] -= 0.01
         (equipped_creature.damage_resistances)[lookup_damage_type_id("SLH")] -= 0.02
 
