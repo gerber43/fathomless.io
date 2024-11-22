@@ -109,7 +109,7 @@ class FireBolt(Spell):
         target = super().use(grid, caster, target)
         if target is None:
             return False
-        target.hp -= int(5*target.resistances(lookup_damage_type_id("Fire")))
+        target.hp -= int(5*target.damage_resistances[lookup_damage_type_id("Fire")])
 
 class LightningBolt(Spell):
     def __init__(self):
@@ -118,7 +118,7 @@ class LightningBolt(Spell):
         target = super().use(grid, caster, target)
         if target is None:
             return False
-        target.hp -= int(5*target.resistances(lookup_damage_type_id("Lightning")))
+        target.hp -= int(5*target.damage_resistances[lookup_damage_type_id("Lightning")])
 
 class ForceBolt(Spell):
     def __init__(self):
@@ -127,7 +127,7 @@ class ForceBolt(Spell):
         target = super().use(grid, caster, target)
         if target is None:
             return False
-        target.hp -= int(5*target.resistances(lookup_damage_type_id("Blunt")))
+        target.hp -= int(5*target.damage_resistances[lookup_damage_type_id("Blunt")])
 
 class IceBolt(Spell):
     def __init__(self):
@@ -136,7 +136,7 @@ class IceBolt(Spell):
         target = super().use(grid, caster, target)
         if target is None:
             return False
-        target.hp -= int(5*target.resistances(lookup_damage_type_id("Cold")))
+        target.hp -= int(5*target.damage_resistances[lookup_damage_type_id("Cold")])
 
 class HolyBolt(Spell):
     def __init__(self):
@@ -145,7 +145,7 @@ class HolyBolt(Spell):
         target = super().use(grid, caster, target)
         if target is None:
             return False
-        target.hp -= int(5*target.resistances(lookup_damage_type_id("Light")))
+        target.hp -= int(5*target.damage_resistances[lookup_damage_type_id("Light")])
 
 class DarkBolt(Spell):
     def __init__(self):
@@ -154,7 +154,7 @@ class DarkBolt(Spell):
         target = super().use(grid, caster, target)
         if target is None:
             return False
-        target.hp -= int(5*target.resistances(lookup_damage_type_id("Dark")))
+        target.hp -= int(5*target.damage_resistances[lookup_damage_type_id("Dark")])
 
 class AcidBolt(Spell):
     def __init__(self):
@@ -163,8 +163,8 @@ class AcidBolt(Spell):
         target = super().use(grid, caster, target)
         if target is None:
             return False
-        target.hp -= int(5*target.resistances(lookup_damage_type_id("Acid")))
-        acid_destroy(grid, target, int(5*target.resistances(lookup_damage_type_id("Acid"))))
+        target.hp -= int(5*target.damage_resistances[lookup_damage_type_id("Acid")])
+        acid_destroy(grid, target, int(5*target.damage_resistances[lookup_damage_type_id("Acid")]))
 
 class DeathBolt(Spell):
     def __init__(self):
@@ -173,7 +173,7 @@ class DeathBolt(Spell):
         target = super().use(grid, caster, target)
         if target is None:
             return False
-        target.hp -= int(5*target.resistances(lookup_damage_type_id("Necrotic")))
+        target.hp -= int(5*target.damage_resistances[lookup_damage_type_id("Necrotic")])
 
 class ArcaneBolt(Spell):
     def __init__(self):
@@ -182,7 +182,7 @@ class ArcaneBolt(Spell):
         target = super().use(grid, caster, target)
         if target is None:
             return False
-        target.hp -= int(5*target.resistances(lookup_damage_type_id("Arcane")))
+        target.hp -= int(5*target.damage_resistances[lookup_damage_type_id("Arcane")])
 
 class VoidBolt(Spell):
     def __init__(self):
@@ -191,7 +191,7 @@ class VoidBolt(Spell):
         target = super().use(grid, caster, target)
         if target is None:
             return False
-        target.hp -= int(5*target.resistances(lookup_damage_type_id("Existence")))
+        target.hp -= int(5*target.damage_resistances[lookup_damage_type_id("Existence")])
 
 class CreateWater(Spell):
     def __init__(self):
@@ -210,7 +210,7 @@ class Fireball(Spell):
         target = super().use(grid, caster, target)
         if target is None:
             return False
-        target.hp -= int(15*target.resistances(lookup_damage_type_id("Fire")))
+        target.hp -= int(15*target.damage_resistances[lookup_damage_type_id("Fire")])
         target = original_target
         for i in range(-1, 1):
             for j in range(-1, 1):
@@ -249,7 +249,7 @@ class WickedRend(Spell):
         target = super().use(grid, caster, target)
         if target is None:
             return False
-        target.hp -= int(20 * target.resistances(lookup_damage_type_id("Dark")))
+        target.hp -= int(20 * target.damage_resistances[lookup_damage_type_id("Dark")])
         target.gain_status_effect(grid, "Bleed", 5, False, True, None)
 
 
@@ -260,10 +260,10 @@ class ChaosStorm(Spell):
         target = super().use(grid, caster, target)
         if target is None:
             return False
-        target.hp -= int(10 * target.resistances(lookup_damage_type_id("Fire")))
-        target.hp -= int(10 * target.resistances(lookup_damage_type_id("Lightning")))
-        target.hp -= int(10 * target.resistances(lookup_damage_type_id("Acid")))
-        acid_destroy(grid, target, int(5 * target.resistances(lookup_damage_type_id("Acid"))))
+        target.hp -= int(10 * target.damage_resistances[lookup_damage_type_id("Fire")])
+        target.hp -= int(10 * target.damage_resistances[lookup_damage_type_id("Lightning")])
+        target.hp -= int(10 * target.damage_resistances[lookup_damage_type_id("Acid")])
+        acid_destroy(grid, target, int(5 * target.damage_resistances[lookup_damage_type_id("Acid")]))
 
 class Flay(Spell):
     def __init__(self):
@@ -454,7 +454,7 @@ class BloodBurst(ActiveAbility):
     def use(self, grid, caster, target):
         target = super().use(grid, caster, target)
         caster.hp -= 10
-        target.hp -= int(15*(1-target.resistances[lookup_damage_type_id("Dark")]))
+        target.hp -= int(15*(1-target.damage_resistances[lookup_damage_type_id("Dark")]))
         target.gain_status_effect(grid, "Blindness", 3, False, True, None)
 
 class ShardShot(ActiveAbility):
@@ -462,8 +462,8 @@ class ShardShot(ActiveAbility):
         super().__init__("Corruptite Shard", "1", 0, 5, 0, 5, "")
     def use(self, grid, caster, target):
         target = super().use(grid, caster, target)
-        target.hp -= int(15*(1-target.resistances[lookup_damage_type_id("Piercing")]))
-        target.hp -= int(15*(1-target.resistances[lookup_damage_type_id("Dark")]))
+        target.hp -= int(15*(1-target.damage_resistances[lookup_damage_type_id("Piercing")]))
+        target.hp -= int(15*(1-target.damage_resistances[lookup_damage_type_id("Dark")]))
 
 class FetidBreath(ActiveAbility):
     def __init__(self):
