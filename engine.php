@@ -397,6 +397,7 @@ if (file_exists("maps/Test.pkl")) {
             padding:0;
             border:0;
             margin:0;
+            
         }
         .modal .shop span{
             display:flex;
@@ -404,6 +405,10 @@ if (file_exists("maps/Test.pkl")) {
             justify-content:center;
             width:100%;
             
+        }
+        .modal .shop {
+            overflow:scroll;
+            height:clamp(300px,50svh,600px);
         }
         .modal div .close button{
                 padding:20px;
@@ -435,9 +440,6 @@ if (file_exists("maps/Test.pkl")) {
         }
         .modal > div img {
             width:50px;
-           position:absolute;
-           right:0;
-
         }
         .modal > div .log {
             padding:20px;
@@ -478,9 +480,12 @@ if (file_exists("maps/Test.pkl")) {
             gap:0;
 
         }
-        #levelUpMenu {
+        #levelUpMenu span{
             padding:0;
             margin:0;
+            height:600px;
+            overflow:scroll;
+            height:clamp(300px,50svh,600px);
         }
         #levelUpMenu div button {
            
@@ -562,7 +567,10 @@ if (file_exists("maps/Test.pkl")) {
             .tile .Top {
                 z-index:3;
             }
-            #inventory, #settings, #alert, #dialogue, #keyBind, #modal, #inspection, #action {
+            #dialogue {
+                z-index:5;
+            }
+            #inventory, #settings, #alert, #keyBind, #modal, #inspection, #action {
                 z-index:4;
             }
             #action {
@@ -867,7 +875,7 @@ if (file_exists("maps/Test.pkl")) {
             function isValidMove(coordinates) {
                 var target = currentMap[coordinates[0]][coordinates[1]];
 
-                    var range = (currentMap[viewRadius][viewRadius]["Creature"]["equipment"][0]['range'])
+                    var range = currentMap[viewRadius][viewRadius]["Creature"]["equipment"][0]?(currentMap[viewRadius][viewRadius]["Creature"]["equipment"][0]['range']):1;
                     if ((target["Bottom"]["textureIndex"] != 8) && ((document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= range && target["Creature"] !== undefined) || document.getElementById(coordinates[0]+","+coordinates[1]).dataset.manhattan <= 1)) {
                     if (target["Terrain"] && target["Terrain"]["warning"] != "" && target["Creature"] === undefined) {
                          createModal("<p>"+target["Terrain"]["warning"]+"</p><button onclick = 'this.parentElement.parentElement.remove();sendRequest(`?sendAttack=`+encodeURIComponent(confirmationCoordinates));'>Yes</button><button onclick = 'this.parentElement.parentElement.remove();disableMovement=false;'>No</button>");
@@ -1222,17 +1230,47 @@ confirmationCoordinates = coordinates;
                 }
             }
                             var statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
+                            var skills = ['One-Handed Blades', 'One-Handed Axes', 'One-Handed Maces', 'Two-Handed Blades', 'Two-Handed Axes', 'Two-Handed Maces', 'Polearms', 'Slings', 'Bows', 'Elementalism', 'Cursing', 'Enhancement', 'Transmutation', 'Summoning', 'Dual-Wielding', 'Memory', 'Search', 'Hide', 'Lockpicking', 'Disarm Trap'];
+                                
+                            
+            
             var race = "";
+            var totalSkillPoints = 0;
+            
             function updateLevelUp(status, direction) {
                     var pointsUsed = statusPoints['cunning'] + statusPoints["fitness"] + statusPoints["magic"];
 
-                    if (status != "submit") {
-                        statusPoints[status] += (statusPoints[status] + direction >= 0 && pointsUsed + direction <= statusPoints['total'])?direction:0;
+                    if (status == "cunning" || status == "fitness" || status == "magic") {
+                        statusPoints[status] += (statusPoints[status] + direction >= 0 && pointsUsed + direction <= 1)?direction:0;
                         document.getElementById(status).innerHTML = statusPoints[status];
-                        document.getElementById('remaining_points').innerHTML = statusPoints['total'] - (statusPoints['cunning'] + statusPoints["fitness"] + statusPoints["magic"]);
+                        document.getElementById('remaining_points').innerHTML = 1 - (statusPoints['cunning'] + statusPoints["fitness"] + statusPoints["magic"]);
+                        
+                    } else if (status != "submit") {
+                        if (totalSkillPoints + direction <= statusPoints['total'] && totalSkillPoints + direction >= 0 && parseInt(document.getElementById(status).innerHTML) + direction >= 0) {
+                            totalSkillPoints += direction;
+                            document.getElementById(status).innerHTML = parseInt(document.getElementById(status).innerHTML) + direction;
+                        
+                            document.getElementById('remaining_skill_points').innerHTML = statusPoints["total"] - totalSkillPoints;
+                        }
+                            
+                            
+                            
                         
                     } else {
-                        sendRequest("?levelUp&cunning="+encodeURIComponent(statusPoints['cunning'])+"&fitness="+encodeURIComponent(statusPoints['fitness'])+"&magic="+encodeURIComponent(statusPoints['magic']));
+                          
+                        var skillSend = "";
+                        for (var i = 0; i < skills.length; i++) {
+                            skillSend += document.getElementById(skills[i]).innerHTML;
+                            if (i != skills.length - 1) {
+                                skillSend += ",";
+                            }
+                        }
+                                                
+                        sendRequest("?levelUp&cunning="+encodeURIComponent(statusPoints['cunning'])+"&fitness="+encodeURIComponent(statusPoints['fitness'])+"&magic="+encodeURIComponent(statusPoints['magic'])+"&skills="+encodeURIComponent(skillSend));
+                    document.getElementById('modal').remove();
+statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
+                                                      totalSkillPoints = 0;
+                        
                     }
                 }
             function receiveMap(response) {
@@ -1274,22 +1312,35 @@ confirmationCoordinates = coordinates;
                         var contents = currentMap[viewRadius][viewRadius]['Decor']['inventory'];
                         for (var i = 0; i < contents.length; i++) {
                             var item = contents[i];
+                            if (item['name'] != "Gold") {
                             shopContents += "<div><span><p>"+item['name']+"</p><img src = '"+tileObjects[item['textureIndex']]['icon']+"'></span><span><p>Cost: "+item['price']+"</p></span><button onclick = 'sendRequest(`?buy="+i+"`)'>Buy</button></div>"
-                        }
+                            }
+                                
+                            }
                         createModal("<p>"+currentMap[viewRadius][viewRadius]['Decor']['name']+"</p><div class = 'shop'>"+shopContents+"</div><button class = 'x' onclick = 'document.getElementById(`modal`).remove();'>X</button>");
                     }
                     if (update['level_up_menu']) {statusPoints
                         statusPoints['total'] = update['level_up_menu']['points'];
                         var levelUpMenu = "<p>New Level: "+update['level_up_menu']['level']+"</p>";
-                        levelUpMenu += "<p>Remaining Points <span id = 'remaining_points'>"+(update['level_up_menu']['points']-statusPoints['cunning']-statusPoints['fitness']-statusPoints['magic'])+"</span></p>";
-                        levelUpMenu += "<p>Current Cunning: "+currentMap[viewRadius][viewRadius]['Creature']['cunning']+"</p>";
+                        levelUpMenu += "<p>Remaining Status Points <span id = 'remaining_points'>"+(1-statusPoints['cunning']-statusPoints['fitness']-statusPoints['magic'])+"</span></p>";
+                        levelUpMenu += "<p>Remaining Skill Points <span id = 'remaining_skill_points'>"+statusPoints['total']+"</span></p>";
+                        levelUpMenu += "<button onclick = 'updateLevelUp(`submit`, 0);'>Submit</button>";
+                        levelUpMenu += "<hr><span><p>Statuses</p><p>Current Cunning: "+currentMap[viewRadius][viewRadius]['Creature']['cunning']+"</p>";
                         levelUpMenu += "<div><button onclick = 'updateLevelUp(`cunning`, -1);'>-</button><p>Cunning <span id = 'cunning'>"+statusPoints['cunning']+"</span></p><button onclick = 'updateLevelUp(`cunning`, 1);'>+</button></div>";
                         levelUpMenu += "<p>Current Fitness: "+currentMap[viewRadius][viewRadius]['Creature']['fitness']+"</p>";
                         levelUpMenu += "<div><button onclick = 'updateLevelUp(`fitness`, -1);'>-</button><p>Fitness <span id = 'fitness'>"+statusPoints['fitness']+"</span></p><button onclick = 'updateLevelUp(`fitness`, 1);'>+</button></div>";
                         levelUpMenu += "<p>Current Magic: "+currentMap[viewRadius][viewRadius]['Creature']['magic']+"</p>";
                         levelUpMenu += "<div><button onclick = 'updateLevelUp(`magic`, -1);'>-</button><p>Magic <span id = 'magic'>"+statusPoints['magic']+"</span></p><button onclick = 'updateLevelUp(`magic`, 1);'>+</button></div>";
-                        levelUpMenu += "<button onclick = 'updateLevelUp(`submit`, 0);'>Submit</button>";
-                        createModal(levelUpMenu,"levelUpMenu");
+                        levelUpMenu += "<hr><p>Skills</p>";
+                        for (var i = 0; i < skills.length; i++) {
+                            levelUpMenu += "<p>Current "+skills[i]+": "+currentMap[viewRadius][viewRadius]['Creature']['skills'][i]+"</p>";
+                            levelUpMenu += "<div><button onclick = 'updateLevelUp(`"+skills[i]+"`, -1);'>-</button><p>"+skills[i]+" <span id = '"+skills[i]+"'>"+currentMap[viewRadius][viewRadius]['Creature']['skills'][i]+"</span></p><button onclick = 'updateLevelUp(`"+skills[i]+"`, 1);'>+</button></div>";
+
+                        }
+                        
+                        
+                        
+                        createModal(levelUpMenu+"</span>","levelUpMenu");
                     }
                     if (update['level_up']) {
                         if (document.getElementById('modal')) {
@@ -1363,7 +1414,7 @@ confirmationCoordinates = coordinates;
                     document.getElementById("cover").remove()
                 }
                 player = currentMap[viewRadius][viewRadius]["Creature"];
-                displayManhattan(player.equipment[0].range)
+                displayManhattan((player.equipment[0])?player.equipment[0].range:1)
                 if (inspecting) {
                     toggleInspect(inspecting)
                 }
