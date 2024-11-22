@@ -371,7 +371,7 @@ def get_map_subset(player_pos, game_map, fov_radius):
                 if (internalGrid.get('Creature') is not None and not segment):
                     
                     if (internalGrid['Creature'].get('turns')):
-                        internalGrid['Creature']['score'] = internalGrid['Creature']['score']//internalGrid['Creature']['turns']
+                        internalGrid['Creature']['score'] = internalGrid['Creature']['score'] - internalGrid['Creature']['turns']
                     
                     
                     
@@ -510,7 +510,10 @@ def find_current_level(game_map):
                 if gameObject.name == "Stairs":
                     return gameObject.hp
     return None  # If player is not found
-
+def jsonify(array):
+    if (isinstance(array,GameObject)):
+        print(dir(array))
+    
 if (HTTP_FIELDS.getvalue('uuid')):
       uuid = HTTP_FIELDS.getvalue('uuid')
       direction = None
@@ -712,7 +715,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
     #send subset_map and message back to client
       
       if (gameOver):
-         game_log += "Game Over. Final Score: "+str(player.score//player.turns)
+         game_log += "Game Over. Final Score: "+str(player.score - player.turns)
       
       with open("../logs/"+uuid+".txt", "a") as myfile:
          myfile.write(game_log)
@@ -727,7 +730,8 @@ if (HTTP_FIELDS.getvalue('uuid')):
               objectKeys = list(map_subset[i][j].keys())
               for k in range(len(objectKeys)):
                   if not is_jsonable(map_subset[i][j][objectKeys[k]]):
-                      
+                      print("here")
+                      jsonify(map_subset[i][j][objectKeys[k]])
                       map_subset[i][j][objectKeys[k]]['creature'] = "BAD"
       response = {
           "message": message if message else "",
