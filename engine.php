@@ -33,6 +33,12 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             * {
             font-family: '8BIT WONDER', sans-serif;
             }
+            :root {
+                --buttonImage: url(https://img.freepik.com/premium-vector/seamless-pattern-old-wood-wall-background_117579-47.jpg);
+                --goldColor:rgb(212,175,55);
+                --accentColor:saddlebrown;
+                
+            }
             html, body {
             margin:0;
             padding:0;
@@ -51,7 +57,7 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             width:100vw;
             height:100svh;
             }
-            #page,#canvas .tile,#inventory, #keyBind {
+            #page,#canvas .tile,#inventory, #keyBind ,#colorMenu{
             display:flex;
             align-items:center;
             justify-content:center;
@@ -71,7 +77,7 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             height:100%;
             }
             
-            #inventory, #keyBind {
+            #inventory,#colorMenu, #keyBind {
             transition:.75s;
             height:0;
             width:100vw;
@@ -94,7 +100,7 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             background-size: contain;
             z-index:1;
             }
-            #dialogue, #inventory, #keyBind {
+            #dialogue, #inventory ,#colorMenu, #keyBind {
             bottom:0;
             left:0;
             width:100vw;
@@ -139,7 +145,7 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             justify-content:end;
             flex-direction:row-reverse;
             width:0px;
-            background:saddlebrown;
+            background:var(--accentColor);
             border-radius:20px;
             opacity:.25;
             font-size:0;
@@ -173,12 +179,12 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
   appearance: none;
   width: 100%; /* Full-width */
   height: 25px; /* Specified height */
-  background: saddlebrown; /* Grey background */
+  background: var(--accentColor); /* Grey background */
   outline: none; /* Remove outline */
   opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
   -webkit-transition: .2s; /* 0.2 seconds transition on hover */
   transition: opacity .2s;
-  border:2px solid rgb(212,175,55);
+  border:2px solid var(--goldColor);
   border-radius:20px;
                 
             }
@@ -266,9 +272,9 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             left:0;
             width:0;
             height:100svh;
-            background:saddlebrown;
+            background:var(--accentColor);
             overflow:scroll;
-            color:rgb(212,175,55);
+            color:var(--goldColor);
             -ms-overflow-style: none;
             scrollbar-width: none; 
             resize:both;
@@ -308,7 +314,7 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             }
             #inspection div {
             border-radius:20px;
-            border:solid rgb(212,175,55) 5px;
+            border:solid var(--goldColor) 5px;
             width:90%;
             padding:5px;
             }
@@ -334,13 +340,13 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             hr {
             width:90%;
             height:5px;
-            background:rgb(212,175,55);
+            background:var(--goldColor);
             border:none;
             }
-            #keyBind {
-            background:saddlebrown;
+            #keyBind ,#colorMenu{
+            background:var(--accentColor);
             }
-            #keyBind button {
+            #keyBind button ,#colorMenu button{
             background: none;
             color: inherit;
             border: none;
@@ -348,7 +354,7 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             font: inherit;
             cursor: pointer;
             outline: inherit;
-            color:rgb(212,175,55);
+            color:var(--goldColor);
             }
             @keyframes inspectionLoad {
             from {opacity:1;}
@@ -373,7 +379,7 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             left:0;
             width:100vw;
             height:100vh;
-            color:rgb(212,175,55);
+            color:var(--goldColor);
             
         }
         .modal div .close{
@@ -420,7 +426,7 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
                 -webkit-appearance: none;  /* Override default CSS styles */
   appearance: none;
   outline: none; /* Remove outline */
-  color:rgb(212,175,55);
+  color:var(--goldColor);
         }
         .modal > div {
             margin: 0;
@@ -434,9 +440,9 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             justify-content:start;
             width:50vw;
             height:clamp(fit-content,50svh,50svh);
-            background:saddlebrown;
+            background:var(--accentColor);
             gap:20px;
-            border:rgb(212,175,55) 2px solid;
+            border:var(--goldColor) 2px solid;
             height:fit-content;
 
         }
@@ -464,12 +470,12 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             outline: inherit;
             width:75%;
             height:fit-content;
-            color:gold;
+            color:var(--goldColor);
             font-size:20px;
-            border:2px burlywood solid;
-            background:saddlebrown;
+            border:2px var(--accentColor) solid;
+            background:var(--accentColor);
             padding:20px;
-            background:url(https://img.freepik.com/premium-vector/seamless-pattern-old-wood-wall-background_117579-47.jpg);
+            background:var(--buttonImage);
             
         }
         
@@ -478,7 +484,7 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             display:flex;
             align-items:center;
             justify-content:center;
-            background:url(https://img.freepik.com/premium-vector/seamless-pattern-old-wood-wall-background_117579-47.jpg);
+            background:var(--buttonImage);
             gap:0;
 
         }
@@ -517,9 +523,9 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             height:fit-content;
             font-size:20px;
             text-align:center;
-             border:rgb(212,175,55) 2px solid;
-            background:saddlebrown;
-            color:rgb(212,175,55);
+             border:var(--goldColor) 2px solid;
+            background:var(--accentColor);
+            color:var(--goldColor);
             gap:0px;
             
             
@@ -542,7 +548,7 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             flex-direction:column;
             width:fit-content;
             height:fit-content;
-             border:rgb(212,175,55) 2px solid;
+             border:var(--goldColor) 2px solid;
              font-size:15px;
              width:200px;
              height:200px;
@@ -572,7 +578,7 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             #dialogue {
                 z-index:5;
             }
-            #inventory, #settings, #alert, #keyBind, #modal, #inspection, #action {
+            #inventory, #settings, #alert, #keyBind,#colorMenu, #modal, #inspection, #action {
                 z-index:4;
             }
             #action {
@@ -586,9 +592,9 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
                 top:0;
                 left:0;
                 background:#eee;
-                border:rgb(212,175,55) 2px solid;
-            background:saddlebrown;
-            color:rgb(212,175,55);
+                border:var(--goldColor) 2px solid;
+            background:var(--accentColor);
+            color:var(--goldColor);
             height:0;
             margin:0;
             padding:0;
@@ -608,11 +614,11 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             outline: inherit;
             width:75%;
             height:fit-content;
-            color:gold;
-            border:2px burlywood solid;
-            background:saddlebrown;
+            color:var(--goldColor);
+            border:2px var(--accentColor) solid;
+            background:var(--accentColor);
             padding:20px;
-            background:url(https://img.freepik.com/premium-vector/seamless-pattern-old-wood-wall-background_117579-47.jpg);
+            background:var(--buttonImage);
             
             }
             #inventory button, #inspection div button, #inventory > span > span > span button {
@@ -626,12 +632,12 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             outline: inherit;
             width:fit-content;
             height:fit-content;
-            color:gold;
+            color:var(--goldColor);
             font-size:20px;
-            border:2px burlywood solid;
-            background:saddlebrown;
+            border:2px var(--accentColor) solid;
+            background:var(--accentColor);
             padding:20px;
-            background:url(https://img.freepik.com/premium-vector/seamless-pattern-old-wood-wall-background_117579-47.jpg);
+            background:var(--buttonImage);
             text-align:center;
             }
             #inventory button:nth-child(1) {
@@ -642,7 +648,14 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             #inspection div button {
                 width:100%;
             }
-           
+             #colorMenu {
+                 gap:20px;
+             }
+           #colorMenu button {
+               padding:20px;
+               -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
+           }
             
         </style>
     </head>
@@ -654,6 +667,7 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
         <div id = "alert"></div>
         <div id = "inventory"></div>
         <div id = "keyBind"></div>
+        <div id = "colorMenu"></div>
         <div id = "settings">
             <button data-setting = "settings_menu">
             <img id = "gear" src = "https://icons.veryicon.com/png/o/miscellaneous/xdh-font-graphics-library/gear-setting-1.png">
@@ -667,7 +681,9 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
                 <input id = "musicSlider" class = "slider"  data-setting = "musicVolume" type = "range" min = "0" max = "100" value = "0">
                 <button id = "fovLevel">Current Fov: 11</button>
                 <input id = "fovSlider" class = "slider"  data-setting = "fovSlider" type = "range" min = "3" max = "11" value = "11">
+                <button id = "toggleAnimations" data-setting = "toggleAnimations">Disable Animations</button>
                 <button data-setting = "toggleAscii">Enable Ascii</button>
+                <button data-setting = "toggleColor">Toggle Color</button>
                 <button data-setting = "toggleResolution">Toggle Resolution</button>
                 <button data-setting = "keyBind">Key Binds</button>
                 <button data-setting = "keyboardOnly">Keyboard Only</button>
@@ -684,6 +700,13 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
             var objectTypes = ["Bottom","Terrain","Item","Decor","Creature","Light","Top"];
             var keyBinds = (!localStorage.getItem("keyBinds"))?{"Inventory":"KeyE","Select":"Enter","Settings":"Escape","Attack":"Space","Movement":["ArrowRight","ArrowDown","ArrowLeft","ArrowUp","KeyD","KeyS","KeyA","KeyW"]}:(JSON.parse(localStorage.getItem("keyBinds")));
             var fov = (localStorage.getItem("fov"))?localStorage.getItem("fov"):11;
+            var animate = (localStorage.getItem("animate") !== null)?(localStorage.getItem("animate")):true;
+            if (animate === 'false') {
+                animate = false;
+            }
+            if (!animate) {
+                document.getElementById('toggleAnimations').innerHTML = "Enable Animations";
+            }
             document.getElementById('fovLevel').innerHTML = "Current Fov: "+fov;
             document.getElementById('fovSlider').value = fov;
             if (localStorage.getItem("soundSettings")) {
@@ -720,6 +743,131 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
                 }
                 inspectingPlayer = !inspectingPlayer;
             }
+            var currentButton =  (localStorage.getItem("button"))?localStorage.getItem("button"):0;
+            var buttonTextures = ['https://img.freepik.com/premium-vector/seamless-pattern-old-wood-wall-background_117579-47.jpg',tileObjects[12]['icon'],tileObjects[9]['icon'],'https://blog.foster.uw.edu/wp-content/uploads/2020/07/Black-Square-300x300.jpg','https://www.replicasurfaces.com/cdn/shop/products/all_white_replica_surfaces_1000x.jpg?v=1719580064']
+            
+            var currentMenu = (localStorage.getItem("menu"))?localStorage.getItem("menu"):0;
+            var menuTextures = [tileObjects[12]['icon'],'https://img.freepik.com/premium-vector/seamless-pattern-old-wood-wall-background_117579-47.jpg',tileObjects[9]['icon'],'https://blog.foster.uw.edu/wp-content/uploads/2020/07/Black-Square-300x300.jpg','https://www.replicasurfaces.com/cdn/shop/products/all_white_replica_surfaces_1000x.jpg?v=1719580064']
+            
+            
+            var colors = (localStorage.getItem("colors"))?localStorage.getItem("colors"):0;
+            var colorList = ['rgb(212,175,55)','red','green','white','black']
+            var accentColors = ['saddlebrown','pink','red','green','white','black']
+            var accent = (localStorage.getItem("accent"))?localStorage.getItem("accent"):0;
+             if (currentButton != 0) {
+                 currentButton--;
+                changeTextures(`button`);
+            }
+             if (colors != 0) {
+                 colors--;
+                changeTextures(`color`);
+            }
+            if (currentMenu != 0) {
+                currentMenu--;
+                changeTextures(`menu`);
+            }
+            if (accent != 0) {
+                accent--;
+                changeTextures(`accent`);
+            }
+            
+            var isColorMenu = false;
+            function toggleColorMenu() {
+                if (isColorMenu) {
+                    document.getElementById('colorMenu').style.height = "0px";
+                    document.getElementById('colorMenu').innerHTML = "";
+                } else {
+                    document.getElementById('colorMenu').style.height = "100svh";
+                    document.getElementById('colorMenu').style.fontSize = "20px";
+                    var colorMenu = "<button class = 'x' onclick = 'toggleColorMenu();'>X</button>";
+                    colorMenu += "<button onclick='changeColorMode(`light`)'>Reset Textures</button>";
+                    colorMenu += "<button onclick='changeColorMode(`dark`)'>Dark Mode</button>";
+                    
+                    colorMenu += "<button onclick='changeColorMode(`terminal`)'>Terminal Mode</button><hr>";
+                    colorMenu += "<button onclick = 'changeTextures(`button`)' style = 'background-image:var(--buttonImage);'>Change Button Texture</button>";
+                    colorMenu += "<button onclick = 'changeTextures(`menu`)' id = 'menuTexture' style = 'background-image:url("+menuTextures[currentMenu]+");'>Change Menu Texture</button>";
+                    colorMenu += "<button onclick = 'changeTextures(`color`)' style = 'background:var(--goldColor);'>Change Main Colors</button>";
+                    colorMenu += "<button onclick = 'changeTextures(`accent`)' style = 'background:var(--accentColor);'>Change Accent Colors</button>";
+                    document.getElementById('colorMenu').innerHTML = colorMenu;
+                }
+                
+                
+                isColorMenu = !isColorMenu;
+                
+            }
+            function changeColorMode(mode) {
+                if (mode == "dark") {
+                    currentButton = 2;
+                    currentMenu = 2;
+                    accent = 4;
+                    colors = 2;
+                    changeTextures(`button`);
+                changeTextures(`color`);
+                changeTextures(`menu`);
+                changeTextures(`accent`);
+                }
+                if (mode == "light") {
+                    currentButton = -1;
+                    currentMenu = -1;
+                    accent = -1;
+                    colors = -1;
+                    changeTextures(`button`);
+                changeTextures(`color`);
+                changeTextures(`menu`);
+                changeTextures(`accent`);
+                }
+                if (mode == "terminal") {
+                    currentButton = 2;
+                    currentMenu = 2;
+                    accent = 4;
+                    colors = 1;
+                    changeTextures(`button`);
+                changeTextures(`color`);
+                changeTextures(`menu`);
+                changeTextures(`accent`);
+                }
+                
+                
+            }
+            function changeTextures(type) {
+                if (type == "button") {
+                    
+                                    
+
+                    currentButton = (currentButton+1)%buttonTextures.length;
+                    localStorage.setItem("button",currentButton);
+                    
+            document.documentElement.style.setProperty('--buttonImage', "url("+buttonTextures[currentButton]+")");
+            
+                }
+                if (type == "menu") {
+                    
+                    currentMenu = (currentMenu+1)%menuTextures.length;
+                    localStorage.setItem("menu",currentMenu);
+                    if (document.getElementById('menuTexture')) {
+                    document.getElementById('menuTexture').style.backgroundImage = "url("+menuTextures[currentMenu]+")";
+                    }
+           
+            document.getElementById('dialogue').style.backgroundImage = "url("+menuTextures[currentMenu]+")";
+            document.getElementById('inventory').style.backgroundImage = "url("+menuTextures[currentMenu]+")";
+                }
+                if (type == "color") {
+                   
+                    colors = (colors+1)%colorList.length;
+                     localStorage.setItem("colors",colors);
+                    
+            document.documentElement.style.setProperty('--goldColor', colorList[colors]);
+            
+                }
+                if (type == "accent") {
+                    
+                    accent = (accent+1)%accentColors.length;
+                    localStorage.setItem("accent",accent);
+            document.documentElement.style.setProperty('--accentColor', accentColors[accent]);
+            
+                }
+                
+            }
             function toggleActions(tileId) {
                 var coordinates = tileId.split(",");
                 if (tileId == viewRadius+","+viewRadius && !inventoryOpened) {
@@ -737,7 +885,7 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
                 if ((!isAction || tileId != activeTile) && currentMap[coordinates[0]][coordinates[1]]['Bottom']['textureIndex'] != 8 && (Object.keys(currentMap[coordinates[0]][coordinates[1]]).length > 2)) {
                     document.getElementById("action").style.height = "100px";
                      document.getElementById("action").style.fontSize = "20px";
-                     document.getElementById("action").style.border = "rgb(212,175,55) 2px solid";
+                     document.getElementById("action").style.border = "var(--goldColor) 2px solid";
                     var selectedTile = currentMap[coordinates[0]][coordinates[1]];
                     document.getElementById(tileId).classList.add('inspecting');
                     var inspectButton = "<button onclick = 'inspectTile(activeTile);'>Inspect</button>";
@@ -851,7 +999,7 @@ file_get_contents("https://fathomless.io/cgi-bin/movement_api.py?uuid=Test&diffi
                 
                 document.getElementById('settings').style.width=(isSettingsOpen?"0px":"100vw");
                 document.getElementById('settings').style.fontSize=(isSettingsOpen?"0px":"10px");
-                document.getElementById('settings').style.border=(isSettingsOpen?"":"solid rgb(212,175,55) 5px");
+                document.getElementById('settings').style.border=(isSettingsOpen?"":"solid var(--goldColor) 5px");
                 document.getElementById('settings_span').querySelectorAll('input').forEach((Item) => {Item.style.display=(!isSettingsOpen)?"flex":"none";Item.style.width=(!isSettingsOpen)?"80px":"0px";Item.style.height=(!isSettingsOpen)?"20px":"0px";});
                 document.getElementById('gear').classList.toggle('gearRotate');
                 isSettingsOpen = !isSettingsOpen;
@@ -966,7 +1114,7 @@ confirmationCoordinates = coordinates;
                                         buffer += "<p class = 'center'>"+attribute+"</p>";
                                     }
                                     for (var i = 0; i < tileArray[object][attribute].length; i++) {
-                                         if (attribute == "abilities" || attribute == "inventory" && tileArray[object][attribute][i]['name'] != "Gold") {
+                                         if (attribute == "abilities" || attribute == "inventory" && tileArray[object][attribute][i]['name'] != "var(--goldColor)") {
                                             buffer += "<div>"+inspectObject(tileArray[object][attribute][i],tileId)+"<button class = 'use' onclick = 'selectedItem = `"+attribute+":"+i+"`;toggleInspect(`"+tileId+"`);createMessage(`dialogue`,`Click On A Target`,2);'>Use</button></div>";
                                         } else {
                                             buffer += "<div>"+inspectObject(tileArray[object][attribute][i],tileId)+"</div>";
@@ -1114,7 +1262,7 @@ confirmationCoordinates = coordinates;
                     
                     for (var i = 0; i < inventory.length; i++) {
                         item = inventory[i];
-                        var useButton = (item['name'] != "Gold")?"<button class = 'use' onclick = 'selectedItem = `Inventory:"+i+"`;toggleInventory();createMessage(`dialogue`,`Click On A Target`,2);'>Use</button>":"";
+                        var useButton = (item['name'] != "var(--goldColor)")?"<button class = 'use' onclick = 'selectedItem = `Inventory:"+i+"`;toggleInventory();createMessage(`dialogue`,`Click On A Target`,2);'>Use</button>":"";
                          inventoryBuffer += "<span><p>"+item['name']+"</p><img src = '"+tileObjects[item['textureIndex']]['icon']+"'><p>"+item['amount']+"</p>"+useButton+"</span>";
 
                     }
@@ -1186,7 +1334,7 @@ confirmationCoordinates = coordinates;
             function toggleKeyBind() {
                 document.getElementById('keyBind').style.height = (keyBindOpened)?"0":"100svh";
                 document.getElementById('keyBind').style.fontSize = (keyBindOpened)?"0":"20px";
-                document.getElementById('keyBind').style.border = (keyBindOpened)?"0":"solid rgb(212,175,55) 5px";
+                document.getElementById('keyBind').style.border = (keyBindOpened)?"0":"solid var(--goldColor) 5px";
                 if (!keyBindOpened) {
                     toggleSettings();
                     document.getElementById('keyBind').innerHTML = "<button onclick = 'toggleKeyBind()'>X</button>";
@@ -1222,13 +1370,15 @@ confirmationCoordinates = coordinates;
                 }
             }
             function applyEffects(target, type, duration) {
-                if (type == "damaged") {
-                    target.style.backgroundImage = "url('https://8bitdogsol.dog/images/f121eab4be5ed47f5a67b9ee8ba2c7ca.gif')";
-                }
-                
-                if (type == "ability") {
+                if (animate) {
+                    if (type == "damaged") {
+                        target.style.backgroundImage = "url('https://8bitdogsol.dog/images/f121eab4be5ed47f5a67b9ee8ba2c7ca.gif')";
+                    }
                     
-                    target.style.backgroundImage = "url('https://fathomless.io/assets/images/ability.gif')";
+                    if (type == "ability") {
+                        
+                        target.style.backgroundImage = "url('https://fathomless.io/assets/images/ability.gif')";
+                    }
                 }
             }
             function loadTrack() {
@@ -1328,7 +1478,7 @@ statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
                         var contents = currentMap[viewRadius][viewRadius]['Decor']['inventory'];
                         for (var i = 0; i < contents.length; i++) {
                             var item = contents[i];
-                            if (item['name'] != "Gold") {
+                            if (item['name'] != "var(--goldColor)") {
                             shopContents += "<div><span><p>"+item['name']+"</p><img src = '"+tileObjects[item['textureIndex']]['icon']+"'></span><span><p>Cost: "+item['price']+"</p></span><button onclick = 'sendRequest(`?buy="+i+"`)'>Buy</button></div>"
                             }
                                 
@@ -1339,7 +1489,7 @@ statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
                             shopContents += "<p>Sell:</p><hr>";
                         for (var i = 0; i < playerInventory.length; i++) {
                             var item = playerInventory[i];
-                            if (item['name'] != "Gold") {
+                            if (item['name'] != "var(--goldColor)") {
                             shopContents += "<div><span><p>"+item['name']+"</p><img src = '"+tileObjects[item['textureIndex']]['icon']+"'></span><span><p>Cost: "+item['price']+"</p></span><button onclick = 'sendRequest(`?sell="+i+"`)'>Sell</button></div>"
                             }
                                 
@@ -1472,11 +1622,13 @@ statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
                 xmlhttp.send();
             }
             function moveObject(gameObject,x,y) {
-                var offset = document.getElementById("0,0").getBoundingClientRect().width;
-                gameObject.style.zIndex = (x != 0 || y != 0)?1:"";
-                gameObject.style.transition = (x != 0 || y != 0)?((gameObject.parentElement.id == viewRadius+","+viewRadius || gameObject.id == "canvas")?".2s":".1s"):"0s";
-                gameObject.style.transitionTimingFunction = (x != 0 || y != 0)?"ease-in-out":"";
-                gameObject.style.transform = (x != 0 || y != 0)?"translate("+(offset*x)+"px, "+(offset*y)+"px)":"";
+                if (animate) {
+                    var offset = document.getElementById("0,0").getBoundingClientRect().width;
+                    gameObject.style.zIndex = (x != 0 || y != 0)?1:"";
+                    gameObject.style.transition = (x != 0 || y != 0)?((gameObject.parentElement.id == viewRadius+","+viewRadius || gameObject.id == "canvas")?".2s":".1s"):"0s";
+                    gameObject.style.transitionTimingFunction = (x != 0 || y != 0)?"ease-in-out":"";
+                    gameObject.style.transform = (x != 0 || y != 0)?"translate("+(offset*x)+"px, "+(offset*y)+"px)":"";
+                }
             }
             function directionHandler(tileCoordinates) {
                 if (playMusic && !music) {
@@ -1721,6 +1873,19 @@ statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
                             music.pause();
                             music.currentTime = 0;
                         }
+                    }
+                    if (Item.dataset.setting && Item.dataset.setting == "toggleAnimations") {
+                        
+                        
+                        animate = !animate;
+                        Item.innerHTML = (!animate)?"Enable Animations":"Disable Animations";
+                        localStorage.setItem("animate", animate);
+                        
+                        
+                    }
+                    if (Item.dataset.setting && Item.dataset.setting == "toggleColor") {
+                        toggleColorMenu();
+                        toggleSettings();
                     }
                     if (Item.dataset.setting && Item.dataset.setting == "toggleAscii") {
                         Item.innerHTML = (!asciiMode)?"Enable Graphics":"Enable Ascii"
