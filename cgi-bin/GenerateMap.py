@@ -406,7 +406,7 @@ def generateMap(width, height, depth, num_creatures, player, num_items):
     terrain_grid = generate_terrain_with_probabilities(width, height, terrain_probabilities)
         
 
-    place_decor(terrain_grid, current_biome, width, height)
+    #place_decor(terrain_grid, current_biome, width, height)
     
     place_doors(terrain_grid, width, height)
     final_grid, final_traversable_grid = carve_guaranteed_paths(terrain_grid, width, height)
