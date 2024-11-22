@@ -152,7 +152,7 @@ def place_doors(grid, width, height, door_probability=0.6):
                     if random.random() < door_probability:
                         # Remove the wall and place a door
                         #grid[y][x] = [obj for obj in grid[y][x] if not isinstance(obj, Wall)]  # Remove the wall
-                        grid[y][x].append(Door((y, x)))
+                        grid[y][x] = [Door((y, x))]
 
 
 def place_player(grid, player, traversable_path, times = 0):
