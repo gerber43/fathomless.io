@@ -637,6 +637,8 @@ if (HTTP_FIELDS.getvalue('uuid')):
           message = "map loaded"
     #update the Creature's position
       if (message == "Creature has moved"):
+          player_pos = find_player_position(game_map)
+
           update_Creature_position(game_map, player_pos)
           #print(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor").name)
           if (get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor") and get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Decor").name == "Stairs") or (get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Terrain") and get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Terrain").name == "Pit"):
