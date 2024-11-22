@@ -4,12 +4,28 @@ import sys
 import cgi
 from GameObject import Item, Consumable, Equippable, Weapon, TwoHandedWeapon, Smear, LightSourceItem
 from SubSystem import lookup_damage_type_id, lookup_skill_id
-from ActiveAbilities import Spell, Technique, HealingTouch, CreateWater, Flay, FireBolt, DarkShroud, WickedRend
+from ActiveAbilities import Spell, Technique, HealingTouch, CreateWater, Flay, FireBolt, DarkShroud, WickedRend, \
+    LightningBolt, ForceBolt, HolyBolt, DarkBolt, AcidBolt, DeathBolt, ArcaneBolt, VoidBolt, Fireball, PoisonCloud, \
+    ChaosStorm, DecayCurse, MundaneCurse, ReduceAilment, Metallicize, KnitFlesh, Levitate, CleanseAilment, \
+    ExpungeAilments, SuperiorMaterial
 from StatusEffects import Bleed, Poison, Burning, Rot, Manaburn
 from Enchantment import random_enchantment
 
 #list of spawnable items, the name, their level, and their type
-items = [("Amulet", 0, "Equipment"), ("Ring", 1, "Equipment"), ("IronDagger", 1, "Weapon"), ("IronSpear", 1, "Weapon"), ("WoodenClub", 1, "Weapon"), ("LeatherCuirass", 2, "Equipment"), ("LesserHealth", 2, "Consumable"), ("HealingTouchScroll", 3, "Consumable"), ("MedHealth", 7, "Consumable"), ("GreaterHealth", 15, "Consumable")]
+items = [("IronDagger", 1, "Weapon"), ("IronShortsword", 1, "Weapon"), ("IronGreatsword", 1, "Weapon"), ("IronHatchet", 1, "Weapon"), ("IronGreataxe", 1, "Weapon"), ("WoodenClub", 1, "Weapon"), ("WoodenGreatclub", 1, "Weapon"), ("IronSpear", 1, "Weapon"), ("IronHalberd", 1, "Weapon"), ("Sling", 1, "Weapon"), ("OakShortbow", 1, "Weapon"), ("OakLongbow", 1, "Weapon"), ("WoodenBuckler", 1, "Equippable"), ("Bandage", 1, "Consumable"), ("Pebble", 1, "Item"), ("FireBoltScroll", 1, "Consumable"), ("IceBoltScroll", 1, "Consumable"),
+         ("LeatherCuirass", 2, "Equippable"), ("LeatherHelmet", 2, "Equippable"), ("LeatherBoots", 2, "Equippable"), ("LesserHealth", 2, "Consumable"), ("LesserMana", 2, "Consumable"), ("Antidote", 2, "Consumable"), ("MinorPoison", 2, "Consumable"), ("DiseasedBlood", 2, "Consumable"), ("HungryFluid", 2, "Consumable"), ("Arrow", 2, "Item"), ("FlayScroll", 2, "Consumable"),
+         ("LightningBoltScroll", 3, "Consumable"), ("ForceBoltScroll", 3, "Consumable"), ("HolyBoltScroll", 3, "Consumable"), ("DarkBoltScroll", 3, "Consumable"), ("HealingTouchScroll", 3, "Consumable"),
+         ("SoftWhetstone", 4, "Consumable"), ("DilutedOil", 4, "Consumable"),
+         ("SteelDagger", 5, "Weapon"), ("SteelShortsword", 5, "Weapon"), ("SteelGreatsword", 5, "Weapon"), ("SteelAxe", 5, "Weapon"), ("SteelGreataxe", 5, "Weapon"), ("SteelMace", 5, "Weapon"), ("SteelGreatmaul", 5, "Weapon"), ("SteelSpear", 5, "Weapon"), ("SteelHalberd", 5, "Weapon"), ("YewShortbow", 5, "Weapon"), ("YewLongbow", 5, "Weapon"), ("SteelShield", 5, "Equippable"), ("AcidBoltScroll", 5, "Consumable"), ("DeathBoltScroll", 5, "Consumable"), ("FireballScroll", 5, "Consumable"), ("DecayCurseScroll", 5, "Consumable"), ("ReduceAilmentScroll", 5, "Consumable"),
+         ("MediumPoison", 6, "Consumable"), ("RottenBlood", 6, "Consumable"), ("RavenousFluid", 6, "Consumable"), ("CreateWaterScroll", 6, "Consumable"),
+         ("SteelBreastplate", 7, "Equippable"), ("SteelGreaves", 7, "Equippable"), ("SteelHelmet", 7, "Equippable"), ("SteelBoots", 7, "Equippable"), ("MedHealth", 7, "Consumable"), ("MedMana", 7, "Consumable"), ("ArcaneBoltScroll", 7, "Consumable"),
+         ("PoisonCloudScroll", 8, "Consumable"), ("Metallicize", 8, "Consumable"),
+         ("DarkShroudScroll", 9, "Consumable"), ("WickedRendScroll", 9, "Consumable"),
+         ("MithrilDagger", 10, "Weapon"), ("MithrilShortsword", 10, "Weapon"), ("MithrilGreatsword", 10, "Weapon"), ("MithrilAxe", 10, "Weapon"), ("MithrilGreataxe", 10, "Weapon"), ("MithrilMace", 10, "Weapon"), ("MithrilGreatmaul", 10, "Weapon"), ("MithrilSpear", 10, "Weapon"), ("MithrilHalberd", 10, "Weapon"), ("SilverwoodShortbow", 10, "Weapon"), ("SilverwoodLongbow", 10, "Weapon"), ("MithrilShield", 10, "Equippable"), ("Whetstone", 10, "Consumable"), ("Oil", 10, "Consumable"), ("VoidBoltScroll", 10, "Consumable"), ("MundaneCurseScroll", 10, "Consumable"),
+         ("MithrilBreastplate", 12, "Equippable"), ("MithrilGreaves", 12, "Equippable"), ("MithrilHelmet", 12, "Equippable"), ("MithrilBoots", 12, "Equippable"), ("DeadlyPoison", 12, "Consumable"), ("UndeadEssence", 12, "Consumable"), ("AntiMana", 12, "Consumable"), ("KnitFleshScroll", 12, "Consumable"),
+         ("AdamantineDagger", 15, "Weapon"), ("AdamantineShortsword", 15, "Weapon"), ("AdamantineGreatsword", 15, "Weapon"), ("AdamantineAxe", 15, "Weapon"), ("AdamantineGreataxe", 15, "Weapon"), ("AdamantineMace", 15, "Weapon"), ("AdamantineGreatmaul", 15, "Weapon"), ("AdamantineSpear", 15, "Weapon"), ("AdamantineHalberd", 15, "Weapon"), ("SkywoodShortbow", 15, "Weapon"), ("SkywoodLongbow", 15, "Weapon"), ("AdamantineShield", 15, "Equippable"), ("GreaterHealth", 15, "Consumable"), ("GreaterMana", 15, "Consumable"), ("HardWhetstone", 15, "Consumable"), ("VolatileOil", 15, "Consumable"), ("ChaosStormScroll", 15, "Consumable"), ("LevitateScroll", 15, "Consumable"),
+         ("AdamantineBreastplate", 17, "Equippable"), ("AdamantineGreaves", 17, "Equippable"), ("AdamantineHelmet", 17, "Equippable"), ("AdamantineBoots", 17, "Equippable"), ("CleanseAilmentScroll", 17, "Consumable"),
+         ("ExpungeAilmentsScroll", 20, "Consumable"), ("SuperiorMaterialScroll", 20, "Consumable"),]
 
 #function to pick a random item
 def random_item(pos, depth):
@@ -22,15 +38,18 @@ def random_item(pos, depth):
     if end_index == -1:
         end_index = len(items)
     item = items[random.randint(0, end_index - 1)]
-    if item[2] == "Consumable":
-        return eval(item[0])(pos, depth//item[1])
     if item[2] == "Weapon":
         #return eval(item[0])(pos, random_enchantment(item[1], True, depth))
         return eval(item[0])(pos, None)
-
-    #TODO: Create at least 21 non-weapon enchantments and re-enable this code
-    #return eval(item[0])(pos, random_enchantment(item[1], False, depth))
-    return eval(item[0])(pos, None)
+    if item[2] == "Equippable":
+        # TODO: Create at least 21 non-weapon enchantments and re-enable this code
+        # return eval(item[0])(pos, random_enchantment(item[1], False, depth))
+        return eval(item[0])(pos, None)
+    amount = depth // item[1]
+    item_prelim = eval(item[0])(pos, 0)
+    if amount > item_prelim.max_stack:
+        amount = item_prelim.max_stack
+    return eval(item[0])(pos, amount)
 
 
 
@@ -84,13 +103,13 @@ class GreaterMana(Consumable):
 
 class Bandage(Consumable):
     def __init__(self, pos, amount):
-        super().__init__("Bandage", "40", pos, amount, 16, 15, 5)
+        super().__init__("Bandage", "40", pos, amount, 16, 1, 5)
     def use_effect(self, grid, target):
         target.heal(0)
 
 class Antidote(Consumable):
     def __init__(self, pos, amount):
-        super().__init__("Antidote", "40", pos, amount, 16, 15, 20)
+        super().__init__("Antidote", "40", pos, amount, 16, 2, 20)
     def use_effect(self, grid, target):
         for status in target.status_effects:
             if status.status_type == "Poison":
@@ -880,6 +899,54 @@ class FlayScroll(Consumable):
             return -1
         target.abilities.append(Flay())
 
+class LightningBoltScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Lightning Bolt", "41", pos, amount, 1, 3, 300)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(LightningBolt())
+
+class ForceBoltScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Force Bolt", "41", pos, amount, 1, 3, 300)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(ForceBolt())
+
+class HolyBoltScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Holy Bolt", "41", pos, amount, 1, 3, 300)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(HolyBolt())
+
+class DarkBoltScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Dark Bolt", "41", pos, amount, 1, 3, 300)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(DarkBolt())
+
 class HealingTouchScroll(Consumable):
     def __init__(self, pos, amount):
         super().__init__("Scroll of Healing Touch", "41", pos, amount, 1, 3, 300)
@@ -892,6 +959,66 @@ class HealingTouchScroll(Consumable):
             return -1
         target.abilities.append(HealingTouch())
 
+class AcidBoltScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Acid Bolt", "41", pos, amount, 1, 5, 500)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(AcidBolt())
+
+class DeathBoltScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Death Bolt", "41", pos, amount, 1, 5, 500)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(DeathBolt())
+
+class FireballScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Fireball", "41", pos, amount, 1, 5, 500)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(Fireball())
+
+class DecayCurseScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Curse of Decay", "41", pos, amount, 1, 5, 500)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(DecayCurse())
+
+class ReduceAilmentScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Reduce Ailment", "41", pos, amount, 1, 5, 500)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(ReduceAilment())
+
 class CreateWaterScroll(Consumable):
     def __init__(self, pos, amount):
         super().__init__("Scroll of Create Water", "41", pos, amount, 1, 6, 600)
@@ -903,6 +1030,42 @@ class CreateWaterScroll(Consumable):
         if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
             return -1
         target.abilities.append(CreateWater())
+
+class ArcaneBoltScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Arcane Bolt", "41", pos, amount, 1, 7, 700)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(ArcaneBolt())
+
+class PoisonCloudScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Poison Cloud", "41", pos, amount, 1, 8, 800)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(PoisonCloud())
+
+class MetallicizeScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Metallicize", "41", pos, amount, 1, 8, 800)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(Metallicize())
 
 class DarkShroudScroll(Consumable):
     def __init__(self, pos, amount):
@@ -927,6 +1090,102 @@ class WickedRendScroll(Consumable):
         if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
             return -1
         target.abilities.append(WickedRend())
+
+class VoidBoltScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Void Bolt", "41", pos, amount, 1, 10, 1000)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(VoidBolt())
+
+class MundaneCurseScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Curse of Mundanity", "41", pos, amount, 1, 10, 1000)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(MundaneCurse())
+
+class KnitFleshScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Curse of Knit Flesh", "41", pos, amount, 1, 12, 1200)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(KnitFlesh())
+
+class ChaosStormScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Chaos Storm", "41", pos, amount, 1, 15, 1500)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(ChaosStorm())
+
+class LevitateScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Levitate", "41", pos, amount, 1, 15, 1500)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(Levitate())
+
+class CleanseAilmentScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Cleanse Ailment", "41", pos, amount, 1, 17, 1700)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(CleanseAilment())
+
+class ExpungeAilmentsScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Expunge Ailments", "41", pos, amount, 1, 20, 2000)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(ExpungeAilments())
+
+class SuperiorMaterialScroll(Consumable):
+    def __init__(self, pos, amount):
+        super().__init__("Scroll of Superior Material", "41", pos, amount, 1, 20, 2000)
+    def use_effect(self, grid, target):
+        total_spells_techniques = 0
+        for active_ability in target.abilities:
+            if isinstance(active_ability, Spell) or isinstance(active_ability, Technique):
+                total_spells_techniques += 1
+        if total_spells_techniques >= target.skills[lookup_skill_id("Memory")]:
+            return -1
+        target.abilities.append(SuperiorMaterial())
 
 #smears
 
@@ -958,7 +1217,6 @@ class DilutedOil(Smear):
     def __init__(self, pos, amount):
         super().__init__("Diluted Oil", "17", pos, amount, 2, 4, 70, Burning(2, False))
 
-
 class Oil(Smear):
     def __init__(self, pos, amount):
         super().__init__("Oil", "17", pos, amount, 2, 10, 250, Burning(4, False))
@@ -969,24 +1227,24 @@ class VolatileOil(Smear):
 
 class DiseasedBlood(Smear):
     def __init__(self, pos, amount):
-        super().__init__("Diseased Blood", "17", pos, amount, 2, 4, 70, Rot(2, False))
+        super().__init__("Diseased Blood", "17", pos, amount, 2, 2, 50, Rot(2, False))
 
 class RottenBlood(Smear):
     def __init__(self, pos, amount):
-        super().__init__("Rotten Blood", "17", pos, amount, 2, 10, 250, Rot(4, False))
+        super().__init__("Rotten Blood", "17", pos, amount, 2, 6, 200, Rot(4, False))
 
 class UndeadEssence(Smear):
     def __init__(self, pos, amount):
-        super().__init__("Essence of Undeath", "17", pos, amount, 2, 15, 700, Rot(6, False))
+        super().__init__("Essence of Undeath", "17", pos, amount, 2, 12, 500, Rot(6, False))
 
 class HungryFLuid(Smear):
     def __init__(self, pos, amount):
-        super().__init__("Mana-Hungry Fluid", "17", pos, amount, 2, 4, 70, Manaburn(2, False))
+        super().__init__("Mana-Hungry Fluid", "17", pos, amount, 2, 2, 50, Manaburn(2, False))
 
 class RavenousFluid(Smear):
     def __init__(self, pos, amount):
-        super().__init__("Mana-Ravenous Fluid", "17", pos, amount, 2, 10, 250, Manaburn(4, False))
+        super().__init__("Mana-Ravenous Fluid", "17", pos, amount, 2, 6, 200, Manaburn(4, False))
 
 class AntiMana(Smear):
     def __init__(self, pos, amount):
-        super().__init__("Anti-Mana", "17", pos, amount, 2, 15, 700, Manaburn(6, False))
+        super().__init__("Anti-Mana", "17", pos, amount, 2, 12, 500, Manaburn(6, False))

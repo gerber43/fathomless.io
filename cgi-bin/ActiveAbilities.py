@@ -230,7 +230,7 @@ class PoisonCloud(Spell):
 
 class DarkShroud(Spell):
     def __init__(self):
-        super().__init__("Dark Shroud", "45", 9, 25, 5, "Elementalism")
+        super().__init__("Dark Shroud", "45", 9, 25, 1, "Elementalism")
     def use(self, grid, caster, target):
         if super().use(grid, caster, target) is None:
             return False
