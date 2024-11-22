@@ -71,10 +71,10 @@ def process_Creature_movement(position, direction, game_map):
     if creature and len(creature.segments) > 0:
         for segment in creature.segments:
 
-            if not is_valid_move(segment.pos[0] - x + new_x, segment.pos[1] - y + new_y, game_map, True):
+            if not is_valid_move(segment.pos[0] - x + new_x, segment.pos[1] - y + new_y, game_map, True) or (get_object_by_class(game_map[new_x][new_y],"Terrain") and is_harmful(game_map,get_object_by_class(game_map[segment.pos[0] - x + new_x][segment.pos[1] - y + new_y],"Terrain"),creature)):
                 return position, "cannot fit"
     
-    if not is_valid_move(new_x, new_y, game_map):
+    if not is_valid_move(new_x, new_y, game_map) or (get_object_by_class(game_map[position[0]][position[1]],"Creature") and get_object_by_class(game_map[new_x][new_y],"Terrain") and is_harmful(game_map,get_object_by_class(game_map[new_x][new_y],"Terrain"),get_object_by_class(game_map[x][y],"Creature"))):
         
         if (len(game_map) > new_x and len(game_map) > new_y and get_object_by_class(game_map[new_x][new_y],"Terrain") and get_object_by_class(game_map[position[0]][position[1]],"Player")):
             terrain = get_object_by_class(game_map[new_x][new_y],"Terrain")
@@ -546,7 +546,26 @@ biomes_dict = {
     22: 'World Heart',
     23: 'World Heart'  
 }
+def is_harmful(game_map, terrain, creature):
+    if terrain:
+        # Create a copy of the creature
+        creature_copy = copy.deepcopy(creature)
+
+        # Record the initial state of the creature
+        initial_hp = creature.hp
+        initial_status_effects_length = len(creature.status_effects)
+        
+        # Let the creature step onto the terrain (simulate the step)
+        
+        terrain.on_step(game_map, creature_copy)
     
+        # Check if the creature was harmed
+        hp_decreased = creature_copy.hp < initial_hp
+        status_effects_increased = len(creature_copy.status_effects) > initial_status_effects_length
+        if (hp_decreased or status_effects_increased):
+            return True
+        return False
+    return True    
 if (HTTP_FIELDS.getvalue('uuid')):
       uuid = HTTP_FIELDS.getvalue('uuid')
       direction = None
