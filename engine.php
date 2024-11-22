@@ -1308,7 +1308,7 @@ statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
                     }
                    
                     if (update['shop']) {
-                        var shopContents = "";
+                        var shopContents = "<p>Buy:</p><hr>";
                         var contents = currentMap[viewRadius][viewRadius]['Decor']['inventory'];
                         for (var i = 0; i < contents.length; i++) {
                             var item = contents[i];
@@ -1317,6 +1317,19 @@ statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
                             }
                                 
                             }
+                        
+                        playerInventory = currentMap[viewRadius][viewRadius]['Creature']['inventory'];
+                        if (playerInventory.length > 1) {
+                            shopContents += "<p>Sell:</p><hr>";
+                        for (var i = 0; i < playerInventory.length; i++) {
+                            var item = playerInventory[i];
+                            if (item['name'] != "Gold") {
+                            shopContents += "<div><span><p>"+item['name']+"</p><img src = '"+tileObjects[item['textureIndex']]['icon']+"'></span><span><p>Cost: "+item['price']+"</p></span><button onclick = 'sendRequest(`?sell="+i+"`)'>Sell</button></div>"
+                            }
+                                
+                            }
+                        }
+                        
                         createModal("<p>"+currentMap[viewRadius][viewRadius]['Decor']['name']+"</p><div class = 'shop'>"+shopContents+"</div><button class = 'x' onclick = 'document.getElementById(`modal`).remove();'>X</button>");
                     }
                     if (update['level_up_menu']) {statusPoints
@@ -1334,7 +1347,7 @@ statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
                         levelUpMenu += "<hr><p>Skills</p>";
                         for (var i = 0; i < skills.length; i++) {
                             levelUpMenu += "<p>Current "+skills[i]+": "+currentMap[viewRadius][viewRadius]['Creature']['skills'][i]+"</p>";
-                            levelUpMenu += "<div><button onclick = 'updateLevelUp(`"+skills[i]+"`, -1);'>-</button><p>"+skills[i]+" <span id = '"+skills[i]+"'>"+currentMap[viewRadius][viewRadius]['Creature']['skills'][i]+"</span></p><button onclick = 'updateLevelUp(`"+skills[i]+"`, 1);'>+</button></div>";
+                            levelUpMenu += "<div><button onclick = 'updateLevelUp(`"+skills[i]+"`, -1);'>-</button><p>"+skills[i]+" <span id = '"+skills[i]+"'>0</span></p><button onclick = 'updateLevelUp(`"+skills[i]+"`, 1);'>+</button></div>";
 
                         }
                         
