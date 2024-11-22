@@ -234,12 +234,14 @@ class Creature(GameObject):
 
     def pickup_item(self, grid, target):
         grid[target.pos[0]][target.pos[1]].remove(target)
-        self.xp += target.price * target.amount
+        self.score += target.price * target.amount
+        
         for item in self.inventory:
             if target.name == item.name and item.amount + target.amount <= target.max_stack:
                 item.amount += target.amount
                 return
         self.inventory.append(target)
+        
 
 
     def drop_item(self, grid, target):
@@ -402,7 +404,7 @@ class Equippable(Item):
             self.equipped = chosen_slot
             equipped_creature.equipment = list(equipped_creature.equipment)
             equipped_creature.equipment[lookup_equipment_slot(chosen_slot)] = self
-            if self in quipped_creature.inventory:
+            if self in equipped_creature.inventory:
                 equipped_creature.inventory.remove(self)
             if self.enchantment is not None:
                 self.enchantment.on_equip(grid)
