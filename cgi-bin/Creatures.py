@@ -6,7 +6,7 @@ from asyncio import start_unix_server
 
 from GameObject import Creature, CreatureSegment, Boss, Gold, Unavailable
 from Items import *
-from StatusEffects import Poison, Flight, Regeneration, Burning
+from StatusEffects import Poison, Flight, Regeneration, Burning, Suffocation
 from ActiveAbilities import *
 from Enchantment import *
 from Terrain import Wall
@@ -516,7 +516,7 @@ class MagmaGolemSlam(Weapon):
 # magma Core
 class MagmaGolem(Creature):
     def __init__(self, pos):
-        super().__init__("Magma Golem", "22", pos, [], 150, 0, 1, [], 5, 0, 0, 1, 0.1, 10,
+        super().__init__("Magma Golem", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 150, 0, 1, [], 5, 0, 0, 1, 0.1, 10,
                          (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
                          (MagmaGolemSlam(), None, None, None, None, None, None, None, None), [], [0.6, 0.8, 0.9, 1.0, 0.9, 0.0, -1.0, 0.5, 1.0, 1.0, 1.0, 0.0, 0.0],
                          [1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0], [], 0, [], 50, 5)
@@ -782,7 +782,7 @@ class DarkElfSorceress(Creature):
 # Undercity
 class Drider(Creature):
     def __init__(self, pos):
-        super().__init__("Drider", "22", pos, [], 150, 0, 1, [], 10, 10, 10, 3, 0.3, 999,
+        super().__init__("Drider", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 150, 0, 1, [], 10, 10, 10, 3, 0.3, 999,
                          [0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 2, 0],
                          (MithrilHalberd([-1, -1], Darkness()), Unavailable(), None, None, None, None, None, None, None), [], [0.5, 0.7, 0.8, 0.0, 0.3, 1.0, 0.3, 0.0, 0.0, 1.0, 0.0, 0.7, 0.5],
                          [0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
@@ -796,44 +796,55 @@ class DarkElfQueen(Boss):
                          [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.7, 0.5], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 0, [MithrilShortsword([-1, -1], Evil()), WickedRendScroll([-1, -1], 1)], 200, 20)
 
 
+class AshGolemSlam(Weapon):
+    def __init__(self, ):
+        super().__init__("Slam", "33", [-1, -1], 0, 0, 0, "One-Handed Mace", 1, 1.25, [[lookup_damage_type_id("Blunt"), 25, 0]], [Suffocation(20, False)], None)
+
 # Embers and Columbarium
 class AshGolem(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Ash Golem", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
+        super().__init__("Ash Golem", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 170, 0, 1, [], 5, 0, 0, 1, 0.1, 10,
                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                         (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+                         (AshGolemSlam(), None, None, None, None, None, None, None, None), [], [0.6, 0.8, 1.0, 1.0, 0.9, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 0.0, 0.0],
+                         [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0], [], 0, [], 60, 6)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 15, False, target):
+            self.basic_attack_damage(grid, AshGolemSlam(), target, self.crit_check(grid))
+
+class ObsidianGolemSlam(Weapon):
+    def __init__(self, ):
+        super().__init__("Slam", "33", [-1, -1], 0, 0, 0, "One-Handed Mace", 1, 1.25, [[lookup_damage_type_id("Blunt"), 15, 0], [lookup_damage_type_id("Piercing"), 15, 5]], [], None)
 
 # Embers
 class ObsidianGolem(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Obsidian Golem", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                         (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Obsidian Golem", "22", pos, [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static")], 150, 0, 1, [], 5, 0, 0, 1, 0.1, 10,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+                         (ObsidianGolemSlam(), None, None, None, None, None, None, None, None), [], [1.0, 1.0, 0.0, 1.0, 0.9, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 0.0, 0.0],
+                         [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0], [], 0, [], 60, 6)
+    def basic_attack(self, grid, target):
+        if self.basic_attack_hit_check(grid, 10, False, target):
+            self.basic_attack_damage(grid, MagmaGolemSlam(), target, self.crit_check(grid))
+
+class AshColossusSlam(Weapon):
+    def __init__(self, ):
+        super().__init__("Slam", "33", [-1, -1], 0, 0, 0, "One-Handed Mace", 1, 1.25, [[lookup_damage_type_id("Blunt"), 30, 0]], [Suffocation(40, False)], None)
+
 
 # Boss of Embers
 class AshColossus(Boss):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Obsidian Golem", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5,
-                         (weapon, None, None, None, None, None, None, None, None),
+        super().__init__("Ash Colossus", "22", pos,
+        [CreatureSegment(self, 22, (pos[0] + 1, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0] + 2, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0] + 3, pos[1]), "Static"), CreatureSegment(self, 22, (pos[0] + 4, pos[1]), "Static"),
+                  CreatureSegment(self, 22, (pos[0], pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 2, pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 3, pos[1] + 1), "Static"), CreatureSegment(self, 22, (pos[0] + 4, pos[1] + 1), "Static"),
+                  CreatureSegment(self, 22, (pos[0], pos[1] + 2), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 2), "Static"), CreatureSegment(self, 22, (pos[0] + 2, pos[1] + 2), "Static"), CreatureSegment(self, 22, (pos[0] + 3, pos[1] + 2), "Static"), CreatureSegment(self, 22, (pos[0] + 4, pos[1] + 2), "Static"),
+                  CreatureSegment(self, 22, (pos[0], pos[1] + 3), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 3), "Static"), CreatureSegment(self, 22, (pos[0] + 2, pos[1] + 3), "Static"), CreatureSegment(self, 22, (pos[0] + 3, pos[1] + 3), "Static"), CreatureSegment(self, 22, (pos[0] + 4, pos[1] + 3), "Static"),
+                  CreatureSegment(self, 22, (pos[0], pos[1] + 4), "Static"), CreatureSegment(self, 22, (pos[0] + 1, pos[1] + 4), "Static"), CreatureSegment(self, 22, (pos[0] + 2, pos[1] + 4), "Static"), CreatureSegment(self, 22, (pos[0] + 3, pos[1] + 4), "Static"), CreatureSegment(self, 22, (pos[0] + 4, pos[1] + 4), "Static"),],
+                        300, 0, 1, [], 30, 0, 0, 0, 0.1,
+                         (AshColossusSlam(), None, None, None, None, None, None, None, None),
                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [],
-                         basicDamageResistances, basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+                         [0.6, 0.8, 1.0, 1.0, 0.9, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 0.0, 0.0],
+                         [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0], [], 0, [], 200, 20)
 
 
 # Columbarium
