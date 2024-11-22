@@ -61,7 +61,7 @@ class Heat(Enchantment):
     def __init__(self,):
         super().__init__("Heat", 1, 30, [(lookup_damage_type_id("Fire"), 5, 2)], [])
 
-class Fire(Enchantment):
+class Flame(Enchantment):
     def __init__(self,):
         super().__init__("Flames", 2, 60, [(lookup_damage_type_id("Fire"), 10, 4)], [])
 
@@ -117,7 +117,7 @@ class Illumination(Enchantment):
     def __init__(self,):
         super().__init__("Illumination", 3, 90, [(lookup_damage_type_id("Light"), 5, 2)], [])
 
-class Light(Enchantment):
+class Bright(Enchantment):
     def __init__(self,):
         super().__init__("Light", 6, 180, [(lookup_damage_type_id("Light"), 10, 4)], [])
 
@@ -175,7 +175,7 @@ class Annihilation(Enchantment):
 
 
 #enchantments list ordered from highest level to lowest level
-weapon_enchantments = [Heat(), Chilling(), Fire(), Sparking(), Illumination(), Shadow(), Incineration(), Dissolving(), Decay(), Lightning(), Light(), Darkness(), Magic(), Hellfire(), HolyLightning(), Melting(), Death(), Fading(), Gravechill(), Electrocution(), Evil(), Wizardry(), Undeath(), Flux(), Unraveling(), Chaos(), Twilight(), Annihilation()]
+weapon_enchantments = [Heat(), Chilling(), Flame(), Sparking(), Illumination(), Shadow(), Incineration(), Dissolving(), Decay(), Lightning(), Bright(), Darkness(), Magic(), Hellfire(), HolyLightning(), Melting(), Death(), Fading(), Gravechill(), Electrocution(), Evil(), Wizardry(), Undeath(), Flux(), Unraveling(), Chaos(), Twilight(), Annihilation()]
 other_enchantments = []
 
 

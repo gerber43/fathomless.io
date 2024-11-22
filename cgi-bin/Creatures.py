@@ -774,15 +774,10 @@ class XotilHighPriest(Boss):
 # Undercity
 class DarkElfSorceress(Creature):
     def __init__(self, pos):
-        weapon_choice = random.randint(0, 1)
-        if weapon_choice == 0:
-            weapon = IronDagger((-1, -1), None)
-        else:
-            weapon = WoodenClub((-1, -1), None)
-        super().__init__("Dark Elf Sorceress", "22", pos, [], 10, 0, 1, [], 1, 5, 0, 0.3, 0.5, 10,
-                         (5, 5, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 0, 2, 0, 2, 0, 5, 0),
-                         (weapon, None, None, None, None, None, None, None, None), [], basicDamageResistances,
-                         basicStatusResistances, [], 0, ((Gold((-1, -1), 3), 0.7)), 10, 1)
+        super().__init__("Dark Elf Sorceress", "22", pos, [], 70, 0, 1, [], 1, 5, 15, 5, 0.3, 999,
+                         (0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 15, 15, 15, 15, 0, 0, 0, 0, 0, 0, 2, 0),
+                         (WoodenClub([-1, -1], None), None, None, None, None, None, None, None, None), [], [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.7, 0.5],
+                         basicStatusResistances, [], 0, [[Gold([-1, -1], 60), 0.7]], 110, 11)
 
 # Undercity
 class Drider(Creature):
