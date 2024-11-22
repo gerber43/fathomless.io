@@ -266,6 +266,8 @@ class Creature(GameObject):
             return
         if (len([gameObject for gameObject in grid[self.pos[0]][self.pos[1]] if gameObject.__class__.__base__.__name__ == "Decor"]) == 0):
             grid[self.pos[0]][self.pos[1]].append(corpse)
+        for segment in self.segments:
+            grid[segment.pos[0]][segment.pos[1]].remove(segment)
         for i in range(int(len(self.drop_table)//2) - 1):
             drop_item = self.drop_table[i]
             #drop_item.pos = corpse.pos
@@ -294,7 +296,6 @@ class Player(Creature):
                          status_resistances, [Gold([-1, -1], 105)], 20, None, 0, 1)
     def check_level(self, grid):
         if self.xp >= 20*self.level:
-            #TODO: display levelup screen, where player chooses to place their stat point in fitness, cunning, or magic and allocates their 5 (6 in case of human) skill points among their skills
             self.xp -= 100*self.level
             self.level += 1
             self.max_hp = self.fitness*10

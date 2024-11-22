@@ -663,6 +663,8 @@ if (file_exists("maps/Test.pkl")) {
                 <input  id = "sfxSlider" class = "slider" data-setting = "sfxVolume" type = "range" min = "0" max = "100" value = "0">
                 <button id = "musicVolume">Music Volume: 0%</button>
                 <input id = "musicSlider" class = "slider"  data-setting = "musicVolume" type = "range" min = "0" max = "100" value = "0">
+                <button id = "fovLevel">Current Fov: 11</button>
+                <input id = "fovSlider" class = "slider"  data-setting = "fovSlider" type = "range" min = "3" max = "11" value = "11">
                 <button data-setting = "toggleAscii">Enable Ascii</button>
                 <button data-setting = "toggleResolution">Toggle Resolution</button>
                 <button data-setting = "keyBind">Key Binds</button>
@@ -679,6 +681,7 @@ if (file_exists("maps/Test.pkl")) {
             var inspectingPlayer = activeTile = isAction = songPosition = sfxVolume = musicVolume = currentLevel = playerDirection = viewRadius = keyBindOpened = inspecting = music = playMusic = sfx = isLowResolution = start = disableMovement = playAudio = closeSetting = isSettingsOpen = currentMap = viewDiameter  = inventoryOpened = asciiMode= 0;
             var objectTypes = ["Bottom","Terrain","Item","Decor","Creature","Light","Top"];
             var keyBinds = (!localStorage.getItem("keyBinds"))?{"Inventory":"KeyE","Select":"Enter","Settings":"Escape","Attack":"Space","Movement":["ArrowRight","ArrowDown","ArrowLeft","ArrowUp","KeyD","KeyS","KeyA","KeyW"]}:(JSON.parse(localStorage.getItem("keyBinds")));
+            var fov = 11;
             if (localStorage.getItem("soundSettings")) {
                 var soundSettings = JSON.parse(localStorage.getItem("soundSettings"));
             playMusic = soundSettings[0];
@@ -1107,7 +1110,8 @@ confirmationCoordinates = coordinates;
                     
                     for (var i = 0; i < inventory.length; i++) {
                         item = inventory[i];
-                         inventoryBuffer += "<span><p>"+item['name']+"</p><img src = '"+tileObjects[item['textureIndex']]['icon']+"'><p>"+item['amount']+"</p><button class = 'use' onclick = 'selectedItem = `Inventory:"+i+"`;toggleInventory();createMessage(`dialogue`,`Click On A Target`,2);'>Use</button></span>";
+                        var useButton = (item['name'] != "Gold")?"<button class = 'use' onclick = 'selectedItem = `Inventory:"+i+"`;toggleInventory();createMessage(`dialogue`,`Click On A Target`,2);'>Use</button>":"";
+                         inventoryBuffer += "<span><p>"+item['name']+"</p><img src = '"+tileObjects[item['textureIndex']]['icon']+"'><p>"+item['amount']+"</p>"+useButton+"</span>";
 
                     }
                     inventoryBuffer += "</span>";
@@ -1117,7 +1121,9 @@ confirmationCoordinates = coordinates;
                     equipmentBuffer = "<br><p>Equipment</p><span>";
                     
                     for (var i = 0; i < player['equipment'].length; i++) {
-                         equipmentBuffer += "<span><p>"+player['equipment'][i]['name']+"</p><img src = '"+tileObjects[player['equipment'][i]['textureIndex']]['icon']+"'><p>"+player['equipment'][i]['slot']+" | "+player['equipment'][i]['type']+"</p></span>";
+                            var useButton = "<button class = 'use' onclick = 'selectedItem = `Equipment:"+i+"`;toggleInventory();createMessage(`dialogue`,`Click On A Target`,2);'>Unequip</button>";
+
+                         equipmentBuffer += "<span><p>"+player['equipment'][i]['name']+"</p><img src = '"+tileObjects[player['equipment'][i]['textureIndex']]['icon']+"'><p>"+player['equipment'][i]['slot']+" | "+player['equipment'][i]['type']+"</p>"+useButton+"</span>";
 
                     }
                     equipmentBuffer += "</span>";
@@ -1438,6 +1444,7 @@ statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
                     createMessage("alert",(healthChange)+"<img src = '"+tileObjects[16]['icon']+"'>",1);
                 }
             }
+            
             function sendRequest(uri = "") {
                 start = performance.now();
                 var xmlhttp = new XMLHttpRequest();
@@ -1445,6 +1452,11 @@ statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
                     if (this.readyState == 4 && this.status == 200) {
                         receiveMap(this.responseText);
                     }
+                }
+                if (uri == "") {
+                    uri = "?fov="+encodeURIComponent(fov);
+                } else {
+                     uri += "&fov="+encodeURIComponent(fov);
                 }
                 xmlhttp.open("GET", "https://fathomless.io/sessionValidate/"+uri, true);
                 xmlhttp.send();
@@ -1610,6 +1622,15 @@ statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
             document.querySelectorAll('input[type="range"]').forEach((Item) => {
                 
                 Item.addEventListener("input", () => {
+                    if (Item.dataset.setting && Item.dataset.setting == "fovSlider") {
+                        Item.value = (Item.value%2)?Item.value:Item.value-1;
+                        if (Item.value != fov) {
+                            fov = Item.value;
+                            document.getElementById('fovLevel').innerHTML = "Current Fov: "+fov;
+                            sendRequest();
+                        }
+                    }
+                    
                     if (Item.dataset.setting && Item.dataset.setting == "sfxVolume") {
                         sfxVolume = Item.value;
                         document.getElementById('sfxVolume').innerHTML = "SFX Volume: "+(Item.value)+"%";
@@ -1627,6 +1648,7 @@ statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
                          }
 
                     }
+                    
                     if (Item.dataset.setting && Item.dataset.setting == "musicVolume") {
                         musicVolume = Item.value;
                         document.getElementById('musicVolume').innerHTML = "Music Volume: "+(Item.value)+"%"
@@ -1673,6 +1695,7 @@ statusPoints = {"cunning":0,"fitness":0,"magic":0,"total":0};
                             sfx = [new Audio('https://fathomless.io/assets/audio/walking.mp3'),new Audio('https://fathomless.io/assets/audio/coin.mp3'),new Audio('https://fathomless.io/assets/audio/crash.mp3'),new Audio('https://fathomless.io/assets/audio/walk2.mp3'), new Audio('https://fathomless.io/assets/audio/woosh.mp3'), new Audio('https://fathomless.io/assets/audio/dead.mp3'), new Audio('https://fathomless.io/assets/audio/attack.mp3'), new Audio('https://fathomless.io/assets/audio/shoot.mp3'), new Audio('https://fathomless.io/assets/audio/hit.mp3'), new Audio('https://fathomless.io/assets/audio/kill.mp3')];
                         }
                     }
+                    
                     if (Item.dataset.setting && Item.dataset.setting == "toggleMusic") {
                         Item.innerHTML = (!playMusic)?"Mute Music":"Play Music"
                         playMusic = !playMusic;

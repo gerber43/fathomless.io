@@ -529,6 +529,10 @@ if (HTTP_FIELDS.getvalue('uuid')):
       fitness = int(HTTP_FIELDS.getvalue('fitness')) if (HTTP_FIELDS.getvalue('fitness')) else 0
       magic = int(HTTP_FIELDS.getvalue('magic')) if (HTTP_FIELDS.getvalue('magic')) else 0
       cunning = int(HTTP_FIELDS.getvalue('cunning')) if (HTTP_FIELDS.getvalue('cunning')) else 0
+      field_of_view = int(HTTP_FIELDS.getvalue('fov')) if (HTTP_FIELDS.getvalue('fov')) else 11
+      if field_of_view%2 == 0 or field_of_view <= 1 and field_of_view > 11:
+          field_of_view = 11
+      fov_radius = field_of_view // 2 
 
       
 
@@ -620,11 +624,21 @@ if (HTTP_FIELDS.getvalue('uuid')):
               creatureType = "Creature"
               if (get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType) == None):
                   creatureType = "Player"
+                  
+              if (selected_method.lower() == "equipment" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]], "Player")):
+                  targetItem = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").equipment[selected_index]
+                  targetItem.on_unequip(game_map,get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player"))
+                  game_log += targetItem.name+" Unequiped By "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).pos)
+                  message = targetItem.name+" Unequiped By "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).pos)
+                    
               if (selected_method.lower() == "inventory" and get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]], creatureType)):
                   targetItem = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").inventory[selected_index]
-                  
+                    
                   if (targetItem.__class__.__base__.__name__ == "Consumable"):
                       get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").inventory[selected_index].use_effect(game_map,get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType))
+                      get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").inventory[selected_index].amount -= 1
+                      if (get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").inventory[selected_index].amount < 0):
+                          get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").inventory.remove(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").inventory[selected_index])
                       game_log += targetItem.name+" Consumed By "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).pos)
                       message = targetItem.name+" Consumed By "+get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).name+" @ "+str(get_object_by_class(game_map[target_coordinates[0]][target_coordinates[1]],creatureType).pos)
                       
@@ -677,7 +691,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
               else:
                   turn_log.append({"buy":"failed:"+buy})
                   turn_log.append({"shop":"interacted"})
-                  message = "Not enough gold"
+                  message = "Thank You"
       if sell != None:
           shop = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Shop")
           if shop:
