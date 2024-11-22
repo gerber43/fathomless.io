@@ -114,18 +114,20 @@ def is_valid_move(x, y, game_map, creature, move_by_destruct_terrain):
     else:
         if (get_object_by_class(game_map[x][y],"Terrain") and not get_object_by_class(game_map[x][y],"Terrain").passable):
             return False
+    
     if ((get_object_by_class(game_map[x][y],"Decor") and not get_object_by_class(game_map[x][y],"Decor").passable)):
         return False
     #craeture will avoid harmful terrain if can't fly
+    
     terrain = get_object_by_class(game_map[x][y], "Terrain")
     is_flying = False
-    if creature.status_effects:
-        for effect in creature.status_effects:
-            if effect.status_type and effect.status_type == "Flight":
-                is_flying = True
-        if not is_flying:
-            if is_harmful(game_map, terrain, creature):
-                return False
+    
+    for effect in creature.status_effects:
+        if effect.status_type and effect.status_type == "Flight":
+            is_flying = True
+    if not is_flying:
+        if is_harmful(game_map, terrain, creature):
+            return False
     return True
 
 def is_destructible(terrain, game_map):
@@ -174,10 +176,10 @@ def is_harmful(game_map, terrain, creature):
     if terrain:
         # Create a copy of the creature
         creature_copy = copy.deepcopy(creature)
-    
+
         # Record the initial state of the creature
-        initial_hp = creature_copy.hp
-        initial_status_effects_length = len(creature_copy.status_effects)
+        initial_hp = creature.hp
+        initial_status_effects_length = len(creature.status_effects)
         
         # Let the creature step onto the terrain (simulate the step)
         
