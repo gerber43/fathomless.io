@@ -523,6 +523,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
       name = HTTP_FIELDS.getvalue('name') if (HTTP_FIELDS.getvalue('name')) else "Name"
       interact = HTTP_FIELDS.getvalue('interact') if (HTTP_FIELDS.getvalue('interact')) else None
       buy = (HTTP_FIELDS.getvalue('buy')) if (HTTP_FIELDS.getvalue('buy')) else None
+      sell = (HTTP_FIELDS.getvalue('sell')) if (HTTP_FIELDS.getvalue('sell')) else None
       skills = (HTTP_FIELDS.getvalue('skills')) if (HTTP_FIELDS.getvalue('skills')) else None
       levelUp = HTTP_FIELDS.getvalue('levelUp') if (HTTP_FIELDS.getvalue('levelUp')) else None
       fitness = int(HTTP_FIELDS.getvalue('fitness')) if (HTTP_FIELDS.getvalue('fitness')) else 0
@@ -677,6 +678,17 @@ if (HTTP_FIELDS.getvalue('uuid')):
                   turn_log.append({"buy":"failed:"+buy})
                   turn_log.append({"shop":"interacted"})
                   message = "Not enough gold"
+      if sell != None:
+          shop = get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Shop")
+          if shop:
+              if shop.sell(game_map, player, player.inventory[int(sell)]):
+                  turn_log.append({"sell":"sold:"+sell})
+                  turn_log.append({"shop":"interacted"})
+                  message = "Item Sold"
+              else:
+                  turn_log.append({"sell":"failed:"+sell})
+                  turn_log.append({"shop":"interacted"})
+                  message = "Sell Failed"
       turn_log.append({"race":player.race})
 
       points = 5 if player.__class__.__name__ != "Human" else 6
@@ -687,17 +699,11 @@ if (HTTP_FIELDS.getvalue('uuid')):
               skills[i] = int(skills[i])
               totalSkills += skills[i]
       if (levelUp != None and player.xp >= 20*player.level and (fitness + cunning + magic) == 1 and totalSkills == points):
-          
-
           player.fitness += fitness
           player.cunning += cunning
           player.magic += magic
-          player.xp -= 20*player.level
-          player.level += 1   
-          player.max_hp += player.fitness*10
-          player.max_mp += player.magic*10
-          player.dodge += player.cunning*2
-          player.crit_chance += (float(player.cunning) ** (2.0/3.0))/10.0
+          player.check_level(game_map)
+
           
           
           for i in range(len(skills)):
