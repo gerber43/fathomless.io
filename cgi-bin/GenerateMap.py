@@ -346,10 +346,6 @@ def generate_terrain_with_probabilities(grid_width, grid_height, terrain_probabi
                 x1, y1 = random.randint(0, grid_width - 5), random.randint(0, grid_height - 5)
                 x2, y2 = min(x1 + random.randint(2, 7), grid_width - 1), min(y1 + random.randint(2, 7), grid_height - 1)
                 add_filled_rectangle(grid, x1, y1, x2, y2, Water)
-            elif terrain_type == 'fire':
-                x1, y1 = random.randint(0, grid_width - 5), random.randint(0, grid_height - 5)
-                x2, y2 = min(x1 + random.randint(2, 7), grid_width - 1), min(y1 + random.randint(2, 7), grid_height - 1)
-                add_filled_rectangle(grid, x1, y1, x2, y2, Fire)
             elif terrain_type == 'empty_space':
                 x1, y1 = random.randint(0, grid_width - 5), random.randint(0, grid_height - 5)
                 x2, y2 = min(x1 + random.randint(3, 7), grid_width - 1), min(y1 + random.randint(3, 7), grid_height - 1)
