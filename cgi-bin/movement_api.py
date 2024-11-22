@@ -227,7 +227,8 @@ def calculate_destruct_path_cost(path, creature, game_map):
                 #creature.bassic_attack(game_map, terrain_copy)
                 terrain_copy.hp -= 20
                 total_cost += 1
-              
+                
+            
     total_cost += len(path) - 1
     return total_cost
                     
@@ -330,7 +331,7 @@ def get_map_subset(player_pos, game_map, fov_radius):
                             internalGrid['Decor']['inventory'][inventory] = internalGrid['Decor']['inventory'][inventory].__dict__
                     del internalGrid['Shop']
                     
-
+                
                 if (internalGrid.get('Weapon') is not None):
                     internalGrid['Item'] = internalGrid['Weapon']
                     del internalGrid['Weapon']
@@ -368,6 +369,13 @@ def get_map_subset(player_pos, game_map, fov_radius):
 
                 
                 if (internalGrid.get('Creature') is not None and not segment):
+                    
+                    if (internalGrid['Creature'].get('turns')):
+                        internalGrid['Creature']['score'] = internalGrid['Creature']['score']//internalGrid['Creature']['turns']
+                    
+                    
+                    
+                    
                     del internalGrid['Creature']['segments']
                     #for segment in range(len(internalGrid['Creature']['segments'])):
                         #internalGrid['Creature']['segments'] = "Segments Present"
@@ -704,7 +712,7 @@ if (HTTP_FIELDS.getvalue('uuid')):
     #send subset_map and message back to client
       
       if (gameOver):
-         game_log += "Game Over. Final Score: "+str(get_object_by_class(game_map[player_pos[0]][player_pos[1]],"Player").score)
+         game_log += "Game Over. Final Score: "+str(player.score//player.turns)
       
       with open("../logs/"+uuid+".txt", "a") as myfile:
          myfile.write(game_log)
